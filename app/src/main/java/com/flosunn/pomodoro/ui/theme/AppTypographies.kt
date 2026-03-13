@@ -1,0 +1,40 @@
+package com.flosunn.pomodoro.ui.theme
+
+import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
+import com.flosunn.pomodoro.R
+
+val fontFamily = FontFamily(
+    Font(R.font.comic_relife_regular, weight = FontWeight.Normal),
+    Font(R.font.comic_relife_bold, weight = FontWeight.Bold),
+)
+
+@Immutable
+data class AppTypographies(
+    val body: TextStyle,
+    val label: TextStyle,
+    val heading: TextStyle,
+)
+
+val Typography = AppTypographies(
+    body = TextStyle(
+        fontFamily = fontFamily,
+        fontSize = 16.sp,
+    ),
+    label = TextStyle(
+        fontFamily = fontFamily,
+        fontSize = 14.sp,
+    ),
+    heading = TextStyle(
+        fontFamily = fontFamily,
+        fontSize = 18.sp,
+    )
+)
+
+inline val LocalTypography
+    get() = staticCompositionLocalOf { Typography }
