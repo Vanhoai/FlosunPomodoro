@@ -63,7 +63,7 @@ fun SwipeView(navBackStack: NavBackStack<NavKey>) {
                 }
             }
         },
-        BottomNavRoute.Home
+        BottomNavRoute.Settings
     )
 
     var currentBottomBarScreen: BottomNavRoute by rememberSaveable(
@@ -71,12 +71,13 @@ fun SwipeView(navBackStack: NavBackStack<NavKey>) {
     ) { mutableStateOf(BottomNavRoute.Home) }
 
     Scaffold(
-        modifier = Modifier.background(AppTheme.colors.backgroundColor),
+        modifier = Modifier.background(Color.Transparent),
+        containerColor = Color.Transparent,
         bottomBar = {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(AppTheme.colors.backgroundColor)
+                    .background(Color.Transparent)
             ) {
                 NavigationBar(
                     modifier = Modifier
@@ -88,6 +89,7 @@ fun SwipeView(navBackStack: NavBackStack<NavKey>) {
                             shape = RoundedCornerShape(AppTheme.sizing.borderMedium)
                         ),
                     containerColor = Color.Transparent,
+                    windowInsets = WindowInsets(0, 0, 0, 0)
                 ) {
                     bottomNavRoutes.forEach { destination ->
                         Box(

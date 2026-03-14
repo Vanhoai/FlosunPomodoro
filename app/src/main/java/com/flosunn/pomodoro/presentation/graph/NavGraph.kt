@@ -3,6 +3,7 @@ package com.flosunn.pomodoro.presentation.graph
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.background
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
@@ -15,6 +16,7 @@ import androidx.savedstate.serialization.SavedStateConfiguration
 import com.flosunn.pomodoro.presentation.auth.AuthView
 import com.flosunn.pomodoro.presentation.swipe.SwipeView
 import com.flosunn.pomodoro.ui.components.shared.NotFoundView
+import com.flosunn.pomodoro.ui.theme.AppTheme
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 
@@ -29,11 +31,11 @@ fun NavGraph(modifier: Modifier = Modifier) {
                 }
             }
         },
-        NavRoute.Auth
+        NavRoute.Swipe
     )
 
     NavDisplay(
-        modifier = modifier,
+        modifier = modifier.background(AppTheme.colors.backgroundColor),
         backStack = navBackStack,
         onBack = { navBackStack.removeLastOrNull() },
         entryDecorators = listOf(

@@ -20,7 +20,7 @@ import com.flosunn.pomodoro.ui.theme.AppTheme
 @Composable
 fun CoreButton(
     modifier: Modifier = Modifier,
-    height: Int = 60,
+    height: Int = 52,
     brush: Brush = Brush.horizontalGradient(
         colors = listOf(
             AppTheme.colors.primaryColor,

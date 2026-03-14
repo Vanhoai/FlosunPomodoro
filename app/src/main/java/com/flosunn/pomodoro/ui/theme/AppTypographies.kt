@@ -14,11 +14,16 @@ val fontFamily = FontFamily(
     Font(R.font.comic_relife_bold, weight = FontWeight.Bold),
 )
 
+val poetsenoneFontFamily = FontFamily(
+    Font(R.font.poetsenone_regular, weight = FontWeight.Normal),
+)
+
 @Immutable
 data class AppTypographies(
     val body: TextStyle,
     val label: TextStyle,
     val heading: TextStyle,
+    val clock: TextStyle,
 )
 
 val Typography = AppTypographies(
@@ -33,6 +38,10 @@ val Typography = AppTypographies(
     heading = TextStyle(
         fontFamily = fontFamily,
         fontSize = 18.sp,
+    ),
+    clock = TextStyle(
+        fontFamily = poetsenoneFontFamily,
+        fontSize = 48.sp,
     )
 )
 

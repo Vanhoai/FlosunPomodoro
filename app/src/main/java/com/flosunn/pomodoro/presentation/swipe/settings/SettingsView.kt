@@ -1,46 +1,139 @@
 package com.flosunn.pomodoro.presentation.swipe.settings
 
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
-import com.flosunn.pomodoro.ui.components.core.CoreButton
+import com.flosunn.pomodoro.R
+import com.flosunn.pomodoro.ui.components.shared.SharedSwipeHeading
 import com.flosunn.pomodoro.ui.theme.AppTheme
 
+data class SettingItem(
+    val icon: Int,
+    val title: String,
+)
+
+data class GroupedSetting(
+    val title: String,
+    val items: List<SettingItem>,
+)
+
+val settings = listOf(
+    GroupedSetting(
+        title = "General",
+        items = listOf(
+            SettingItem(icon = R.drawable.ic_achievement, title = "Preferences"),
+            SettingItem(icon = R.drawable.ic_notification, title = "Notification"),
+            SettingItem(icon = R.drawable.ic_appearance, title = "Appearance"),
+        )
+    ),
+    GroupedSetting(
+        title = "Term & Privacy",
+        items = listOf(
+            SettingItem(icon = R.drawable.ic_security, title = "Security"),
+            SettingItem(icon = R.drawable.ic_security, title = "Privacy Policy"),
+        )
+    ),
+    GroupedSetting(
+        title = "Developer Options",
+        items = listOf(
+            SettingItem(icon = R.drawable.ic_terminal, title = "Developer Options"),
+        )
+    )
+)
 
 @Composable
 fun SettingsView(navBackStack: NavBackStack<NavKey>) {
     Column(
         modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
     ) {
-        CoreButton(
-            modifier = Modifier.padding(horizontal = 20.dp),
-            onPress = {
-                navBackStack.removeLastOrNull()
-            },
-            brush = Brush.horizontalGradient(
-                colors = listOf(
-                    Color.White,
-                    Color.White
-                )
-            ),
-        ) {
+        SharedSwipeHeading()
+        for (group in settings) {
             Text(
-                text = "Logout",
-                style = AppTheme.typography.body,
-                color = AppTheme.colors.primaryColor
+                text = group.title,
+                fontSize = 18.sp,
+                modifier = Modifier
+                    .padding(horizontal = 20.dp)
+                    .padding(bottom = 12.dp)
             )
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp)
+                    .padding(bottom = 20.dp)
+                    .clip(RoundedCornerShape(AppTheme.sizing.borderMedium))
+                    .background(
+                        color = Color.White,
+                        shape = RoundedCornerShape(AppTheme.sizing.borderMedium)
+                    ),
+            ) {
+                for (i in group.items.indices) {
+                    val item = group.items[i]
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(52.dp)
+                            .clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = ripple(),
+                                onClick = {}
+                            )
+                            .padding(horizontal = 20.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            painter = painterResource(item.icon),
+                            contentDescription = null,
+                            modifier = Modifier.size(20.dp),
+                            tint = Color(0xFF636363)
+                        )
+
+                        Text(
+                            text = item.title,
+                            fontSize = 16.sp,
+                            color = Color(0xFF636363),
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(start = 12.dp)
+                        )
+
+                        Icon(
+                            painter = painterResource(R.drawable.ic_arrow_right),
+                            contentDescription = null,
+                            tint = Color(0xFF636363),
+                        )
+                    }
+
+                    if (i != group.items.size - 1) HorizontalDivider(
+                        color = Color(0xFFE1E1E1),
+                        modifier = Modifier.padding(horizontal = 20.dp)
+                    )
+                }
+            }
         }
     }
 }
