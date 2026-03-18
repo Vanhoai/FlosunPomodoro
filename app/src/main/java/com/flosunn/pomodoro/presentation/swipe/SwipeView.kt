@@ -63,12 +63,12 @@ fun SwipeView(navBackStack: NavBackStack<NavKey>) {
                 }
             }
         },
-        BottomNavRoute.Settings
+        BottomNavRoute.Home
     )
 
     var currentBottomBarScreen: BottomNavRoute by rememberSaveable(
         stateSaver = bottomBarScreenSaver
-    ) { mutableStateOf(BottomNavRoute.Home) }
+    ) { mutableStateOf(BottomNavRoute.Settings) }
 
     Scaffold(
         modifier = Modifier.background(Color.Transparent),

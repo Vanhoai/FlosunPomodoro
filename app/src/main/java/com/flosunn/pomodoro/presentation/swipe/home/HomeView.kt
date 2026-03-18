@@ -9,7 +9,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -22,6 +21,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import com.flosunn.pomodoro.R
+import com.flosunn.pomodoro.presentation.swipe.home.components.PomodoroTimber
+import com.flosunn.pomodoro.presentation.swipe.home.components.TimerOptions
 import com.flosunn.pomodoro.ui.components.shared.SharedSwipeHeading
 import com.flosunn.pomodoro.ui.components.shared.TaskCard
 import com.flosunn.pomodoro.ui.theme.AppTheme
@@ -48,7 +49,7 @@ fun HomeView(navBackStack: NavBackStack<NavKey>) {
                     .padding(20.dp)
             )
 
-            TimerOptions()
+            TimerOptions(navBackStack)
         }
 
         item {

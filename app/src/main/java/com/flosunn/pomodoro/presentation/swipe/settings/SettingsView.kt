@@ -1,8 +1,11 @@
 package com.flosunn.pomodoro.presentation.swipe.settings
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -27,12 +30,14 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import com.flosunn.pomodoro.R
+import com.flosunn.pomodoro.presentation.graph.NavRoute
 import com.flosunn.pomodoro.ui.components.shared.SharedSwipeHeading
 import com.flosunn.pomodoro.ui.theme.AppTheme
 
 data class SettingItem(
     val icon: Int,
     val title: String,
+    val route: NavRoute? = null
 )
 
 data class GroupedSetting(
@@ -44,9 +49,17 @@ val settings = listOf(
     GroupedSetting(
         title = "General",
         items = listOf(
-            SettingItem(icon = R.drawable.ic_achievement, title = "Preferences"),
+            SettingItem(
+                icon = R.drawable.ic_achievement,
+                title = "Preferences",
+                route = NavRoute.Preference
+            ),
             SettingItem(icon = R.drawable.ic_notification, title = "Notification"),
-            SettingItem(icon = R.drawable.ic_appearance, title = "Appearance"),
+            SettingItem(
+                icon = R.drawable.ic_appearance,
+                title = "Appearance",
+                route = NavRoute.Appearance
+            ),
         )
     ),
     GroupedSetting(
@@ -100,7 +113,9 @@ fun SettingsView(navBackStack: NavBackStack<NavKey>) {
                             .clickable(
                                 interactionSource = remember { MutableInteractionSource() },
                                 indication = ripple(),
-                                onClick = {}
+                                onClick = {
+                                    item.route?.let { navBackStack.add(it) }
+                                }
                             )
                             .padding(horizontal = 20.dp),
                         verticalAlignment = Alignment.CenterVertically
@@ -134,6 +149,42 @@ fun SettingsView(navBackStack: NavBackStack<NavKey>) {
                     )
                 }
             }
+        }
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp)
+                .height(52.dp)
+                .clip(RoundedCornerShape(AppTheme.sizing.borderMedium))
+                .background(Color.White)
+                .border(
+                    width = 1.dp,
+                    color = Color(0xFFECECEC),
+                    shape = RoundedCornerShape(AppTheme.sizing.borderMedium)
+                )
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = ripple(),
+                    onClick = {}
+                )
+                .padding(vertical = 12.dp),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.ic_logout),
+                contentDescription = null,
+                tint = Color(0xFFFF6767),
+                modifier = Modifier.size(20.dp)
+            )
+
+            Text(
+                text = "Logout",
+                fontSize = 16.sp,
+                color = Color(0xFFFF6767),
+                modifier = Modifier.padding(start = 12.dp)
+            )
         }
     }
 }

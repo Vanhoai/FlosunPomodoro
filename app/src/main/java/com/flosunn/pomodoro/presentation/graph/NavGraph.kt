@@ -15,6 +15,10 @@ import androidx.navigation3.ui.NavDisplay
 import androidx.savedstate.serialization.SavedStateConfiguration
 import com.flosunn.pomodoro.presentation.auth.AuthView
 import com.flosunn.pomodoro.presentation.swipe.SwipeView
+import com.flosunn.pomodoro.presentation.swipe.home.fullscreen.FullScreenView
+import com.flosunn.pomodoro.presentation.swipe.settings.appearance.AppearanceView
+import com.flosunn.pomodoro.presentation.swipe.settings.preference.PreferenceView
+import com.flosunn.pomodoro.presentation.swipe.settings.preference.choose_duration.ChooseDurationView
 import com.flosunn.pomodoro.ui.components.shared.NotFoundView
 import com.flosunn.pomodoro.ui.theme.AppTheme
 import kotlinx.serialization.modules.SerializersModule
@@ -28,6 +32,22 @@ fun NavGraph(modifier: Modifier = Modifier) {
                 polymorphic(NavKey::class) {
                     subclass(NavRoute.Auth::class, NavRoute.Auth.serializer())
                     subclass(NavRoute.Swipe::class, NavRoute.Swipe.serializer())
+                    subclass(
+                        subclass = NavRoute.Preference::class,
+                        serializer = NavRoute.Preference.serializer()
+                    )
+                    subclass(
+                        subclass = NavRoute.ChooseDuration::class,
+                        serializer = NavRoute.ChooseDuration.serializer()
+                    )
+                    subclass(
+                        subclass = NavRoute.Appearance::class,
+                        serializer = NavRoute.Appearance.serializer()
+                    )
+                    subclass(
+                        subclass = NavRoute.FullScreen::class,
+                        serializer = NavRoute.FullScreen.serializer()
+                    )
                 }
             }
         },
@@ -61,6 +81,16 @@ fun NavGraph(modifier: Modifier = Modifier) {
             when (key) {
                 is NavRoute.Auth -> NavEntry(key) { AuthView(navBackStack) }
                 is NavRoute.Swipe -> NavEntry(key) { SwipeView(navBackStack) }
+                is NavRoute.Preference -> NavEntry(key) { PreferenceView(navBackStack) }
+                is NavRoute.ChooseDuration -> NavEntry(key) {
+                    ChooseDurationView(
+                        navBackStack,
+                        key
+                    )
+                }
+
+                is NavRoute.Appearance -> NavEntry(key) { AppearanceView(navBackStack) }
+                is NavRoute.FullScreen -> NavEntry(key) { FullScreenView(navBackStack) }
                 else -> NavEntry(key) { NotFoundView() }
             }
         }
