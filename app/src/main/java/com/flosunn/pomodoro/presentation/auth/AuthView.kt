@@ -1,7 +1,7 @@
 package com.flosunn.pomodoro.presentation.auth
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,19 +14,30 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.fragment.app.FragmentActivity
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import com.flosunn.pomodoro.R
+import com.flosunn.pomodoro.presentation.auth.components.AuthForm
+import com.flosunn.pomodoro.presentation.auth.components.BiometricSignInForm
+import com.flosunn.pomodoro.presentation.auth.components.SocialButtons
 import com.flosunn.pomodoro.presentation.graph.NavRoute
-import com.flosunn.pomodoro.ui.components.core.CoreButton
 import com.flosunn.pomodoro.ui.theme.AppTheme
 
+@SuppressLint("ContextCastToActivity")
 @Composable
-fun AuthView(navBackStack: NavBackStack<NavKey>) {
+fun AuthView(
+    navBackStack: NavBackStack<NavKey>,
+    authViewModel: AuthViewModel = hiltViewModel<AuthViewModel>(),
+) {
+    val context = LocalContext.current as FragmentActivity
+
     Scaffold(
         containerColor = AppTheme.colors.backgroundColor,
     ) { paddingValues ->
@@ -51,24 +62,24 @@ fun AuthView(navBackStack: NavBackStack<NavKey>) {
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .padding(top = 20.dp, bottom = 40.dp)
-                    .padding(horizontal = 40.dp)
+                    .padding(horizontal = 20.dp)
             )
 
             Text(
-                text = "Sign In to Continue",
+                text = "Sign In",
                 fontSize = 18.sp,
+                modifier = Modifier.padding(bottom = 40.dp),
             )
 
-            SocialButtons()
-
-            HorizontalDivider(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp, vertical = 10.dp),
-                color = Color(0xFFD5D5D5),
+            SocialButtons(
+                signInGoogle = {},
+                signInGithub = {},
             )
 
-            AuthForm(navigateToSwipe = { navBackStack.add(NavRoute.Swipe) })
+            BiometricSignInForm(
+                authWithBiometric = { authViewModel.enableBiometricAuth(context) },
+                authWithFaceRecognition = { authViewModel.authWithBiometric(context) },
+            )
         }
     }
 }

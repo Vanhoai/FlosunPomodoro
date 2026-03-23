@@ -1,4 +1,4 @@
-package com.flosunn.pomodoro.constants
+package com.flosunn.pomodoro.core.constants
 
 enum class DurationType(
     val title: String,

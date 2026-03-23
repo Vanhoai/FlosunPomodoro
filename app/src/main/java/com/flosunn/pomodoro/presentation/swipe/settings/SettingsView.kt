@@ -82,7 +82,7 @@ fun SettingsView(navBackStack: NavBackStack<NavKey>) {
     Column(
         modifier = Modifier.fillMaxSize(),
     ) {
-        SharedSwipeHeading()
+        SharedSwipeHeading(onPressAvatar = { navBackStack.add(NavRoute.Account) })
         for (group in settings) {
             Text(
                 text = group.title,

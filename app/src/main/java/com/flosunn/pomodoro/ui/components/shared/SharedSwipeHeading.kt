@@ -21,7 +21,7 @@ import com.flosunn.pomodoro.R
 import com.flosunn.pomodoro.ui.components.core.CoreAsyncImage
 
 @Composable
-fun SharedSwipeHeading() {
+fun SharedSwipeHeading(onPressAvatar: () -> Unit = {}) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -57,6 +57,7 @@ fun SharedSwipeHeading() {
             modifier = Modifier
                 .size(48.dp)
                 .clip(RoundedCornerShape(24.dp)),
+            onPress = { onPressAvatar() }
         )
     }
 }

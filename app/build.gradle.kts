@@ -1,9 +1,59 @@
+import java.util.Locale
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
-    alias(libs.plugins.jetbrains.kotlin.serialization)
+    alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.androidx.room)
+    alias(libs.plugins.google.services)
+}
+
+val keystoreFile: File = rootProject.file("keystore.properties")
+if (!keystoreFile.exists()) {
+    throw GradleException("Keystore file not found: ${keystoreFile.absolutePath}")
+}
+
+val keystoreProperties = Properties()
+if (keystoreFile.exists()) keystoreProperties.load(keystoreFile.inputStream())
+
+val localPropertiesFile: File = rootProject.file("local.properties")
+if (!localPropertiesFile.exists()) {
+    throw GradleException("Local properties file not found: ${localPropertiesFile.absolutePath}")
+}
+
+val localProperties = Properties()
+if (localPropertiesFile.exists()) localProperties.load(localPropertiesFile.inputStream())
+
+fun formatKeyBuildConfig(key: String): String {
+    val keys = mutableListOf<String>()
+    var s = ""
+
+    for (c in key.toCharArray()) {
+        if (c.isUpperCase()) {
+            keys.add(s)
+            s = c.toString()
+        } else s += c
+    }
+
+    keys.add(s)
+    return keys.joinToString("_").uppercase(Locale.ROOT)
+}
+
+fun parseLocalPropertiesToBuildConfig(buildConfigField: (type: String, name: String, value: String) -> Unit) {
+    // Parse local.properties and add all keys as BuildConfig fields
+    // noinspection WrongGradleMethod
+    localProperties.propertyNames().asIterator().forEach { propName ->
+        if (propName.toString() == "sdk.dir") return@forEach
+
+        buildConfigField(
+            "String",
+            formatKeyBuildConfig(propName.toString()),
+            "\"${localProperties.getProperty(propName.toString())}\""
+        )
+    }
 }
 
 android {
@@ -22,6 +72,21 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        ndk {
+            // abiFilters += setOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
+            // noinspection ChromeOsAbiSupport
+            abiFilters += setOf("arm64-v8a")
+        }
+    }
+
+    signingConfigs {
+        create("release") {
+            storeFile = file(keystoreProperties["storeFile"].toString())
+            storePassword = keystoreProperties["storePassword"].toString()
+            keyAlias = keystoreProperties["keyAlias"].toString()
+            keyPassword = keystoreProperties["keyPassword"].toString()
+        }
     }
 
     buildTypes {
@@ -31,6 +96,17 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+
+            signingConfig = signingConfigs.getByName("release")
+            parseLocalPropertiesToBuildConfig(buildConfigField = this::buildConfigField)
+        }
+
+        debug {
+            isMinifyEnabled = false
+
+            // Use my own config
+            signingConfig = signingConfigs.getByName("release")
+            parseLocalPropertiesToBuildConfig(buildConfigField = this::buildConfigField)
         }
     }
 
@@ -51,6 +127,10 @@ android {
             }
         }
     }
+}
+
+room {
+    schemaDirectory("$projectDir/schemas")
 }
 
 dependencies {
@@ -76,7 +156,10 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.lifecycle.viewmodel.navigation3)
     implementation(libs.androidx.material3.adaptive.navigation3)
+
+    // Kotlin Serialization
     implementation(libs.kotlinx.serialization.core)
+    implementation(libs.kotlinx.serialization.json)
 
     // Room Database
     implementation(libs.androidx.room.runtime)
@@ -98,4 +181,18 @@ dependencies {
     // Coil for image loading
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
+
+    // Glance
+    implementation(libs.glance.appwidget)
+    implementation(libs.glance.material3)
+
+    // Google Auth
+    implementation(libs.credentials)
+    implementation(libs.credentials.play.services.auth)
+    implementation(libs.googleid)
+
+    // Firebase
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.auth)
 }

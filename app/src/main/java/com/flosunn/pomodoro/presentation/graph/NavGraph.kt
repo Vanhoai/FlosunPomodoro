@@ -13,7 +13,9 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import androidx.savedstate.serialization.SavedStateConfiguration
+import com.flosunn.pomodoro.presentation.account.AccountView
 import com.flosunn.pomodoro.presentation.auth.AuthView
+import com.flosunn.pomodoro.presentation.encrypt.EncryptView
 import com.flosunn.pomodoro.presentation.swipe.SwipeView
 import com.flosunn.pomodoro.presentation.swipe.home.fullscreen.FullScreenView
 import com.flosunn.pomodoro.presentation.swipe.settings.appearance.AppearanceView
@@ -23,6 +25,7 @@ import com.flosunn.pomodoro.ui.components.shared.NotFoundView
 import com.flosunn.pomodoro.ui.theme.AppTheme
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
+import kotlinx.serialization.modules.subclass
 
 @Composable
 fun NavGraph(modifier: Modifier = Modifier) {
@@ -48,10 +51,18 @@ fun NavGraph(modifier: Modifier = Modifier) {
                         subclass = NavRoute.FullScreen::class,
                         serializer = NavRoute.FullScreen.serializer()
                     )
+                    subclass(
+                        subclass = NavRoute.Account::class,
+                        serializer = NavRoute.Account.serializer()
+                    )
+                    subclass(
+                        subclass = NavRoute.Encrypt::class,
+                        serializer = NavRoute.Encrypt.serializer()
+                    )
                 }
             }
         },
-        NavRoute.Swipe
+        NavRoute.Auth
     )
 
     NavDisplay(
@@ -91,6 +102,8 @@ fun NavGraph(modifier: Modifier = Modifier) {
 
                 is NavRoute.Appearance -> NavEntry(key) { AppearanceView(navBackStack) }
                 is NavRoute.FullScreen -> NavEntry(key) { FullScreenView(navBackStack) }
+                is NavRoute.Account -> NavEntry(key) { AccountView(navBackStack) }
+                is NavRoute.Encrypt -> NavEntry(key) { EncryptView() }
                 else -> NavEntry(key) { NotFoundView() }
             }
         }

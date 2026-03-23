@@ -1,4 +1,4 @@
-package com.flosunn.pomodoro.presentation.auth
+package com.flosunn.pomodoro.presentation.auth.components
 
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.padding
@@ -19,15 +19,13 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.flosunn.pomodoro.R
-import com.flosunn.pomodoro.extensions.isValidEmail
+import com.flosunn.pomodoro.core.extensions.isValidEmail
 import com.flosunn.pomodoro.ui.components.core.CoreButton
 import com.flosunn.pomodoro.ui.components.core.CoreTextField
 import com.flosunn.pomodoro.ui.theme.AppTheme
 
 @Composable
-fun AuthForm(
-    navigateToSwipe: () -> Unit = {},
-) {
+fun AuthForm(navigateToSwipe: () -> Unit = {}) {
     var isHidePasswordField by remember { mutableStateOf(true) }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -55,7 +53,7 @@ fun AuthForm(
                 contentDescription = null,
                 modifier = Modifier
                     .padding(end = 12.dp)
-                    .size(24.dp),
+                    .size(20.dp),
                 tint = if (email.isValidEmail()) Color(0xFF3FA039) else Color(0xFF727272),
             )
         },

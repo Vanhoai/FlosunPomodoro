@@ -1,11 +1,14 @@
 package com.flosunn.pomodoro.presentation.graph
 
 import androidx.navigation3.runtime.NavKey
-import com.flosunn.pomodoro.constants.DurationType
+import com.flosunn.pomodoro.core.constants.DurationType
 import kotlinx.serialization.Serializable
 
 @Serializable
 sealed interface NavRoute : NavKey {
+
+    @Serializable
+    data object Encrypt : NavRoute, NavKey
 
     @Serializable
     data object Auth : NavRoute, NavKey

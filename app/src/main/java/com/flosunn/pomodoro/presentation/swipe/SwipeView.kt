@@ -2,21 +2,16 @@ package com.flosunn.pomodoro.presentation.swipe
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeContent
-import androidx.compose.foundation.layout.safeGestures
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -68,7 +63,7 @@ fun SwipeView(navBackStack: NavBackStack<NavKey>) {
 
     var currentBottomBarScreen: BottomNavRoute by rememberSaveable(
         stateSaver = bottomBarScreenSaver
-    ) { mutableStateOf(BottomNavRoute.Settings) }
+    ) { mutableStateOf(BottomNavRoute.Home) }
 
     Scaffold(
         modifier = Modifier.background(Color.Transparent),

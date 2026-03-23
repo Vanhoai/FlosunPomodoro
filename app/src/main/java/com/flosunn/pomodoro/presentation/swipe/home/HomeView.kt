@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import com.flosunn.pomodoro.R
+import com.flosunn.pomodoro.presentation.graph.NavRoute
 import com.flosunn.pomodoro.presentation.swipe.home.components.PomodoroTimber
 import com.flosunn.pomodoro.presentation.swipe.home.components.TimerOptions
 import com.flosunn.pomodoro.ui.components.shared.SharedSwipeHeading
@@ -38,7 +39,7 @@ fun HomeView(navBackStack: NavBackStack<NavKey>) {
             .background(AppTheme.colors.backgroundColor),
     ) {
         item {
-            SharedSwipeHeading()
+            SharedSwipeHeading(onPressAvatar = { navBackStack.add(NavRoute.Account) })
             TaskCard()
 
             PomodoroTimber(

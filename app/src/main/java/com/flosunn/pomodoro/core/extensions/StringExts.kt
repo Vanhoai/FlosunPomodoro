@@ -1,0 +1,15 @@
+package com.flosunn.pomodoro.core.extensions
+
+import android.util.Patterns
+
+fun String.isValidEmail(): Boolean {
+    return Patterns.EMAIL_ADDRESS.matcher(this).matches()
+}
+
+inline fun <reified T : Enum<T>> String?.toEnum(defaultValue: T): T =
+    if (this == null) defaultValue
+    else try {
+        enumValueOf(this)
+    } catch (e: IllegalArgumentException) {
+        defaultValue
+    }

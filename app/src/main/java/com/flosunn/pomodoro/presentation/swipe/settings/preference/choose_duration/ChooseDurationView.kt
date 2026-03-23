@@ -17,7 +17,6 @@ import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -31,7 +30,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import com.flosunn.pomodoro.R
-import com.flosunn.pomodoro.constants.DurationType
+import com.flosunn.pomodoro.core.constants.DurationType
 import com.flosunn.pomodoro.presentation.graph.NavRoute
 import com.flosunn.pomodoro.ui.components.core.CoreButton
 import com.flosunn.pomodoro.ui.components.shared.CommonBackHeading

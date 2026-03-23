@@ -14,8 +14,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
-import com.flosunn.pomodoro.constants.DurationType
-import com.flosunn.pomodoro.presentation.graph.NavRoute
 import com.flosunn.pomodoro.ui.components.shared.CommonBackHeading
 import com.flosunn.pomodoro.ui.components.shared.RowNavigation
 import com.flosunn.pomodoro.ui.theme.AppTheme
