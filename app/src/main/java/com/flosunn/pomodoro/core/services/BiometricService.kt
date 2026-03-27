@@ -21,7 +21,7 @@ import kotlinx.serialization.json.Json
 @Serializable
 data class BiometricCredentials @OptIn(ExperimentalUuidApi::class) constructor(
     val email: String,
-    val uuid: Uuid,
+    val password: String,
 )
 
 

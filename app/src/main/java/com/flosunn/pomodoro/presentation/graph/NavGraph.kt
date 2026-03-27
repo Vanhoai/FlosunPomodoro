@@ -19,6 +19,7 @@ import com.flosunn.pomodoro.presentation.encrypt.EncryptView
 import com.flosunn.pomodoro.presentation.swipe.SwipeView
 import com.flosunn.pomodoro.presentation.swipe.home.fullscreen.FullScreenView
 import com.flosunn.pomodoro.presentation.swipe.settings.appearance.AppearanceView
+import com.flosunn.pomodoro.presentation.swipe.settings.biometric_authentication.BiometricAuthenticationView
 import com.flosunn.pomodoro.presentation.swipe.settings.preference.PreferenceView
 import com.flosunn.pomodoro.presentation.swipe.settings.preference.choose_duration.ChooseDurationView
 import com.flosunn.pomodoro.ui.components.shared.NotFoundView
@@ -58,6 +59,10 @@ fun NavGraph(modifier: Modifier = Modifier) {
                     subclass(
                         subclass = NavRoute.Encrypt::class,
                         serializer = NavRoute.Encrypt.serializer()
+                    )
+                    subclass(
+                        subclass = NavRoute.BiometricAuthentication::class,
+                        serializer = NavRoute.BiometricAuthentication.serializer()
                     )
                 }
             }
@@ -104,6 +109,12 @@ fun NavGraph(modifier: Modifier = Modifier) {
                 is NavRoute.FullScreen -> NavEntry(key) { FullScreenView(navBackStack) }
                 is NavRoute.Account -> NavEntry(key) { AccountView(navBackStack) }
                 is NavRoute.Encrypt -> NavEntry(key) { EncryptView() }
+                is NavRoute.BiometricAuthentication -> NavEntry(key) {
+                    BiometricAuthenticationView(
+                        navBackStack
+                    )
+                }
+
                 else -> NavEntry(key) { NotFoundView() }
             }
         }

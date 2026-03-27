@@ -18,12 +18,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.flosunn.pomodoro.R
+import com.flosunn.pomodoro.presentation.graph.NavGraph
 import com.flosunn.pomodoro.ui.theme.AppTheme
+import com.flosunn.pomodoro.ui.theme.PomodoroTheme
 
 @Composable
 fun SocialButtons(
@@ -55,10 +59,8 @@ private fun SocialButton(
             .fillMaxWidth()
             .padding(horizontal = 20.dp, vertical = 10.dp)
             .height(52.dp)
-            .background(
-                color = Color.White,
-                shape = RoundedCornerShape(AppTheme.sizing.borderMedium),
-            )
+            .clip(RoundedCornerShape(AppTheme.sizing.borderMedium))
+            .background(Color.White)
             .border(
                 width = 1.dp,
                 color = Color(0xFFE1E1E1),
@@ -82,5 +84,14 @@ private fun SocialButton(
             text = title,
             fontSize = 16.sp,
         )
+    }
+}
+
+
+@Preview
+@Composable
+fun AuthViewPreview() {
+    PomodoroTheme {
+        NavGraph()
     }
 }

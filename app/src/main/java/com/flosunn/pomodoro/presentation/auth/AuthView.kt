@@ -11,12 +11,16 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.FragmentActivity
@@ -24,11 +28,15 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import com.flosunn.pomodoro.R
+import com.flosunn.pomodoro.adapters.database.LocalDatabase
 import com.flosunn.pomodoro.presentation.auth.components.AuthForm
 import com.flosunn.pomodoro.presentation.auth.components.BiometricSignInForm
 import com.flosunn.pomodoro.presentation.auth.components.SocialButtons
+import com.flosunn.pomodoro.presentation.graph.NavGraph
 import com.flosunn.pomodoro.presentation.graph.NavRoute
 import com.flosunn.pomodoro.ui.theme.AppTheme
+import com.flosunn.pomodoro.ui.theme.PomodoroTheme
+import timber.log.Timber
 
 @SuppressLint("ContextCastToActivity")
 @Composable
@@ -37,6 +45,15 @@ fun AuthView(
     authViewModel: AuthViewModel = hiltViewModel<AuthViewModel>(),
 ) {
     val context = LocalContext.current as FragmentActivity
+
+    LaunchedEffect(Unit) {
+        authViewModel.navigationEvent.collect { event ->
+            when (event) {
+                AuthNavigationEvent.NavigateToMainScreen -> navBackStack.add(NavRoute.Swipe)
+                AuthNavigationEvent.NavigateToFaceRecognition -> {}
+            }
+        }
+    }
 
     Scaffold(
         containerColor = AppTheme.colors.backgroundColor,
@@ -51,7 +68,7 @@ fun AuthView(
                 painter = painterResource(R.drawable.ic_logo),
                 contentDescription = null,
                 modifier = Modifier
-                    .padding(top = 20.dp)
+                    .padding(top = 60.dp)
                     .size(90.dp),
             )
 
@@ -72,14 +89,22 @@ fun AuthView(
             )
 
             SocialButtons(
-                signInGoogle = {},
+                signInGoogle = { authViewModel.signInWithGoogle() },
                 signInGithub = {},
             )
 
             BiometricSignInForm(
-                authWithBiometric = { authViewModel.enableBiometricAuth(context) },
-                authWithFaceRecognition = { authViewModel.authWithBiometric(context) },
+                authWithBiometric = { authViewModel.authWithBiometric(context) },
+                authWithFaceRecognition = {},
             )
         }
+    }
+}
+
+@Preview
+@Composable
+fun AuthViewPreview() {
+    PomodoroTheme {
+        NavGraph()
     }
 }

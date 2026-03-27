@@ -12,7 +12,11 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
-@Module(includes = [])
+@Module(
+    includes = [
+        RepositoryModule::class
+    ]
+)
 @InstallIn(SingletonComponent::class)
 class AppModule {
 
@@ -37,5 +41,5 @@ class AppModule {
     fun provideCryptography(application: Application): Cryptography {
         return AESCryptography(application)
     }
-    
+
 }

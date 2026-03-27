@@ -10,8 +10,8 @@ import androidx.compose.ui.unit.sp
 import com.flosunn.pomodoro.R
 
 val fontFamily = FontFamily(
-    Font(R.font.comic_relife_regular, weight = FontWeight.Normal),
-    Font(R.font.comic_relife_bold, weight = FontWeight.Bold),
+    Font(R.font.andika_regular, weight = FontWeight.Normal),
+    Font(R.font.andika_bold, weight = FontWeight.Bold),
 )
 
 val poetsenoneFontFamily = FontFamily(

@@ -6,10 +6,15 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.flosunn.pomodoro.core.constants.BIOMETRIC_CREDENTIALS_KEY
+import com.flosunn.pomodoro.core.constants.CURRENT_ACCOUNT_KEY
 import com.flosunn.pomodoro.core.services.BiometricCredentials
 import com.flosunn.pomodoro.core.services.BiometricService
 import com.flosunn.pomodoro.core.services.OAuthService
+import com.flosunn.pomodoro.core.utils.AppStorage
+import com.flosunn.pomodoro.core.utils.BaseResult
 import com.flosunn.pomodoro.core.utils.EncryptedStorage
+import com.flosunn.pomodoro.domain.usecases.AuthParams
+import com.flosunn.pomodoro.domain.usecases.AuthenticateUseCase
 import com.google.firebase.Firebase
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.GoogleAuthCredential
@@ -17,6 +22,9 @@ import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.auth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
@@ -27,13 +35,23 @@ import kotlin.coroutines.suspendCoroutine
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
+enum class AuthNavigationEvent {
+    NavigateToMainScreen,
+    NavigateToFaceRecognition,
+}
+
 @HiltViewModel
 class AuthViewModel @Inject constructor(
     private val application: Application,
     private val oauthService: OAuthService,
     private val biometricService: BiometricService,
     private val encryptedStorage: EncryptedStorage,
+    private val appStorage: AppStorage,
+    private val authenticateUseCase: AuthenticateUseCase,
 ) : ViewModel() {
+
+    private val _navigationEvent = Channel<AuthNavigationEvent>(Channel.BUFFERED)
+    val navigationEvent = _navigationEvent.receiveAsFlow()
 
     suspend fun signInWithIdToken(
         idToken: String,
@@ -70,51 +88,67 @@ class AuthViewModel @Inject constructor(
                     Toast.LENGTH_SHORT
                 ).show()
             }
-        } else {
-            Timber.tag("AuthViewModel").d("Google sign-in successful: ${authResult?.user?.email}")
-        }
-    }
-
-    @OptIn(ExperimentalUuidApi::class)
-    fun enableBiometricAuth(context: FragmentActivity) = viewModelScope.launch {
-        val results = biometricService.register(
-            context = context,
-            credentials = BiometricCredentials(
-                email = "vanhoai.adv@gmail.com",
-                uuid = Uuid.random(),
-            )
-        )
-
-        if (results.first != null) {
-            Toast.makeText(
-                application.applicationContext,
-                "Biometric authentication setup failed. Please try again.",
-                Toast.LENGTH_SHORT
-            ).show()
             return@launch
         }
 
-        Toast.makeText(
-            application.applicationContext,
-            "Biometric authentication setup successful.",
-            Toast.LENGTH_SHORT
-        ).show()
+        val name = authResult?.user?.displayName
+        val uid = authResult?.user?.uid
+        val email = authResult?.user?.email
 
-        val result =
-            encryptedStorage.writeEncryptedMessage(BIOMETRIC_CREDENTIALS_KEY, results.second!!)
-        if (!result) {
+        if (name == null || uid == null || email == null) {
+            withContext(Dispatchers.Main) {
+                Toast.makeText(
+                    application.applicationContext,
+                    "Failed to retrieve user information. Please try again.",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+            return@launch
+        }
+
+        val response = authenticateUseCase(
+            AuthParams(
+                name = name,
+                email = email,
+                password = uid, // Using UID as a password for simplicity, but in a real app, you should handle this more securely.
+            )
+        )
+
+        if (response is BaseResult.Failure) {
+            withContext(Dispatchers.Main) {
+                Toast.makeText(
+                    application.applicationContext,
+                    "Authentication failed. Please try again.",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+            return@launch
+        }
+
+        val account = (response as BaseResult.Success).data
+
+        withContext(Dispatchers.Main) {
             Toast.makeText(
                 application.applicationContext,
-                "Failed to save biometric credentials. Please try again.",
-                Toast.LENGTH_SHORT
-            ).show()
-        } else {
-            Toast.makeText(
-                application.applicationContext,
-                "Biometric credentials saved successfully.",
+                "Welcome, ${account.name}!",
                 Toast.LENGTH_SHORT
             ).show()
         }
+
+        val result = appStorage.writeSerializable(CURRENT_ACCOUNT_KEY, account)
+        if (!result) {
+            withContext(Dispatchers.Main) {
+                Toast.makeText(
+                    application.applicationContext,
+                    "Failed to save account information. Please try again.",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+            return@launch
+        }
+
+        delay(1000)
+        _navigationEvent.send(AuthNavigationEvent.NavigateToMainScreen)
     }
 
     fun authWithBiometric(context: FragmentActivity) = viewModelScope.launch {

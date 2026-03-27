@@ -28,6 +28,9 @@ sealed interface NavRoute : NavKey {
     data object Appearance : NavRoute, NavKey
 
     @Serializable
+    data object BiometricAuthentication : NavRoute, NavKey
+
+    @Serializable
     data object NotificationSettings : NavRoute, NavKey
 
     @Serializable

@@ -60,13 +60,17 @@ val settings = listOf(
                 title = "Appearance",
                 route = NavRoute.Appearance
             ),
+            SettingItem(
+                icon = R.drawable.ic_biometric,
+                title = "Biometric Authentication",
+                route = NavRoute.BiometricAuthentication,
+            ),
         )
     ),
     GroupedSetting(
         title = "Term & Privacy",
         items = listOf(
             SettingItem(icon = R.drawable.ic_security, title = "Security"),
-            SettingItem(icon = R.drawable.ic_security, title = "Privacy Policy"),
         )
     ),
     GroupedSetting(
