@@ -39,6 +39,12 @@ object AppTheme {
         get() = LocalTypography.current
 }
 
+enum class ThemeMode {
+    SYSTEM,
+    LIGHT,
+    DARK
+}
+
 @Composable
 fun PomodoroTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),

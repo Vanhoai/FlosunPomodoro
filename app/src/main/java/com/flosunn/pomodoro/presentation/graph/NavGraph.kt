@@ -1,5 +1,7 @@
 package com.flosunn.pomodoro.presentation.graph
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
@@ -20,6 +22,8 @@ import com.flosunn.pomodoro.presentation.swipe.SwipeView
 import com.flosunn.pomodoro.presentation.swipe.home.fullscreen.FullScreenView
 import com.flosunn.pomodoro.presentation.swipe.settings.appearance.AppearanceView
 import com.flosunn.pomodoro.presentation.swipe.settings.biometric_authentication.BiometricAuthenticationView
+import com.flosunn.pomodoro.presentation.swipe.settings.language.AppLanguageView
+import com.flosunn.pomodoro.presentation.swipe.settings.notification.NotificationSettingsView
 import com.flosunn.pomodoro.presentation.swipe.settings.preference.PreferenceView
 import com.flosunn.pomodoro.presentation.swipe.settings.preference.choose_duration.ChooseDurationView
 import com.flosunn.pomodoro.ui.components.shared.NotFoundView
@@ -28,6 +32,7 @@ import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun NavGraph(modifier: Modifier = Modifier) {
     val navBackStack = rememberNavBackStack(
@@ -63,6 +68,14 @@ fun NavGraph(modifier: Modifier = Modifier) {
                     subclass(
                         subclass = NavRoute.BiometricAuthentication::class,
                         serializer = NavRoute.BiometricAuthentication.serializer()
+                    )
+                    subclass(
+                        subclass = NavRoute.NotificationSettings::class,
+                        serializer = NavRoute.NotificationSettings.serializer()
+                    )
+                    subclass(
+                        subclass = NavRoute.AppLanguage::class,
+                        serializer = NavRoute.AppLanguage.serializer()
                     )
                 }
             }
@@ -115,6 +128,13 @@ fun NavGraph(modifier: Modifier = Modifier) {
                     )
                 }
 
+                is NavRoute.NotificationSettings -> NavEntry(key) {
+                    NotificationSettingsView(
+                        navBackStack
+                    )
+                }
+
+                is NavRoute.AppLanguage -> NavEntry(key) { AppLanguageView(navBackStack) }
                 else -> NavEntry(key) { NotFoundView() }
             }
         }

@@ -15,6 +15,7 @@ import com.flosunn.pomodoro.core.utils.BaseResult
 import com.flosunn.pomodoro.core.utils.EncryptedStorage
 import com.flosunn.pomodoro.domain.usecases.AuthParams
 import com.flosunn.pomodoro.domain.usecases.AuthenticateUseCase
+import com.flosunn.pomodoro.ui.components.shared.GlobalLoading
 import com.google.firebase.Firebase
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.GoogleAuthCredential
@@ -52,6 +53,11 @@ class AuthViewModel @Inject constructor(
 
     private val _navigationEvent = Channel<AuthNavigationEvent>(Channel.BUFFERED)
     val navigationEvent = _navigationEvent.receiveAsFlow()
+
+    suspend fun checkAuthentication(): Boolean = suspendCancellableCoroutine { continuation ->
+        val currentUser = Firebase.auth.currentUser
+        continuation.resume(currentUser != null)
+    }
 
     suspend fun signInWithIdToken(
         idToken: String,

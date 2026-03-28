@@ -39,4 +39,7 @@ sealed interface NavRoute : NavKey {
     @Serializable
     data object Account : NavRoute, NavKey
 
+
+    @Serializable
+    data object AppLanguage : NavRoute, NavKey
 }

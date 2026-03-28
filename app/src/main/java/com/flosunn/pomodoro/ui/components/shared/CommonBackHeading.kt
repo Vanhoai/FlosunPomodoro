@@ -25,6 +25,7 @@ fun CommonBackHeading(onBack: () -> Unit, title: String) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 20.dp)
+            .padding(bottom = 12.dp)
             .height(60.dp),
         contentAlignment = Alignment.CenterStart
     ) {

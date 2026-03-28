@@ -34,8 +34,10 @@ import com.flosunn.pomodoro.presentation.auth.components.BiometricSignInForm
 import com.flosunn.pomodoro.presentation.auth.components.SocialButtons
 import com.flosunn.pomodoro.presentation.graph.NavGraph
 import com.flosunn.pomodoro.presentation.graph.NavRoute
+import com.flosunn.pomodoro.ui.components.shared.rememberGlobalLoading
 import com.flosunn.pomodoro.ui.theme.AppTheme
 import com.flosunn.pomodoro.ui.theme.PomodoroTheme
+import kotlinx.coroutines.delay
 import timber.log.Timber
 
 @SuppressLint("ContextCastToActivity")
@@ -45,6 +47,7 @@ fun AuthView(
     authViewModel: AuthViewModel = hiltViewModel<AuthViewModel>(),
 ) {
     val context = LocalContext.current as FragmentActivity
+    val globalLoading = rememberGlobalLoading()
 
     LaunchedEffect(Unit) {
         authViewModel.navigationEvent.collect { event ->
@@ -53,6 +56,20 @@ fun AuthView(
                 AuthNavigationEvent.NavigateToFaceRecognition -> {}
             }
         }
+    }
+
+    LaunchedEffect(Unit) {
+        globalLoading.setLoading(
+            isLoading = true,
+            message = "Checking Authentication"
+        )
+
+        val isAuthenticated = authViewModel.checkAuthentication()
+        delay(1000)
+        globalLoading.setLoading(false)
+
+        delay(500)
+        if (isAuthenticated) navBackStack.add(NavRoute.Swipe)
     }
 
     Scaffold(

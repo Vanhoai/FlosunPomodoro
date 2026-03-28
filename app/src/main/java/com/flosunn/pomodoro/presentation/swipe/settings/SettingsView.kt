@@ -50,13 +50,17 @@ val settings = listOf(
         title = "General",
         items = listOf(
             SettingItem(
-                icon = R.drawable.ic_achievement,
+                icon = R.drawable.ic_box,
                 title = "Preferences",
                 route = NavRoute.Preference
             ),
-            SettingItem(icon = R.drawable.ic_notification, title = "Notification"),
             SettingItem(
-                icon = R.drawable.ic_appearance,
+                icon = R.drawable.ic_notification,
+                title = "Notification",
+                route = NavRoute.NotificationSettings
+            ),
+            SettingItem(
+                icon = R.drawable.ic_language,
                 title = "Appearance",
                 route = NavRoute.Appearance
             ),
@@ -127,7 +131,7 @@ fun SettingsView(navBackStack: NavBackStack<NavKey>) {
                         Icon(
                             painter = painterResource(item.icon),
                             contentDescription = null,
-                            modifier = Modifier.size(20.dp),
+                            modifier = Modifier.size(24.dp),
                             tint = Color(0xFF636363)
                         )
 
@@ -144,6 +148,7 @@ fun SettingsView(navBackStack: NavBackStack<NavKey>) {
                             painter = painterResource(R.drawable.ic_arrow_right),
                             contentDescription = null,
                             tint = Color(0xFF636363),
+                            modifier = Modifier.size(18.dp)
                         )
                     }
 

@@ -49,7 +49,6 @@ fun BiometricAuthenticationView(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 20.dp)
-                    .padding(top = 20.dp)
                     .clip(RoundedCornerShape(AppTheme.sizing.borderMedium))
                     .background(Color.White),
             ) {

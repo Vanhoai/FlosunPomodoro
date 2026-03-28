@@ -6,28 +6,28 @@
   <path
       android:pathData="M0.75,7.75V5.25C0.75,2.76 2.76,0.75 5.25,0.75H7.75"
       android:strokeLineJoin="round"
-      android:strokeWidth="1.5"
+      android:strokeWidth="1"
       android:fillColor="#00000000"
       android:strokeColor="#676767"
       android:strokeLineCap="round"/>
   <path
       android:pathData="M13.75,0.75H16.25C18.74,0.75 20.75,2.76 20.75,5.25V7.75"
       android:strokeLineJoin="round"
-      android:strokeWidth="1.5"
+      android:strokeWidth="1"
       android:fillColor="#00000000"
       android:strokeColor="#676767"
       android:strokeLineCap="round"/>
   <path
       android:pathData="M20.75,14.75V16.25C20.75,18.74 18.74,20.75 16.25,20.75H14.75"
       android:strokeLineJoin="round"
-      android:strokeWidth="1.5"
+      android:strokeWidth="1"
       android:fillColor="#00000000"
       android:strokeColor="#676767"
       android:strokeLineCap="round"/>
   <path
       android:pathData="M7.75,20.75H5.25C2.76,20.75 0.75,18.74 0.75,16.25V13.75"
       android:strokeLineJoin="round"
-      android:strokeWidth="1.5"
+      android:strokeWidth="1"
       android:fillColor="#00000000"
       android:strokeColor="#676767"
       android:strokeLineCap="round"/>
