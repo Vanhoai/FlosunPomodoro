@@ -27,6 +27,10 @@ if (!localPropertiesFile.exists()) {
 val localProperties = Properties()
 if (localPropertiesFile.exists()) localProperties.load(localPropertiesFile.inputStream())
 
+// Require versionCode and versionName in local.properties
+if (!localProperties.containsKey("versionCode") || !localProperties.containsKey("versionName"))
+    throw GradleException("versionCode and versionName must be defined in local.properties")
+
 fun formatKeyBuildConfig(key: String): String {
     val keys = mutableListOf<String>()
     var s = ""
@@ -68,8 +72,8 @@ android {
         applicationId = "com.flosunn.pomodoro"
         minSdk = 24
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = localProperties["versionCode"].toString().toInt()
+        versionName = localProperties["versionName"].toString()
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -200,4 +204,19 @@ dependencies {
     implementation(libs.media3.common)
     implementation(libs.media3.exoplayer)
     implementation(libs.media3.ui)
+
+    // Supabase
+    implementation(platform(libs.supabase.bom))
+    implementation(libs.supabase.postgrest)
+    implementation(libs.supabase.auth)
+    implementation(libs.supabase.realtime)
+
+    // Ktor
+    implementation(libs.ktor.client.core)
+    implementation(libs.ktor.client.android)
+    implementation(libs.ktor.client.logging)
+    implementation(libs.ktor.client.websockets)
+    implementation(libs.ktor.serialization)
+    implementation(libs.ktor.client.okhttp)
+    implementation(libs.ktor.client.content.negotiation)
 }

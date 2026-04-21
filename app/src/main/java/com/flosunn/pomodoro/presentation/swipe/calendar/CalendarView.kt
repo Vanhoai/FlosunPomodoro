@@ -68,7 +68,10 @@ fun CalendarView(navBackStack: NavBackStack<NavKey>) {
         }
 
         items(10) {
-            TaskCard(modifier = Modifier.padding(vertical = 12.dp))
+            TaskCard(
+                modifier = Modifier.padding(vertical = 12.dp, horizontal = 20.dp),
+                isRevealed = false,
+            )
         }
     }
 }

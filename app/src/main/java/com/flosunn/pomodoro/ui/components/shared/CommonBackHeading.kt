@@ -1,7 +1,12 @@
 package com.flosunn.pomodoro.ui.components.shared
 
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -20,14 +25,18 @@ import androidx.compose.ui.unit.sp
 import com.flosunn.pomodoro.R
 
 @Composable
-fun CommonBackHeading(onBack: () -> Unit, title: String) {
+fun CommonBackHeading(
+    onBack: () -> Unit,
+    title: String,
+    actions: @Composable RowScope.() -> Unit = {},
+) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 20.dp)
             .padding(bottom = 12.dp)
             .height(60.dp),
-        contentAlignment = Alignment.CenterStart
+        contentAlignment = Alignment.Center
     ) {
         Text(
             text = title,
@@ -36,17 +45,31 @@ fun CommonBackHeading(onBack: () -> Unit, title: String) {
             fontSize = 18.sp,
         )
 
-        Icon(
-            painter = painterResource(R.drawable.ic_arrow_back),
-            contentDescription = null,
-            tint = Color(0xFF5F5F5F),
-            modifier = Modifier
-                .size(20.dp)
-                .pointerInput(Unit) {
-                    detectTapGestures {
-                        onBack()
-                    }
-                },
-        )
+        Row(
+            modifier = Modifier.fillMaxSize(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.ic_arrow_back),
+                contentDescription = null,
+                tint = Color(0xFF5F5F5F),
+                modifier = Modifier
+                    .size(20.dp)
+                    .pointerInput(Unit) {
+                        detectTapGestures {
+                            onBack()
+                        }
+                    },
+            )
+
+            Row(
+                modifier = Modifier.fillMaxHeight(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.End,
+            ) {
+                actions()
+            }
+        }
     }
 }

@@ -54,6 +54,7 @@ fun RowNavigation(
                 text = description,
                 fontSize = 15.sp,
                 color = Color(0xFF929292),
+                modifier = Modifier.padding(bottom = 4.dp, end = 4.dp)
             )
 
             Icon(

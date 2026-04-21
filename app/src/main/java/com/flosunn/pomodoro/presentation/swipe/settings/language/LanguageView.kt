@@ -67,7 +67,7 @@ fun AppLanguageView(navBackStack: NavBackStack<NavKey>) {
                     .clip(RoundedCornerShape(AppTheme.sizing.borderMedium))
                     .background(Color.White)
             ) {
-                supportLanguages.forEachIndexed { index, lanauge ->
+                supportLanguages.forEachIndexed { index, language ->
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -83,7 +83,7 @@ fun AppLanguageView(navBackStack: NavBackStack<NavKey>) {
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = lanauge,
+                            text = language,
                             fontSize = 16.sp,
                             modifier = Modifier.weight(1f),
                             textAlign = TextAlign.Start
@@ -96,7 +96,7 @@ fun AppLanguageView(navBackStack: NavBackStack<NavKey>) {
                         )
                     }
 
-                    if (index != durationOptions.size - 1) HorizontalDivider(
+                    if (index != supportLanguages.size - 1) HorizontalDivider(
                         modifier = Modifier.padding(horizontal = 20.dp),
                         color = Color(0xFFE0E0E0)
                     )

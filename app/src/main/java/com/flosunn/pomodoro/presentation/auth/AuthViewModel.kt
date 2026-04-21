@@ -10,6 +10,7 @@ import com.flosunn.pomodoro.core.constants.CURRENT_ACCOUNT_KEY
 import com.flosunn.pomodoro.core.services.BiometricCredentials
 import com.flosunn.pomodoro.core.services.BiometricService
 import com.flosunn.pomodoro.core.services.OAuthService
+import com.flosunn.pomodoro.core.services.SupabaseService
 import com.flosunn.pomodoro.core.utils.AppStorage
 import com.flosunn.pomodoro.core.utils.BaseResult
 import com.flosunn.pomodoro.core.utils.EncryptedStorage
@@ -46,6 +47,7 @@ class AuthViewModel @Inject constructor(
     private val application: Application,
     private val oauthService: OAuthService,
     private val biometricService: BiometricService,
+    private val supabaseService: SupabaseService,
     private val encryptedStorage: EncryptedStorage,
     private val appStorage: AppStorage,
     private val authenticateUseCase: AuthenticateUseCase,
@@ -58,7 +60,7 @@ class AuthViewModel @Inject constructor(
         val currentUser = Firebase.auth.currentUser
         continuation.resume(currentUser != null)
     }
-
+    
     suspend fun signInWithIdToken(
         idToken: String,
         rawNonce: String
@@ -67,6 +69,23 @@ class AuthViewModel @Inject constructor(
         Firebase.auth.signInWithCredential(credential)
             .addOnFailureListener { e -> continuation.resume(null to e) }
             .addOnSuccessListener { result -> continuation.resume(result to null) }
+    }
+
+    suspend fun sigInWithSupabase(
+        idToken: String,
+        rawNonce: String
+    ): Pair<AuthResult?, Exception?> {
+        supabaseService.signInWithGoogle(idToken, rawNonce)
+        val user = supabaseService.retrieveCurrentUser()
+            ?: return null to Exception("No user found after Supabase sign-in")
+
+        Toast.makeText(
+            application.applicationContext,
+            "Supabase sign-in successful. Welcome, ${user.email ?: "User"}!",
+            Toast.LENGTH_SHORT
+        ).show()
+
+        return null to Exception("Supabase sign-in failed")
     }
 
     fun signInWithGoogle() = viewModelScope.launch {

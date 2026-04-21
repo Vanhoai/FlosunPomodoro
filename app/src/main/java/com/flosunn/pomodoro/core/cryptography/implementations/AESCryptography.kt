@@ -76,7 +76,7 @@ class AESCryptography @Inject constructor(application: Application) : Cryptograp
         cipher.init(Cipher.DECRYPT_MODE, secretKey, spec)
         return cipher
     }
-    
+
     override fun decryptWithCipher(cipher: Cipher, encryptedMessage: EncryptedMessage): String {
         val bytes = cipher.doFinal(encryptedMessage.ciphertext)
         return String(bytes, Charset.forName("UTF-8"))

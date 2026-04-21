@@ -20,66 +20,26 @@ import com.flosunn.pomodoro.presentation.auth.AuthView
 import com.flosunn.pomodoro.presentation.encrypt.EncryptView
 import com.flosunn.pomodoro.presentation.swipe.SwipeView
 import com.flosunn.pomodoro.presentation.swipe.home.fullscreen.FullScreenView
+import com.flosunn.pomodoro.presentation.swipe.settings.add_new_year.AddNewYearView
 import com.flosunn.pomodoro.presentation.swipe.settings.appearance.AppearanceView
 import com.flosunn.pomodoro.presentation.swipe.settings.biometric_authentication.BiometricAuthenticationView
 import com.flosunn.pomodoro.presentation.swipe.settings.language.AppLanguageView
 import com.flosunn.pomodoro.presentation.swipe.settings.notification.NotificationSettingsView
 import com.flosunn.pomodoro.presentation.swipe.settings.preference.PreferenceView
 import com.flosunn.pomodoro.presentation.swipe.settings.preference.choose_duration.ChooseDurationView
+import com.flosunn.pomodoro.presentation.swipe.settings.twelve_week_year.TwelveWeekYearView
+import com.flosunn.pomodoro.presentation.swipe.settings.year_detail.YearDetailView
 import com.flosunn.pomodoro.ui.components.shared.NotFoundView
 import com.flosunn.pomodoro.ui.theme.AppTheme
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
-import kotlinx.serialization.modules.subclass
+
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun NavGraph(modifier: Modifier = Modifier) {
     val navBackStack = rememberNavBackStack(
-        configuration = SavedStateConfiguration {
-            serializersModule = SerializersModule {
-                polymorphic(NavKey::class) {
-                    subclass(NavRoute.Auth::class, NavRoute.Auth.serializer())
-                    subclass(NavRoute.Swipe::class, NavRoute.Swipe.serializer())
-                    subclass(
-                        subclass = NavRoute.Preference::class,
-                        serializer = NavRoute.Preference.serializer()
-                    )
-                    subclass(
-                        subclass = NavRoute.ChooseDuration::class,
-                        serializer = NavRoute.ChooseDuration.serializer()
-                    )
-                    subclass(
-                        subclass = NavRoute.Appearance::class,
-                        serializer = NavRoute.Appearance.serializer()
-                    )
-                    subclass(
-                        subclass = NavRoute.FullScreen::class,
-                        serializer = NavRoute.FullScreen.serializer()
-                    )
-                    subclass(
-                        subclass = NavRoute.Account::class,
-                        serializer = NavRoute.Account.serializer()
-                    )
-                    subclass(
-                        subclass = NavRoute.Encrypt::class,
-                        serializer = NavRoute.Encrypt.serializer()
-                    )
-                    subclass(
-                        subclass = NavRoute.BiometricAuthentication::class,
-                        serializer = NavRoute.BiometricAuthentication.serializer()
-                    )
-                    subclass(
-                        subclass = NavRoute.NotificationSettings::class,
-                        serializer = NavRoute.NotificationSettings.serializer()
-                    )
-                    subclass(
-                        subclass = NavRoute.AppLanguage::class,
-                        serializer = NavRoute.AppLanguage.serializer()
-                    )
-                }
-            }
-        },
+        configuration = config,
         NavRoute.Auth
     )
 
@@ -135,6 +95,9 @@ fun NavGraph(modifier: Modifier = Modifier) {
                 }
 
                 is NavRoute.AppLanguage -> NavEntry(key) { AppLanguageView(navBackStack) }
+                is NavRoute.TwelveWeekYear -> NavEntry(key) { TwelveWeekYearView(navBackStack) }
+                is NavRoute.AddNewYear -> NavEntry(key) { AddNewYearView(navBackStack) }
+                is NavRoute.YearDetail -> NavEntry(key) { YearDetailView(navBackStack) }
                 else -> NavEntry(key) { NotFoundView() }
             }
         }
