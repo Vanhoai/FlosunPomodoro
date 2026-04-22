@@ -5,10 +5,8 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -38,7 +36,6 @@ import com.flosunn.pomodoro.ui.components.shared.SharedSwipeHeading
 import com.flosunn.pomodoro.ui.theme.AppTheme
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 data class SettingItem(
@@ -174,7 +171,7 @@ fun SettingsView(navBackStack: NavBackStack<NavKey>) {
                             )
 
                             Icon(
-                                painter = painterResource(R.drawable.ic_arrow_right),
+                                painter = painterResource(R.drawable.ic_arrow_next_2),
                                 contentDescription = null,
                                 tint = Color(0xFF636363),
                                 modifier = Modifier.size(18.dp)

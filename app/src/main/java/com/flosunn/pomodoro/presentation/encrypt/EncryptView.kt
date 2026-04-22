@@ -28,7 +28,7 @@ fun EncryptView(
     val encryptedText = encryptViewModel.encryptedMessage.collectAsState().value
     val decryptedText = encryptViewModel.decryptedMessage.collectAsState().value
 
-    Scaffold() { paddingValues ->
+    Scaffold { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()

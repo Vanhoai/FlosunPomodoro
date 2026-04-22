@@ -95,7 +95,7 @@ fun TwelveWeekYearCard(
                             )
 
                             Icon(
-                                painter = painterResource(R.drawable.ic_arrow_right_2),
+                                painter = painterResource(R.drawable.ic_arrow_next),
                                 contentDescription = null,
                                 tint = Color(0xFF141B34),
                                 modifier = Modifier

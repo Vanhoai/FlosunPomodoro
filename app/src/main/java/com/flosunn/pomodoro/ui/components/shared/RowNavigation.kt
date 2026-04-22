@@ -58,7 +58,7 @@ fun RowNavigation(
             )
 
             Icon(
-                painter = painterResource(R.drawable.ic_arrow_right),
+                painter = painterResource(R.drawable.ic_arrow_next_2),
                 contentDescription = null,
                 tint = Color(0xFF929292),
                 modifier = Modifier.size(20.dp),

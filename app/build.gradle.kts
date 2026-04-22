@@ -187,8 +187,8 @@ dependencies {
     implementation(libs.coil.network.okhttp)
 
     // Glance
-    implementation(libs.glance.appwidget)
-    implementation(libs.glance.material3)
+    // implementation(libs.glance.appwidget)
+    // implementation(libs.glance.material3)
 
     // Google Auth
     implementation(libs.credentials)
@@ -219,4 +219,7 @@ dependencies {
     implementation(libs.ktor.serialization)
     implementation(libs.ktor.client.okhttp)
     implementation(libs.ktor.client.content.negotiation)
+
+    // Datastore
+    implementation(libs.datastore)
 }

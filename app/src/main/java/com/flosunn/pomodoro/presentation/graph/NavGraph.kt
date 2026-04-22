@@ -17,6 +17,7 @@ import androidx.navigation3.ui.NavDisplay
 import androidx.savedstate.serialization.SavedStateConfiguration
 import com.flosunn.pomodoro.presentation.account.AccountView
 import com.flosunn.pomodoro.presentation.auth.AuthView
+import com.flosunn.pomodoro.presentation.datepicker.DatePickerView
 import com.flosunn.pomodoro.presentation.encrypt.EncryptView
 import com.flosunn.pomodoro.presentation.swipe.SwipeView
 import com.flosunn.pomodoro.presentation.swipe.home.fullscreen.FullScreenView
@@ -40,7 +41,7 @@ import kotlinx.serialization.modules.polymorphic
 fun NavGraph(modifier: Modifier = Modifier) {
     val navBackStack = rememberNavBackStack(
         configuration = config,
-        NavRoute.Auth
+        NavRoute.DatePicker
     )
 
     NavDisplay(
@@ -98,6 +99,7 @@ fun NavGraph(modifier: Modifier = Modifier) {
                 is NavRoute.TwelveWeekYear -> NavEntry(key) { TwelveWeekYearView(navBackStack) }
                 is NavRoute.AddNewYear -> NavEntry(key) { AddNewYearView(navBackStack) }
                 is NavRoute.YearDetail -> NavEntry(key) { YearDetailView(navBackStack) }
+                is NavRoute.DatePicker -> NavEntry(key) { DatePickerView(navBackStack) }
                 else -> NavEntry(key) { NotFoundView() }
             }
         }

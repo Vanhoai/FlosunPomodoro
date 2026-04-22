@@ -6,6 +6,7 @@ import com.flosunn.pomodoro.core.constants.DurationType
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
+import kotlinx.serialization.modules.subclass
 
 @Serializable
 sealed interface NavRoute : NavKey {
@@ -54,6 +55,9 @@ sealed interface NavRoute : NavKey {
 
     @Serializable
     data object YearDetail : NavRoute, NavKey
+
+    @Serializable
+    data object DatePicker : NavRoute, NavKey
 }
 
 val config = SavedStateConfiguration {
@@ -108,6 +112,10 @@ val config = SavedStateConfiguration {
             subclass(
                 subclass = NavRoute.YearDetail::class,
                 serializer = NavRoute.YearDetail.serializer()
+            )
+            subclass(
+                subclass = NavRoute.DatePicker::class,
+                serializer = NavRoute.DatePicker.serializer()
             )
         }
     }

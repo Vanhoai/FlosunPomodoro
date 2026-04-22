@@ -8,3 +8,5 @@ enum class DurationType(
     LONG_BREAK("Long Break Duration"),
     LONG_BREAK_AFTER("Long Break After"),
 }
+
+const val DEBUG_TAG = "PomodoroDebug"

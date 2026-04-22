@@ -1,6 +1,10 @@
 package com.flosunn.pomodoro.core.extensions
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.material3.ripple
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.draw.drawWithCache
@@ -36,3 +40,24 @@ fun Modifier.dashBorder(strokeWidth: Dp, color: Color, cornerRadius: Dp) = compo
         )
     }
 )
+
+fun Modifier.rippleEffectClickable(enabled: Boolean = true, onClick: () -> Unit): Modifier =
+    composed {
+        clickable(
+            indication = ripple(),
+            interactionSource = remember { MutableInteractionSource() },
+            enabled = enabled,
+            onClick = onClick,
+        )
+    }
+
+fun Modifier.noRippleEffectClickable(enabled: Boolean = true, onClick: () -> Unit): Modifier =
+    composed {
+        clickable(
+            indication = null,
+            interactionSource = remember { MutableInteractionSource() },
+            enabled = enabled,
+        ) {
+            onClick()
+        }
+    }
