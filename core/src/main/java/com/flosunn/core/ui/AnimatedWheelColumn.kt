@@ -1,33 +1,19 @@
-package com.flosunn.pomodoro.ui.components.core.datepicker
+package com.flosunn.core.ui
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
@@ -35,63 +21,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.lerp
-import com.flosunn.pomodoro.ui.theme.AppTheme
-import timber.log.Timber
 import kotlin.math.abs
-
-@Composable
-fun WheelMonthYearPicker(
-    selectedMonthIndex: Int,
-    selectedYearIndex: Int,
-    onSelectedMonthIndex: (Int) -> Unit,
-    onSelectedYearIndex: (Int) -> Unit,
-    years: List<String>,
-    months: List<String>,
-    modifier: Modifier = Modifier,
-) {
-    Box(
-        modifier = modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center,
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(40.dp)
-                .background(
-                    color = Color(0xFFEEEEEE),
-                    shape = RoundedCornerShape(AppTheme.sizing.borderMedium),
-                )
-        )
-
-        Row(
-            modifier = Modifier.fillMaxSize(),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            WheelColumn(
-                items = months,
-                selectedIndex = selectedMonthIndex,
-                onSelectedIndex = onSelectedMonthIndex,
-                modifier = Modifier.weight(1f),
-                textAlign = TextAlign.Center,
-            )
-
-            WheelColumn(
-                items = years,
-                selectedIndex = selectedYearIndex,
-                onSelectedIndex = onSelectedYearIndex,
-                modifier = Modifier.weight(1f),
-                textAlign = TextAlign.Center,
-            )
-        }
-    }
-}
 
 private val ITEM_HEIGHT = 40.dp
 private const val VISIBLE_ITEMS = 5
 
 @Composable
-fun WheelColumn(
+fun AnimatedWheelColumn(
     items: List<String>,
     selectedIndex: Int,
     onSelectedIndex: (Int) -> Unit,
@@ -148,6 +84,7 @@ fun WheelColumn(
         }
     }
 }
+
 
 @Composable
 fun WheelItem(

@@ -1,4 +1,4 @@
-package com.flosunn.pomodoro.ui.components.core
+package com.flosunn.core.ui
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope

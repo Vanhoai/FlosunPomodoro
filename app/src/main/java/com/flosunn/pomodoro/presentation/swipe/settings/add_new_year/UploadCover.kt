@@ -26,8 +26,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.flosunn.core.extensions.dashed
 import com.flosunn.pomodoro.R
-import com.flosunn.pomodoro.core.extensions.dashBorder
 import com.flosunn.pomodoro.ui.components.core.CoreAsyncImage
 import com.flosunn.pomodoro.ui.theme.AppTheme
 
@@ -48,7 +48,7 @@ fun UploadCover(
             .height(200.dp)
             .clip(RoundedCornerShape(AppTheme.sizing.borderMedium))
             .background(Color.White)
-            .dashBorder(
+            .dashed(
                 strokeWidth = 1.dp,
                 color = Color(0xFFCCCCCC),
                 cornerRadius = 12.dp,

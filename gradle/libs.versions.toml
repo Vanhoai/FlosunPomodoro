@@ -31,6 +31,7 @@ media3 = "1.10.0"
 supabaseBom = "3.5.0"
 ktor = "3.4.2"
 datastore = "1.2.1"
+kotlinxDatetime = "0.7.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -119,6 +120,9 @@ ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negoti
 
 # Datastore
 datastore = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastore" }
+
+# Kotlinx Datetime
+kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

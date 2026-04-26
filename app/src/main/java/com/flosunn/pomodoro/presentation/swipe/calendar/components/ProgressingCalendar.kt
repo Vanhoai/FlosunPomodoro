@@ -50,7 +50,7 @@ fun ProgressingCalendar() {
             )
 
             Icon(
-                painter = painterResource(R.drawable.ic_arrow_next_2),
+                painter = painterResource(R.drawable.ic_arrow_next),
                 contentDescription = null,
                 modifier = Modifier.size(24.dp),
                 tint = Color(0xFF414141),

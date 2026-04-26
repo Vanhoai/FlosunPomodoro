@@ -57,7 +57,7 @@ fun PomodoroTheme(
     val colorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+            if (darkTheme) colorPalette else colorPalette
         }
 
         darkTheme -> colorPalette // update dark theme here if needed
@@ -67,7 +67,7 @@ fun PomodoroTheme(
     CompositionLocalProvider(
         LocalSizing provides Sizing,
         LocalTypography provides Typography,
-        LocalColors provides colorPalette
+        LocalColors provides colorScheme
     ) {
         ProvideTextStyle(value = Typography.body, content = content)
     }

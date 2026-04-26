@@ -1,41 +1,35 @@
-package com.flosunn.pomodoro.ui.components.core.datepicker
+package com.flosunn.core.libraries.datepicker.ui
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.flosunn.pomodoro.R
-import com.flosunn.pomodoro.core.extensions.noRippleEffectClickable
-import com.flosunn.pomodoro.ui.components.core.AnimatedFadeVisibility
-import com.flosunn.pomodoro.ui.components.core.CoreButton
-import timber.log.Timber
-
+import com.flosunn.core.R
+import com.flosunn.core.extensions.noRippleEffectClickable
+import com.flosunn.core.ui.AnimatedFadeVisibility
 
 @Composable
-fun DatePickerHeader(
+fun DatePickerHeading(
     height: Dp,
     title: String,
     isMonthYearViewVisible: Boolean,
     onPressMonthYear: () -> Unit = {},
     onPrevious: () -> Unit = {},
     onNext: () -> Unit = {},
-    onOk: () -> Unit = {},
 ) {
     Row(
         modifier = Modifier
@@ -52,25 +46,7 @@ fun DatePickerHeader(
             modifier = Modifier.noRippleEffectClickable { onPressMonthYear() },
         )
 
-        if (isMonthYearViewVisible) {
-            CoreButton(
-                modifier = Modifier.width(80.dp),
-                cornerRadius = 4.dp,
-                brush = Brush.verticalGradient(
-                    colors = listOf(
-                        Color(0xFFE9E9E9),
-                        Color(0xFFE9E9E9)
-                    )
-                ),
-                onPress = onOk,
-            ) {
-                Text(
-                    text = "Ok",
-                    color = Color.Black,
-                    fontSize = 16.sp,
-                )
-            }
-        } else {
+        AnimatedFadeVisibility(!isMonthYearViewVisible) {
             Row(
                 modifier = Modifier,
                 verticalAlignment = Alignment.CenterVertically,
@@ -96,5 +72,3 @@ fun DatePickerHeader(
         }
     }
 }
-
-

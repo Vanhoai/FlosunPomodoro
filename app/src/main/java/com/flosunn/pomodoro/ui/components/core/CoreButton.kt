@@ -18,7 +18,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.flosunn.pomodoro.core.extensions.rippleEffectClickable
+import com.flosunn.core.extensions.rippleEffectClickable
 import com.flosunn.pomodoro.ui.theme.AppTheme
 
 @Composable

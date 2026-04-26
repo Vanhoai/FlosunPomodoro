@@ -171,7 +171,7 @@ fun SettingsView(navBackStack: NavBackStack<NavKey>) {
                             )
 
                             Icon(
-                                painter = painterResource(R.drawable.ic_arrow_next_2),
+                                painter = painterResource(R.drawable.ic_arrow_next),
                                 contentDescription = null,
                                 tint = Color(0xFF636363),
                                 modifier = Modifier.size(18.dp)

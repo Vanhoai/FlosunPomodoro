@@ -74,7 +74,7 @@ fun HomeView(navBackStack: NavBackStack<NavKey>) {
                     )
 
                     Icon(
-                        painter = painterResource(R.drawable.ic_arrow_next_2),
+                        painter = painterResource(R.drawable.ic_arrow_next),
                         contentDescription = null,
                         tint = AppTheme.colors.primaryColor,
                         modifier = Modifier.padding(start = 4.dp)
