@@ -1,4 +1,4 @@
-package com.flosunn.pomodoro.presentation.swipe.settings.twelve_week_year
+package com.flosunn.pomodoro.presentation.week_year.twelve_week_year
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures

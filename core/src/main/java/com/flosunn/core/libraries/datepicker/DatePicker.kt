@@ -2,11 +2,13 @@ package com.flosunn.core.libraries.datepicker
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -17,6 +19,7 @@ import com.flosunn.core.libraries.datepicker.ui.DatePickerHeading
 import com.flosunn.core.libraries.datepicker.ui.DateView
 import com.flosunn.core.libraries.datepicker.ui.WheelMonthYearPicker
 import com.flosunn.core.ui.AnimatedFadeVisibility
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.number
 
 private val HEADER_HEIGHT = 32.dp
@@ -24,18 +27,22 @@ private val HEADER_HEIGHT = 32.dp
 @Composable
 fun DatePicker(
     modifier: Modifier = Modifier,
+    date: LocalDate? = null,
     onDateSelected: (Int, Int, Int) -> Unit,
-    days: List<String>? = null,
-    month: List<String>? = null,
     viewModel: DatePickerViewModel = hiltViewModel<DatePickerViewModel>(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
+
+    LaunchedEffect(date) {
+        date?.let { viewModel.updateState(date) }
+    }
 
     Card(
         shape = RoundedCornerShape(8.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
-        modifier = modifier,
+        modifier = modifier
+            .height(320.dp),
     ) {
         Box(modifier = Modifier.padding(20.dp)) {
             DatePickerHeading(

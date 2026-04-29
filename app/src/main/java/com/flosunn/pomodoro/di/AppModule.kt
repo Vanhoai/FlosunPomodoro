@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.room.Room
 import com.flosunn.pomodoro.adapters.database.AppDatabase
 import com.flosunn.pomodoro.adapters.database.PomodoroDatabase
+import com.flosunn.pomodoro.core.constants.POMODORO_DATABASE
 import com.flosunn.pomodoro.core.cryptography.Cryptography
 import com.flosunn.pomodoro.core.cryptography.implementations.AESCryptography
 import dagger.Module
@@ -26,7 +27,7 @@ class AppModule {
         return Room.databaseBuilder(
             context = application.applicationContext,
             klass = AppDatabase::class.java,
-            name = "POMODORO_DATABASE"
+            name = POMODORO_DATABASE,
         ).build()
     }
 

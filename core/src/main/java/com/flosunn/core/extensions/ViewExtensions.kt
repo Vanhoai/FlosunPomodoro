@@ -2,6 +2,7 @@ package com.flosunn.core.extensions
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.remember
@@ -12,6 +13,8 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 
@@ -41,6 +44,15 @@ fun Modifier.dashed(strokeWidth: Dp, color: Color, cornerRadius: Dp) = composed(
     }
 )
 
+@SuppressLint("UnnecessaryComposedModifier")
+fun Modifier.tapGesture(key1: Any?, key2: Any? = null, onTap: () -> Unit): Modifier = composed {
+    pointerInput(key1, key2) {
+        detectTapGestures {
+            onTap()
+        }
+    }
+}
+
 fun Modifier.rippleEffectClickable(enabled: Boolean = true, onClick: () -> Unit): Modifier =
     composed {
         clickable(
@@ -61,3 +73,15 @@ fun Modifier.noRippleEffectClickable(enabled: Boolean = true, onClick: () -> Uni
             onClick()
         }
     }
+
+
+fun Modifier.cropVertical(padding: Dp): Modifier = this.layout { measurable, constraints ->
+    val placeable = measurable.measure(constraints)
+    val paddingPx = padding.roundToPx()
+
+    // Reduce the height of the layout by twice the padding (top and bottom)
+    layout(placeable.width, placeable.height - paddingPx * 2) {
+        // Position the content slightly higher to "swallow" the top padding
+        placeable.placeRelative(0, -paddingPx)
+    }
+}

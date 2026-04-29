@@ -52,21 +52,9 @@ import com.flosunn.pomodoro.ui.components.shared.TaskCard
 import com.flosunn.pomodoro.ui.theme.PomodoroTheme
 import timber.log.Timber
 
-fun Modifier.cropVertical(padding: Dp): Modifier = this.layout { measurable, constraints ->
-    val placeable = measurable.measure(constraints)
-    val paddingPx = padding.roundToPx()
-
-    // Reduce the height of the layout by twice the padding (top and bottom)
-    layout(placeable.width, placeable.height - paddingPx * 2) {
-        // Position the content slightly higher to "swallow" the top padding
-        placeable.placeRelative(0, -paddingPx)
-    }
-}
 
 @Composable
 fun TasksView(navBackStack: NavBackStack<NavKey>) {
-
-
     Box(
         modifier = Modifier
             .fillMaxSize()

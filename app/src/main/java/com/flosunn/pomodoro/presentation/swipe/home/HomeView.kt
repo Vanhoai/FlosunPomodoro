@@ -40,7 +40,10 @@ fun HomeView(navBackStack: NavBackStack<NavKey>) {
     ) {
         item {
             SharedSwipeHeading(onPressAvatar = { navBackStack.add(NavRoute.Account) })
-            TaskCard(isRevealed = false)
+            TaskCard(
+                isRevealed = false,
+                modifier = Modifier.padding(horizontal = 20.dp),
+            )
 
             PomodoroTimber(
                 totalSeconds = 25 * 60,

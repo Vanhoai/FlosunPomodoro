@@ -22,14 +22,18 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.flosunn.core.extensions.tapGesture
+import com.flosunn.pomodoro.LocalNavBackStack
 import com.flosunn.pomodoro.R
 
 @Composable
 fun CommonBackHeading(
-    onBack: () -> Unit,
     title: String,
+    onBack: (() -> Unit)? = null,
     actions: @Composable RowScope.() -> Unit = {},
 ) {
+    val navBackStack = LocalNavBackStack.current
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -56,10 +60,8 @@ fun CommonBackHeading(
                 tint = Color(0xFF5F5F5F),
                 modifier = Modifier
                     .size(20.dp)
-                    .pointerInput(Unit) {
-                        detectTapGestures {
-                            onBack()
-                        }
+                    .tapGesture(Unit) {
+                        onBack?.invoke() ?: navBackStack.removeLastOrNull()
                     },
             )
 

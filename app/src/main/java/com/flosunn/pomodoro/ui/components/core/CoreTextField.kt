@@ -22,6 +22,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
@@ -39,12 +41,13 @@ import com.flosunn.pomodoro.ui.theme.AppTheme
 @Composable
 fun CoreTextField(
     modifier: Modifier = Modifier,
+    focusRequester: FocusRequester = remember { FocusRequester() },
     value: String,
     onValueChanged: (String) -> Unit,
     height: Dp = 52.dp,
     isEnabled: Boolean = true,
-    placeholder: String = "Search",
-    padding: PaddingValues = PaddingValues(horizontal = 20.dp),
+    placeholder: String = "e.g. Build Flosun Studio",
+    padding: PaddingValues = PaddingValues(),
     keyboardType: KeyboardType = KeyboardType.Text,
     visualTransformation: VisualTransformation = VisualTransformation.None,
     prefix: @Composable (() -> Unit)? = null,
@@ -57,19 +60,15 @@ fun CoreTextField(
     val isFocused = interactionSource.collectIsFocusedAsState()
     val isValid = validate?.invoke(value) ?: false
 
+
     Row(
         modifier = modifier
             .padding(padding)
             .fillMaxWidth()
             .height(height)
             .background(
-                color = Color.White,
+                color = Color(0xFFF9F9F9),
                 shape = RoundedCornerShape(AppTheme.sizing.borderMedium)
-            )
-            .border(
-                width = 1.5.dp,
-                color = Color(0xFFE5E5E5),
-                shape = RoundedCornerShape(AppTheme.sizing.borderMedium),
             )
             .pointerInput(Unit) { detectTapGestures {} },
         verticalAlignment = Alignment.CenterVertically
@@ -86,7 +85,9 @@ fun CoreTextField(
                 singleLine = singleLine,
                 interactionSource = interactionSource,
                 keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .focusRequester(focusRequester),
                 decorationBox = { innerTextField ->
                     Box(
                         modifier = Modifier
@@ -106,10 +107,7 @@ fun CoreTextField(
                         }
                     }
                 },
-                textStyle = TextStyle(
-                    fontSize = 16.sp,
-                    color = Color.Black
-                ),
+                textStyle = AppTheme.typography.body,
                 cursorBrush = Brush.verticalGradient(
                     listOf(
                         AppTheme.colors.primaryColor,

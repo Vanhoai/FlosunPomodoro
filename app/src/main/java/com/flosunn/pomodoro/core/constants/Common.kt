@@ -10,3 +10,4 @@ enum class DurationType(
 }
 
 const val DEBUG_TAG = "PomodoroDebug"
+const val POMODORO_DATABASE = "PomodoroDatabase"

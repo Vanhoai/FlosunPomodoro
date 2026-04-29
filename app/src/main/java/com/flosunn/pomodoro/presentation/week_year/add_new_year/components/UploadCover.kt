@@ -1,7 +1,5 @@
-package com.flosunn.pomodoro.presentation.swipe.settings.add_new_year
+package com.flosunn.pomodoro.presentation.week_year.add_new_year.components
 
-import androidx.activity.result.PickVisualMediaRequest
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -47,7 +45,7 @@ fun UploadCover(
             )
             .height(200.dp)
             .clip(RoundedCornerShape(AppTheme.sizing.borderMedium))
-            .background(Color.White)
+            .background(Color(0xFFF9F9F9))
             .dashed(
                 strokeWidth = 1.dp,
                 color = Color(0xFFCCCCCC),

@@ -67,6 +67,17 @@ class DatePickerViewModel : ViewModel() {
         }
     }
 
+    fun updateState(date: LocalDate) {
+        _uiState.update {
+            it.copy(
+                date = date,
+                selectedDayOfMonth = date.day,
+                selectedMonthIndex = uiState.value.months.indexOf(date.month),
+                selectedYearIndex = uiState.value.years.indexOf(date.year),
+            )
+        }
+    }
+
     fun updateSelectedMonthIndex(index: Int) {
         val newDate = LocalDate(
             year = uiState.value.date.year,

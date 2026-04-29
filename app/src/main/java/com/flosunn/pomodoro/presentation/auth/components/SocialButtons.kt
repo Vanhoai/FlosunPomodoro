@@ -87,11 +87,3 @@ private fun SocialButton(
     }
 }
 
-
-@Preview
-@Composable
-fun AuthViewPreview() {
-    PomodoroTheme {
-        NavGraph()
-    }
-}

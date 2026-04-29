@@ -15,17 +15,24 @@ import androidx.compose.ui.unit.sp
 import com.flosunn.pomodoro.ui.components.core.CoreButton
 
 @Composable
-fun TwoOptionActions(modifier: Modifier = Modifier) {
+fun TwoOptionActions(
+    modifier: Modifier = Modifier,
+    okLabel: String = "OK",
+    cancelLabel: String = "Cancel",
+    onOk: () -> Unit = {},
+    onCancel: () -> Unit = {},
+) {
     Row(
         modifier = modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(20.dp)
     ) {
         CoreButton(
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
+            onPress = onOk,
         ) {
             Text(
-                text = "Add",
+                text = okLabel,
                 fontSize = 16.sp,
                 color = Color.White,
             )
@@ -38,10 +45,11 @@ fun TwoOptionActions(modifier: Modifier = Modifier) {
                     Color(0xFFFFCACA)
                 )
             ),
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
+            onPress = onCancel,
         ) {
             Text(
-                text = "Cancel",
+                text = cancelLabel,
                 fontSize = 16.sp,
                 color = Color(0xFFFF6767),
             )

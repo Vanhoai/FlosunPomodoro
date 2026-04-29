@@ -21,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
@@ -35,6 +36,7 @@ const val DURATION_MS = 500
 fun CoreBottomSheet(
     sheetState: SheetState,
     title: String,
+    modifier: Modifier = Modifier,
     closeBottomSheet: () -> Unit = {},
     content: @Composable () -> Unit = {},
 ) {
@@ -46,19 +48,28 @@ fun CoreBottomSheet(
             topStart = AppTheme.sizing.borderMedium,
             topEnd = AppTheme.sizing.borderMedium
         ),
-        dragHandle = {
+        dragHandle = null,
+        modifier = modifier,
+    ) {
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(40.dp),
+            contentAlignment = Alignment.Center,
+        ) {
             Box(
                 modifier = Modifier
                     .padding(vertical = 12.dp)
-                    .width(40.dp)
+                    .width(60.dp)
                     .height(4.dp)
                     .background(
-                        color = Color(0xFFEDEDED),
-                        shape = RoundedCornerShape(2.dp)
+                        color = Color(0xFFC0C0C0),
+                        shape = RoundedCornerShape(1.5.dp)
                     )
             )
         }
-    ) {
+
         Text(
             text = title,
             fontSize = 18.sp,
@@ -69,7 +80,7 @@ fun CoreBottomSheet(
         )
 
         HorizontalDivider(
-            color = Color(0xFFE1E1E1),
+            color = Color(0xFFEDEDED),
             modifier = Modifier.padding(horizontal = 20.dp)
         )
 
