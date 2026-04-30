@@ -31,6 +31,9 @@ import com.flosunn.pomodoro.ui.theme.AppTheme
 
 @Composable
 fun TwelveWeekYearCard(
+    cover: String,
+    name: String,
+    duration: String,
     modifier: Modifier = Modifier,
     onPress: () -> Unit = {},
 ) {
@@ -42,7 +45,7 @@ fun TwelveWeekYearCard(
         contentAlignment = Alignment.Center
     ) {
         CoreAsyncImage(
-            url = "https://i.pinimg.com/736x/89/1d/8c/891d8cd9e96d9d03c6aa185b83c046d0.jpg",
+            url = cover,
             modifier = Modifier.fillMaxSize(),
         )
 
@@ -53,14 +56,14 @@ fun TwelveWeekYearCard(
                 .padding(12.dp),
         ) {
             Text(
-                text = "The Beginning",
+                text = name,
                 fontSize = 32.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White,
             )
 
             Text(
-                text = "12/23/2026 - 12/23/2026",
+                text = duration,
                 fontSize = 16.sp,
                 color = Color.White,
             )

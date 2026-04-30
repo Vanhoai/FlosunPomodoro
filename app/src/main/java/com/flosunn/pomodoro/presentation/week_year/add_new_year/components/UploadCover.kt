@@ -25,9 +25,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.flosunn.core.extensions.dashed
+import com.flosunn.core.extensions.rippleEffectClickable
 import com.flosunn.pomodoro.R
+import com.flosunn.pomodoro.core.constants.DEBUG_TAG
 import com.flosunn.pomodoro.ui.components.core.CoreAsyncImage
 import com.flosunn.pomodoro.ui.theme.AppTheme
+import timber.log.Timber
 
 @Composable
 fun UploadCover(
@@ -38,27 +41,27 @@ fun UploadCover(
         modifier = Modifier
             .padding(horizontal = 20.dp)
             .fillMaxWidth()
-            .clickable(
-                indication = ripple(),
-                interactionSource = remember { MutableInteractionSource() },
-                onClick = { onUpload() }
-            )
             .height(200.dp)
             .clip(RoundedCornerShape(AppTheme.sizing.borderMedium))
             .background(Color(0xFFF9F9F9))
-            .dashed(
-                strokeWidth = 1.dp,
-                color = Color(0xFFCCCCCC),
-                cornerRadius = 12.dp,
-            ),
-        contentAlignment = Alignment.Center
+            .rippleEffectClickable { onUpload() }
     ) {
-        if (coverUri != null) {
-            CoreAsyncImage(
-                url = coverUri,
-                modifier = Modifier.fillMaxSize(),
-            )
-        } else {
+        if (coverUri != null) CoreAsyncImage(
+            url = coverUri,
+            modifier = Modifier.fillMaxSize(),
+            onPress = { onUpload() }
+        ) else Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .clip(RoundedCornerShape(12.dp))
+                .dashed(
+                    strokeWidth = 1.dp,
+                    color = Color(0xFFCCCCCC),
+                    cornerRadius = 12.dp,
+                ),
+            contentAlignment = Alignment.Center
+        ) {
+
             Column(
                 modifier = Modifier,
                 verticalArrangement = Arrangement.Center,

@@ -50,6 +50,7 @@ class AuthViewModel @Inject constructor(
     private val supabaseService: SupabaseService,
     private val encryptedStorage: EncryptedStorage,
     private val appStorage: AppStorage,
+    private val globalLoading: GlobalLoading,
     private val authenticateUseCase: AuthenticateUseCase,
 ) : ViewModel() {
 
@@ -60,7 +61,7 @@ class AuthViewModel @Inject constructor(
         val currentUser = Firebase.auth.currentUser
         continuation.resume(currentUser != null)
     }
-    
+
     suspend fun signInWithIdToken(
         idToken: String,
         rawNonce: String
@@ -89,8 +90,14 @@ class AuthViewModel @Inject constructor(
     }
 
     fun signInWithGoogle() = viewModelScope.launch {
+        globalLoading.setLoading(
+            isLoading = true,
+            message = "Signing in with Google"
+        )
+
         val results = oauthService.oauthGoogle()
         if (results == null) {
+            globalLoading.setLoading(false)
             withContext(Dispatchers.Main) {
                 Toast.makeText(
                     application.applicationContext,
@@ -105,7 +112,7 @@ class AuthViewModel @Inject constructor(
         val (idToken, rawNonce) = results
         val (authResult, error) = signInWithIdToken(idToken, rawNonce)
         if (error != null) {
-            Timber.tag("AuthViewModel").e(error, "Google sign-in failed")
+            globalLoading.setLoading(false)
             withContext(Dispatchers.Main) {
                 Toast.makeText(
                     application.applicationContext,
@@ -121,6 +128,7 @@ class AuthViewModel @Inject constructor(
         val email = authResult?.user?.email
 
         if (name == null || uid == null || email == null) {
+            globalLoading.setLoading(false)
             withContext(Dispatchers.Main) {
                 Toast.makeText(
                     application.applicationContext,
@@ -140,6 +148,7 @@ class AuthViewModel @Inject constructor(
         )
 
         if (response is BaseResult.Failure) {
+            globalLoading.setLoading(false)
             withContext(Dispatchers.Main) {
                 Toast.makeText(
                     application.applicationContext,
@@ -162,6 +171,7 @@ class AuthViewModel @Inject constructor(
 
         val result = appStorage.writeSerializable(CURRENT_ACCOUNT_KEY, account)
         if (!result) {
+            globalLoading.setLoading(false)
             withContext(Dispatchers.Main) {
                 Toast.makeText(
                     application.applicationContext,
@@ -172,6 +182,7 @@ class AuthViewModel @Inject constructor(
             return@launch
         }
 
+        globalLoading.setLoading(false)
         delay(1000)
         _navigationEvent.send(AuthNavigationEvent.NavigateToMainScreen)
     }

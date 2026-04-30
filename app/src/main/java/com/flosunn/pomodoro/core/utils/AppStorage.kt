@@ -11,7 +11,6 @@ import javax.inject.Singleton
 
 @Singleton
 class AppStorage @Inject constructor(val application: Application) {
-    val context = application.applicationContext
     val json = Json { ignoreUnknownKeys = true }
 
     suspend fun <T> write(
@@ -20,7 +19,7 @@ class AppStorage @Inject constructor(val application: Application) {
         isCryptoStore: Boolean = false
     ): Boolean {
         return try {
-            val datastore = if (isCryptoStore) context.encryptedStore else context.datastore
+            val datastore = if (isCryptoStore) application.encryptedStore else application.datastore
             datastore.edit { preferences ->
                 when (value) {
                     is String -> preferences[key] = value
@@ -47,7 +46,7 @@ class AppStorage @Inject constructor(val application: Application) {
     ): Boolean {
         return try {
             val jsonString = json.encodeToString(value)
-            val datastore = if (isCryptoStore) context.encryptedStore else context.datastore
+            val datastore = if (isCryptoStore) application.encryptedStore else application.datastore
             datastore.edit { preferences ->
                 preferences[key] = jsonString
             }
@@ -65,7 +64,7 @@ class AppStorage @Inject constructor(val application: Application) {
         isCryptoStore: Boolean = false
     ): T {
         return try {
-            val datastore = if (isCryptoStore) context.encryptedStore else context.datastore
+            val datastore = if (isCryptoStore) application.encryptedStore else application.datastore
             val preferences = datastore.data.first()
             val jsonString = preferences[key]
 
@@ -86,7 +85,7 @@ class AppStorage @Inject constructor(val application: Application) {
         isCryptoStore: Boolean = false
     ): T {
         return try {
-            val datastore = if (isCryptoStore) context.encryptedStore else context.datastore
+            val datastore = if (isCryptoStore) application.encryptedStore else application.datastore
             val preferences = datastore.data.first()
             preferences[key] ?: defaultValue
         } catch (exception: Exception) {
@@ -97,7 +96,7 @@ class AppStorage @Inject constructor(val application: Application) {
 
     suspend fun clear(isCryptoStore: Boolean = false): Boolean {
         return try {
-            val datastore = if (isCryptoStore) context.encryptedStore else context.datastore
+            val datastore = if (isCryptoStore) application.encryptedStore else application.datastore
             datastore.edit { preferences ->
                 preferences.clear()
             }
@@ -114,7 +113,7 @@ class AppStorage @Inject constructor(val application: Application) {
         isCryptoStore: Boolean = false
     ): Boolean {
         return try {
-            val datastore = if (isCryptoStore) context.encryptedStore else context.datastore
+            val datastore = if (isCryptoStore) application.encryptedStore else application.datastore
             val preferences = datastore.data.first()
             preferences.contains(key)
         } catch (exception: Exception) {
@@ -128,7 +127,7 @@ class AppStorage @Inject constructor(val application: Application) {
         isCryptoStore: Boolean = false
     ): Boolean {
         return try {
-            val datastore = if (isCryptoStore) context.encryptedStore else context.datastore
+            val datastore = if (isCryptoStore) application.encryptedStore else application.datastore
             datastore.edit { preferences ->
                 preferences.remove(key)
             }

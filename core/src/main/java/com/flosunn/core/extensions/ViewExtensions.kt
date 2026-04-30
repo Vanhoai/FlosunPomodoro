@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.material3.ripple
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
@@ -53,15 +54,16 @@ fun Modifier.tapGesture(key1: Any?, key2: Any? = null, onTap: () -> Unit): Modif
     }
 }
 
-fun Modifier.rippleEffectClickable(enabled: Boolean = true, onClick: () -> Unit): Modifier =
-    composed {
-        clickable(
-            indication = ripple(),
-            interactionSource = remember { MutableInteractionSource() },
-            enabled = enabled,
-            onClick = onClick,
-        )
-    }
+@Composable
+fun Modifier.rippleEffectClickable(
+    enabled: Boolean = true,
+    onClick: () -> Unit
+): Modifier = this.clickable(
+    interactionSource = remember { MutableInteractionSource() },
+    indication = ripple(),
+    enabled = enabled,
+    onClick = onClick
+)
 
 fun Modifier.noRippleEffectClickable(enabled: Boolean = true, onClick: () -> Unit): Modifier =
     composed {

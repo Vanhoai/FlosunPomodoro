@@ -16,12 +16,15 @@ class AppColors(
     backgroundColor: Color = Color(0xFFF5F5F5),
     typographyColor: Color = Color(0xFF383838),
     isAnimated: Boolean = false,
+    borderColor: Color = Color(0xFFEFEFEF),
 ) {
     private var isAnimated by mutableStateOf(isAnimated)
 
     private var _primaryColor by mutableStateOf(primaryColor)
     private var _backgroundColor by mutableStateOf(backgroundColor)
     private var _typographyColor by mutableStateOf(typographyColor)
+
+    private var _borderColor by mutableStateOf(borderColor)
 
     val primaryColor: Color
         @Composable
@@ -34,6 +37,10 @@ class AppColors(
     val typographyColor: Color
         @Composable
         get() = if (isAnimated) getTypographyAnimatedColor() else _typographyColor
+
+    val borderColor: Color
+        @Composable
+        get() = _borderColor
 
     @Composable
     private fun getPrimaryAnimatedColor(): Color {

@@ -15,6 +15,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.layout.ContentScale
 import coil3.compose.AsyncImage
+import com.flosunn.core.extensions.rippleEffectClickable
 
 @Composable
 fun CoreAsyncImage(
@@ -23,8 +24,7 @@ fun CoreAsyncImage(
     onPress: () -> Unit = {},
 ) {
     var isLoading by remember { mutableStateOf(true) }
-
-    Box(modifier = modifier) {
+    Box(modifier = modifier.rippleEffectClickable { onPress() }) {
         if (isLoading) Box(
             modifier = Modifier
                 .matchParentSize()
@@ -35,13 +35,7 @@ fun CoreAsyncImage(
             model = url
                 ?: "https://i.pinimg.com/736x/73/25/8c/73258c9455ed7295530b7e5e30f10a19.jpg",
             contentDescription = null,
-            modifier = Modifier
-                .matchParentSize()
-                .clickable(
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = ripple(),
-                    onClick = { onPress() }
-                ),
+            modifier = Modifier.matchParentSize(),
             contentScale = ContentScale.Crop,
             filterQuality = FilterQuality.High,
             onLoading = { isLoading = true },

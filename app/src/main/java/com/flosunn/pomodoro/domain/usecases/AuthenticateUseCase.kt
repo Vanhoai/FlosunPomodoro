@@ -44,9 +44,7 @@ class AuthenticateUseCase @Inject constructor(
 
     private fun checkPassword(account: Account, params: AuthParams): Account {
         val isPasswordValid = passwordHasher.verify(params.password, account.password)
-        if (!isPasswordValid) {
-            throw ValidationException("Invalid password")
-        }
+        if (!isPasswordValid) throw ValidationException("Invalid password")
 
         return account
     }

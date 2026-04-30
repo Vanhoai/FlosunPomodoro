@@ -46,7 +46,7 @@ class MainActivity : FragmentActivity() {
         setContent {
             val navBackStack = rememberNavBackStack(
                 configuration = config,
-                NavRoute.AddGoal
+                NavRoute.AddNewYear
             )
 
             CompositionLocalProvider(
