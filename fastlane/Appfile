@@ -1,2 +1,2 @@
 json_key_file("app/play-store-credentials.json")
-package_name("com.flosunn.pomodoro")
+package_name("com.flosun.pomodoro")

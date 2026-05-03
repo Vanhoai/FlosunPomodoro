@@ -61,7 +61,7 @@ fun parseLocalPropertiesToBuildConfig(buildConfigField: (type: String, name: Str
 }
 
 android {
-    namespace = "com.flosunn.pomodoro"
+    namespace = "com.flosun.pomodoro"
     compileSdk {
         version = release(36) {
             minorApiLevel = 1
@@ -69,7 +69,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.flosunn.pomodoro"
+        applicationId = "com.flosun.pomodoro"
         minSdk = 24
         targetSdk = 36
         versionCode = localProperties["versionCode"].toString().toInt()

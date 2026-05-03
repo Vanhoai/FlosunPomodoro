@@ -1,0 +1,16 @@
+package com.flosun.pomodoro.core.constants
+
+enum class DurationType(
+    val title: String,
+) {
+    POMODORO("Pomodoro Duration"),
+    SHORT_BREAK("Short Break Duration"),
+    LONG_BREAK("Long Break Duration"),
+    LONG_BREAK_AFTER("Long Break After"),
+}
+
+const val DEBUG_TAG = "PomodoroDebug"
+const val POMODORO_DATABASE = "PomodoroDatabase"
+
+// ============================ FILE STORE DIRECTORY ============================
+

@@ -1,4 +1,4 @@
-package com.flosunn.pomodoro
+package com.flosun.pomodoro
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -19,6 +19,6 @@ class ExampleInstrumentedTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("com.flosunn.pomodoro", appContext.packageName)
+        assertEquals("com.flosun.pomodoro", appContext.packageName)
     }
 }

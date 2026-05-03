@@ -1,4 +1,4 @@
-package com.flosunn.pomodoro
+package com.flosun.pomodoro
 
 import org.junit.Test
 
