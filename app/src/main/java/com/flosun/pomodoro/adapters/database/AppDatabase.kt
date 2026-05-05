@@ -8,6 +8,7 @@ import com.flosun.pomodoro.adapters.database.entities.AccountEntity
 import com.flosun.pomodoro.adapters.database.entities.GoalEntity
 import com.flosun.pomodoro.adapters.database.entities.LaggingIndicatorEntity
 import com.flosun.pomodoro.adapters.database.entities.SettingEntity
+import com.flosun.pomodoro.adapters.database.entities.TagEntity
 import com.flosun.pomodoro.adapters.database.entities.TaskEntity
 import com.flosun.pomodoro.adapters.database.entities.TwelveWeekYearEntity
 import com.flosun.pomodoro.adapters.database.entities.WeekEntity
@@ -36,6 +37,7 @@ class StringArrayConverter {
         WeekEntity::class,
         GoalEntity::class,
         TaskEntity::class,
+        TagEntity::class,
     ],
     version = 1,
 )

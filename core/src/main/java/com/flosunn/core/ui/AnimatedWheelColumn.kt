@@ -3,6 +3,7 @@ package com.flosunn.core.ui
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
@@ -54,9 +55,7 @@ fun AnimatedWheelColumn(
 
     LaunchedEffect(centerIndex.value) {
         val realIndex = centerIndex.value - 2
-        if (realIndex in items.indices && realIndex != selectedIndex) {
-            onSelectedIndex(realIndex)
-        }
+        if (realIndex in items.indices && realIndex != selectedIndex) onSelectedIndex(realIndex)
     }
 
     LazyColumn(

@@ -30,6 +30,7 @@ import com.flosun.pomodoro.presentation.swipe.settings.language.AppLanguageView
 import com.flosun.pomodoro.presentation.swipe.settings.notification.NotificationSettingsView
 import com.flosun.pomodoro.presentation.swipe.settings.preference.PreferenceView
 import com.flosun.pomodoro.presentation.swipe.settings.preference.choose_duration.ChooseDurationView
+import com.flosun.pomodoro.presentation.task.add_task.AddTaskView
 import com.flosun.pomodoro.presentation.week_year.twelve_week_year.TwelveWeekYearView
 import com.flosun.pomodoro.presentation.week_year.update_year.UpdateYearView
 import com.flosun.pomodoro.presentation.week_year.week_detail.WeekDetailView
@@ -103,6 +104,7 @@ fun NavGraph(
                 is NavRoute.WeekDetail -> NavEntry(key) { WeekDetailView(navBackStack, key) }
                 is NavRoute.UpdateGoal -> NavEntry(key) { UpdateGoalView() }
                 is NavRoute.AddGoal -> NavEntry(key) { AddGoalView() }
+                is NavRoute.AddTask -> NavEntry(key) { AddTaskView() }
                 else -> NavEntry(key) { NotFoundView() }
             }
         }

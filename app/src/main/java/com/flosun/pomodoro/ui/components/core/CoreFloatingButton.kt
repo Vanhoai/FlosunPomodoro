@@ -10,32 +10,33 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.flosunn.core.extensions.cropVertical
 import com.flosun.pomodoro.R
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+
 
 @Composable
-fun CoreFloatingButton() {
+fun CoreFloatingButton(
+    options: List<MenuItem> = emptyList(),
+    onOptionSelected: (MenuItem) -> Unit = {},
+) {
     var expanded by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
 
     Box(
         modifier = Modifier
@@ -56,63 +57,18 @@ fun CoreFloatingButton() {
             tint = Color.White,
         )
 
-        DropdownMenu(
+
+        CoreMenuOptions(
             expanded = expanded,
-            onDismissRequest = { expanded = false },
-            containerColor = Color.White,
-            offset = DpOffset(x = 0.dp, y = (-20).dp),
-            modifier = Modifier.cropVertical(8.dp),
-        ) {
-            Column(
-                modifier = Modifier.width(200.dp),
-            ) {
-                MenuOption(icon = R.drawable.ic_add, name = "Add Task")
-                HorizontalDivider(
-                    modifier = Modifier.padding(horizontal = 12.dp),
-                    color = Color(0xFFF6F6F6),
-                )
-
-                MenuOption(icon = R.drawable.ic_tag, name = "Manage Tags")
-                HorizontalDivider(
-                    modifier = Modifier.padding(horizontal = 12.dp),
-                    color = Color(0xFFF6F6F6),
-                )
-
-                MenuOption(icon = R.drawable.ic_database, name = "Manage Goals")
+            onClose = { expanded = false },
+            options = options,
+            onSelected = {
+                scope.launch {
+                    expanded = false
+                    delay(500L) // Add a delay to allow the menu to close before performing the action
+                    onOptionSelected(it)
+                }
             }
-        }
-    }
-}
-
-@Composable
-fun MenuOption(
-    icon: Int,
-    name: String
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = ripple(),
-                onClick = {}
-            )
-            .padding(vertical = 12.dp, horizontal = 12.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Start,
-    ) {
-        Icon(
-            painter = painterResource(icon),
-            contentDescription = null,
-            tint = Color(0xFF616161),
-            modifier = Modifier.size(20.dp),
-        )
-
-        Text(
-            text = name,
-            fontSize = 16.sp,
-            color = Color(0xFF616161),
-            modifier = Modifier.padding(start = 8.dp),
         )
     }
 }

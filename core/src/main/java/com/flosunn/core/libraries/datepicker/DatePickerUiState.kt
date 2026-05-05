@@ -6,7 +6,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.todayIn
 import kotlin.time.Clock
 
-data class DatePickerUIState(
+data class DatePickerUiState(
     val date: LocalDate = Clock.System.todayIn(TimeZone.currentSystemDefault()),
 
     val months: List<Month> = listOf(

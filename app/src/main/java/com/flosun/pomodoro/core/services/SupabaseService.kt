@@ -3,7 +3,6 @@ package com.flosun.pomodoro.core.services
 import android.app.Application
 import android.widget.Toast
 import com.flosun.pomodoro.BuildConfig
-import com.flosun.pomodoro.presentation.swipe.tasks.components.options
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.auth.auth
@@ -15,7 +14,6 @@ import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.realtime.Realtime
 import io.github.jan.supabase.serializer.KotlinXSerializer
 import kotlinx.serialization.json.Json
-import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 

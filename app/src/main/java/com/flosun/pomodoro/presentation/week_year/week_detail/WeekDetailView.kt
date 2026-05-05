@@ -168,6 +168,7 @@ fun WeekDetailView(
                         GoalCard(
                             name = goal.name,
                             progress = goal.progress,
+                            icon = goal.icon,
                         )
                     }
                 }

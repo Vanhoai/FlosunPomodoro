@@ -9,6 +9,7 @@ import androidx.room.Update
 import com.flosun.pomodoro.adapters.database.entities.AccountEntity
 import com.flosun.pomodoro.adapters.database.entities.GoalEntity
 import com.flosun.pomodoro.adapters.database.entities.LaggingIndicatorEntity
+import com.flosun.pomodoro.adapters.database.entities.TaskEntity
 import com.flosun.pomodoro.adapters.database.entities.TwelveWeekYearEntity
 import com.flosun.pomodoro.adapters.database.entities.WeekEntity
 import kotlinx.coroutines.flow.Flow
@@ -16,7 +17,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface DatabaseDao {
 
-    // region ================================ ACCOUNT QUERIES ================================
+    // region ======================================= ACCOUNT QUERIES =======================================
     @Query("SELECT * FROM accounts")
     fun findAllAccount(): Flow<List<AccountEntity>>
 
@@ -28,10 +29,10 @@ interface DatabaseDao {
 
     @Query("DELETE FROM accounts")
     suspend fun removeAllAccounts(): Int
-    // endregion ================================ ACCOUNT QUERIES ================================
+    // endregion ======================================= ACCOUNT QUERIES =======================================
 
 
-    // region ================================ YEAR QUERIES ================================
+    // region ======================================= YEAR QUERIES =======================================
     @Query("SELECT * FROM twelve_week_years")
     fun findAllTwelveWeekYears(): Flow<List<TwelveWeekYearEntity>>
 
@@ -53,9 +54,9 @@ interface DatabaseDao {
         """
     )
     fun findTwelveWeekYearByDate(date: Long): Flow<TwelveWeekYearEntity?>
-    // endregion ================================ YEAR QUERIES ================================
+    // endregion ======================================= YEAR QUERIES =======================================
 
-    // region ================================ LAGGING INDICATORS QUERIES ================================
+    // region ======================================= LAGGING INDICATORS QUERIES =======================================
     @Query("SELECT * FROM lagging_indicators WHERE id = :id")
     fun findLaggingIndicatorById(id: String): Flow<LaggingIndicatorEntity?>
 
@@ -76,9 +77,9 @@ interface DatabaseDao {
 
     @Query("SELECT * FROM lagging_indicators WHERE year_id = :yearId")
     fun findLaggingIndicatorsByYearId(yearId: String): Flow<List<LaggingIndicatorEntity>>
-    // endregion ================================ LAGGING INDICATORS QUERIES ================================
+    // endregion ======================================= LAGGING INDICATORS QUERIES =======================================
 
-    // region ================================ WEEKS QUERIES ================================
+    // region ======================================= WEEKS QUERIES =======================================
     @Update
     fun updateWeek(week: WeekEntity): Int
 
@@ -107,13 +108,39 @@ interface DatabaseDao {
 
     @Query("SELECT * FROM weeks WHERE id = :weekId")
     fun findWeekById(weekId: String): Flow<WeekEntity?>
-    // endregion ================================ WEEKS QUERIES ================================
+    // endregion ======================================= WEEKS QUERIES =======================================
 
-    // region ================================ GOALS QUERIES ================================
+    // region ======================================= GOAL QUERIES =======================================
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun addNewGoal(goal: GoalEntity): Long
 
     @Query("SELECT * FROM goals WHERE week_id = :weekId")
     fun findGoalsByWeekId(weekId: String): Flow<List<GoalEntity>>
-    // endregion ================================ GOALS QUERIES ================================
+    // endregion ======================================= GOAL QUERIES =======================================
+
+    // region ======================================= TASK QUERIES =======================================
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    fun addNewTask(task: TaskEntity): Long
+
+    @Query(
+        """
+        SELECT * FROM tasks
+        WHERE date = :date AND is_completed = :isCompleted
+        """
+    )
+    fun findTasksByDate(date: Long, isCompleted: Boolean = false): Flow<List<TaskEntity>>
+
+    @Query(
+        """
+        SELECT * FROM tasks
+        WHERE date = :date AND name = :name
+        LIMIT 1
+        """
+    )
+    fun findTasksByDateAndName(date: Long, name: String): Flow<TaskEntity?>
+
+    @Query("SELECT * FROM tasks WHERE id = :id")
+    fun findTaskById(id: String): Flow<TaskEntity?>
+
+    // endregion ======================================= TASK QUERIES =======================================
 }

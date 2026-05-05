@@ -30,6 +30,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
@@ -54,7 +55,10 @@ import androidx.navigation3.runtime.NavKey
 import com.flosun.pomodoro.R
 import com.flosun.pomodoro.core.constants.DEBUG_TAG
 import com.flosun.pomodoro.ui.components.core.CoreButton
+import com.flosun.pomodoro.ui.components.shared.LocalGlobalLoading
 import com.flosun.pomodoro.ui.theme.AppTheme
+import com.flosunn.core.libraries.datepicker.DurationPicker
+import com.flosunn.core.libraries.datepicker.TimePicker
 import timber.log.Timber
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -91,8 +95,16 @@ val messages = listOf(
 
 @OptIn(ExperimentalUuidApi::class)
 @Composable
-fun DatePickerView(navBackStack: NavBackStack<NavKey>) {
+fun DatePickerView(
+    navBackStack: NavBackStack<NavKey>,
+) {
+    val globalLoading = LocalGlobalLoading.current
+
+    var expandedTimePicker by remember { mutableStateOf(false) }
+    var expandedDurationPicker by remember { mutableStateOf(false) }
     var messages by remember { mutableStateOf(emptyList<Message>()) }
+
+    LaunchedEffect(Unit) { globalLoading.setLoading(true, "Loading") }
 
     Scaffold(containerColor = Color.White) { paddingValues ->
         Box(
@@ -101,7 +113,7 @@ fun DatePickerView(navBackStack: NavBackStack<NavKey>) {
                 .padding(paddingValues),
             contentAlignment = Alignment.BottomCenter,
         ) {
-            FlashStackMessage(messages = messages)
+            // FlashStackMessage(messages = messages)
 
             Column(
                 modifier = Modifier
@@ -111,23 +123,32 @@ fun DatePickerView(navBackStack: NavBackStack<NavKey>) {
             ) {
                 CoreButton(
                     modifier = Modifier.padding(horizontal = 20.dp),
-                    onPress = {
-                        val newMessage = Message(
-                            id = Uuid.toString(),
-                            title = "Event has been created",
-                            description = "Sunday, December 24, 2026 at 09:00 AM"
-                        )
-
-                        messages = messages + newMessage
-                    }
+                    onPress = { expandedDurationPicker = true },
                 ) {
                     Text(
-                        text = "Add Flash Message",
+                        text = "Pick Time",
                         color = Color.White,
                         fontSize = 16.sp,
                     )
                 }
             }
+
+            if (expandedTimePicker) TimePicker(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp),
+                onDismiss = { expandedTimePicker = false },
+            )
+
+            if (expandedDurationPicker) DurationPicker(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp),
+                onDismiss = { expandedDurationPicker = false },
+                onChanged = { duration ->
+                    Timber.tag(DEBUG_TAG).d("Selected duration: $duration minutes")
+                }
+            )
         }
     }
 }

@@ -1,6 +1,5 @@
-package com.flosun.pomodoro.presentation.goals.add_goal.components
+package com.flosun.pomodoro.ui.components.shared
 
-import android.graphics.drawable.Icon
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -20,7 +19,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -39,7 +37,6 @@ import com.flosun.pomodoro.R
 import com.flosun.pomodoro.core.constants.DEBUG_TAG
 import com.flosun.pomodoro.ui.components.core.CoreBottomSheet
 import com.flosun.pomodoro.ui.components.core.CoreTextField
-import com.flosun.pomodoro.ui.components.shared.TwoOptionActions
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -57,7 +54,7 @@ private val icons = listOf(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun GoalIcon(
+fun SelectIcon(
     color: Color? = null,
     icon: Int? = null,
     onChangeIcon: (Int) -> Unit = {},
@@ -66,10 +63,7 @@ fun GoalIcon(
     val scope = rememberCoroutineScope()
     var isShowBottomSheet by remember { mutableStateOf(false) }
     val addIconBottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-
     var iconName by remember { mutableStateOf("") }
-
-    Timber.tag(DEBUG_TAG).d("Recomposing GoalIcon with icon: $icon and color: $color")
 
     Box(
         modifier = Modifier.fillMaxWidth(),

@@ -31,6 +31,7 @@ import com.flosun.pomodoro.core.functions.ViewFuncs
 fun GoalCard(
     name: String,
     progress: Int,
+    icon: Int,
     modifier: Modifier = Modifier,
 ) {
     val screenWidth = ViewFuncs.screenWidthDp()
@@ -57,7 +58,7 @@ fun GoalCard(
             contentAlignment = Alignment.Center
         ) {
             Icon(
-                painter = painterResource(R.drawable.ic_grid),
+                painter = painterResource(icon),
                 contentDescription = null,
                 modifier = Modifier.size(20.dp),
                 tint = Color.White,

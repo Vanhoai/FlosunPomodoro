@@ -74,7 +74,7 @@ fun UpdateYearView(
                 item {
                     CommonBackHeading(
                         onBack = { navBackStack.removeLastOrNull() },
-                        title = "Add New Year",
+                        title = "Update Year",
                         actions = {
                             Icon(
                                 painter = painterResource(R.drawable.ic_delete),

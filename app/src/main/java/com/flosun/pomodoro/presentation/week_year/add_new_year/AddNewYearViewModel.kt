@@ -284,6 +284,7 @@ class AddNewYearViewModel @Inject constructor(
             val week = WeekEntity(
                 yearId = yearId,
                 name = "Week $i",
+                reward = "",
                 startTimeMilliseconds = startTime,
                 endTimeMilliseconds = endTime,
             )

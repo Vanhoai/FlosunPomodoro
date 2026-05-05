@@ -48,7 +48,7 @@ fun CoreSpinner(
     Canvas(modifier = modifier.fillMaxSize()) {
         val center = size / 2f
         val orbitRadius = size.minDimension / 2f + 12f
-        val arcWidth = 4f
+        val arcWidth = 2f
 
         // Arc 1
         drawArc(

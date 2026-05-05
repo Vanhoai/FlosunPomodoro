@@ -18,6 +18,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 
 @SuppressLint("UnnecessaryComposedModifier")
 fun Modifier.dashed(strokeWidth: Dp, color: Color, cornerRadius: Dp) = composed(
@@ -88,3 +89,21 @@ fun Modifier.cropVertical(padding: Dp): Modifier = this.layout { measurable, con
         placeable.placeRelative(0, -paddingPx)
     }
 }
+
+fun Modifier.borderTop(
+    strokeWidth: Dp,
+    color: Color,
+): Modifier = this.then(
+    Modifier.drawWithCache {
+        val strokeWidthPx = strokeWidth.toPx()
+
+        onDrawBehind {
+            drawLine(
+                color = color,
+                start = androidx.compose.ui.geometry.Offset(0f, 0f),
+                end = androidx.compose.ui.geometry.Offset(size.width, 0f),
+                strokeWidth = strokeWidthPx,
+            )
+        }
+    }
+)

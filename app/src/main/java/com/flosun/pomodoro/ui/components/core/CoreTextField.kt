@@ -117,6 +117,11 @@ fun CoreTextField(
             )
         }
 
-        if (suffix != null) suffix()
+        if (suffix != null) Box(
+            modifier = Modifier.padding(end = 20.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            suffix()
+        }
     }
 }

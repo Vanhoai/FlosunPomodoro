@@ -17,9 +17,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,27 +31,33 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.flosun.pomodoro.ui.theme.AppTheme
+import kotlinx.coroutines.launch
 
-
-val options = listOf(
-    "Active",
-    "Completed",
-    "Failed",
-)
 
 val SLIDE_SPACING = 2.dp
 
 @SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
-fun OptionsSlider() {
+fun OptionsSlider(
+    selectedOptionIndex: Int = 0,
+    options: List<String> = emptyList(),
+    onChangedOptionIndex: (Int) -> Unit = {},
+) {
+    val scope = rememberCoroutineScope()
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
     val containerWidth = screenWidth - 40.dp
     val optionWidth = (containerWidth - SLIDE_SPACING * (options.size + 1)) / options.size
 
-    var selectedOption by remember { mutableIntStateOf(0) }
+    var selectedIndexInside by remember { mutableIntStateOf(selectedOptionIndex) }
+
+    // Two-way syncing of selected index to make sure the animation works when the index is changed from outside
+    LaunchedEffect(selectedOptionIndex) {
+        selectedIndexInside = selectedOptionIndex
+    }
+
     val offset = animateDpAsState(
-        targetValue = (optionWidth + SLIDE_SPACING) * selectedOption + SLIDE_SPACING,
+        targetValue = (optionWidth + SLIDE_SPACING) * selectedIndexInside + SLIDE_SPACING,
         animationSpec = spring(
             stiffness = Spring.StiffnessMediumLow,
             dampingRatio = Spring.DampingRatioMediumBouncy
@@ -90,14 +98,15 @@ fun OptionsSlider() {
                         .height(40.dp)
                         .pointerInput(Unit) {
                             detectTapGestures {
-                                selectedOption = index
+                                scope.launch { selectedIndexInside = index }
+                                scope.launch { onChangedOptionIndex(index) }
                             }
                         },
                     contentAlignment = Alignment.Center,
                 ) {
                     Text(
                         text = option,
-                        color = if (selectedOption == index) Color.White else Color(
+                        color = if (selectedIndexInside == index) Color.White else Color(
                             0xFF636363
                         ),
                         textAlign = TextAlign.Center

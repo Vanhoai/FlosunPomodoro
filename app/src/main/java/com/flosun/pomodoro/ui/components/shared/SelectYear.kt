@@ -1,4 +1,4 @@
-package com.flosun.pomodoro.presentation.goals.add_goal.components
+package com.flosun.pomodoro.ui.components.shared
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -19,6 +19,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -56,6 +57,7 @@ fun SelectYear(
         modifier = Modifier
             .padding(horizontal = 20.dp)
             .fillMaxWidth()
+            .clip(RoundedCornerShape(8.dp))
             .border(
                 width = 1.dp,
                 color = Color(0xFFE0E0E0),

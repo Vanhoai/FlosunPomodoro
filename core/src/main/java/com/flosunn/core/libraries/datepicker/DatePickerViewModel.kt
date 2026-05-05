@@ -10,7 +10,7 @@ import kotlinx.datetime.minus
 import kotlinx.datetime.plus
 
 class DatePickerViewModel : ViewModel() {
-    private val _uiState = MutableStateFlow(DatePickerUIState())
+    private val _uiState = MutableStateFlow(DatePickerUiState())
     val uiState = _uiState.asStateFlow()
 
     init {

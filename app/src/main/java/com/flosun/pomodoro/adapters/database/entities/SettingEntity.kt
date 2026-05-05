@@ -3,12 +3,14 @@ package com.flosun.pomodoro.adapters.database.entities
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 @Entity(tableName = "settings")
-data class SettingEntity(
-    @PrimaryKey val id: String,
-    @ColumnInfo(name = "created_at") val createdAt: Long,
-    @ColumnInfo(name = "updated_at") val updatedAt: Long,
+data class SettingEntity @OptIn(ExperimentalUuidApi::class) constructor(
+    @PrimaryKey val id: String = Uuid.random().toString(),
+    @ColumnInfo(name = "created_at") val createdAt: Long = System.currentTimeMillis(),
+    @ColumnInfo(name = "updated_at") val updatedAt: Long = System.currentTimeMillis(),
 
     // Reference
     @ColumnInfo(name = "account_id") val accountId: String,
