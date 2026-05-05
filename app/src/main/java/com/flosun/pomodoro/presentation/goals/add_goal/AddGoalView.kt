@@ -153,8 +153,8 @@ fun AddGoalView(
                 TwoOptionActions(
                     okLabel = "Add",
                     cancelLabel = "Cancel",
-                    onOk = {},
-                    onCancel = {},
+                    onOk = { viewModel.addNewGoal(onSuccess = { navBackStack.removeLastOrNull() }) },
+                    onCancel = { navBackStack.removeLastOrNull() },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(20.dp)

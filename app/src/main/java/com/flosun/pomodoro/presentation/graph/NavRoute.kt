@@ -54,6 +54,9 @@ sealed interface NavRoute : NavKey {
     data object AddNewYear : NavRoute, NavKey
 
     @Serializable
+    data class UpdateYear(val yearId: String) : NavRoute, NavKey
+
+    @Serializable
     data class YearDetail(
         val yearId: String,
     ) : NavRoute, NavKey
@@ -121,6 +124,10 @@ val config = SavedStateConfiguration {
             subclass(
                 subclass = NavRoute.AddNewYear::class,
                 serializer = NavRoute.AddNewYear.serializer()
+            )
+            subclass(
+                subclass = NavRoute.UpdateYear::class,
+                serializer = NavRoute.UpdateYear.serializer()
             )
             subclass(
                 subclass = NavRoute.YearDetail::class,

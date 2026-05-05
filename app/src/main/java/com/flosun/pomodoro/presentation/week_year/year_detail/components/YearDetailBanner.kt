@@ -40,6 +40,7 @@ import kotlin.time.Clock
 @SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
 fun YearDetailBanner(
+    name: String,
     coverUri: String,
     startTimeMilliseconds: Long = 0L,
     endTimeMilliseconds: Long = 0L,
@@ -72,7 +73,7 @@ fun YearDetailBanner(
                 .padding(12.dp),
         ) {
             Text(
-                text = "The Beginning",
+                text = name,
                 fontSize = 32.sp,
                 color = Color.White,
                 fontWeight = FontWeight.Bold,

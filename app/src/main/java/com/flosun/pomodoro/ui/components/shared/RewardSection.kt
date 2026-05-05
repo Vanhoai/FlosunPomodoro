@@ -1,4 +1,4 @@
-package com.flosun.pomodoro.presentation.week_year.add_new_year.components
+package com.flosun.pomodoro.ui.components.shared
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest

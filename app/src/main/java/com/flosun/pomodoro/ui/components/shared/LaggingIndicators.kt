@@ -1,18 +1,12 @@
-package com.flosun.pomodoro.presentation.week_year.add_new_year.components
+package com.flosun.pomodoro.ui.components.shared
 
 import android.widget.Toast
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -21,7 +15,6 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -36,14 +29,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.flosunn.core.extensions.tapGesture
 import com.flosun.pomodoro.R
-import com.flosun.pomodoro.core.constants.DEBUG_TAG
 import com.flosun.pomodoro.ui.components.core.CoreBottomSheet
 import com.flosun.pomodoro.ui.components.core.CoreTextField
-import com.flosun.pomodoro.ui.components.shared.SwipeableAction
-import com.flosun.pomodoro.ui.components.shared.SwipeableCard
-import com.flosun.pomodoro.ui.components.shared.TwoOptionActions
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 private enum class BottomSheetAction {
     ADD,

@@ -1,6 +1,5 @@
-package com.flosun.pomodoro.presentation.week_year.add_new_year.components
+package com.flosun.pomodoro.ui.components.shared
 
-import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement

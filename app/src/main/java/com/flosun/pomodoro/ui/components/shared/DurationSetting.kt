@@ -1,5 +1,6 @@
-package com.flosun.pomodoro.presentation.week_year.add_new_year.components
+package com.flosun.pomodoro.ui.components.shared
 
+import android.widget.Toast
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -11,7 +12,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.flosunn.core.extensions.rippleEffectClickable
@@ -35,11 +36,14 @@ private enum class PickTimeType {
 
 @Composable
 fun DurationSetting(
+    isEnabled: Boolean = true,
     startTimeMilliseconds: Long, // Milliseconds since epoch
     endTimeMilliseconds: Long, // Milliseconds since epoch
     onStartTimeChanged: (Long) -> Unit,
     onEndTimeChanged: (Long) -> Unit,
 ) {
+    val context = LocalContext.current
+
     var isShowDatePicker by remember { mutableStateOf(false) }
     var currentDate by remember { mutableStateOf<LocalDate?>(null) }
     var pickTimeType by remember { mutableStateOf<PickTimeType?>(null) }
@@ -66,10 +70,12 @@ fun DurationSetting(
                 .clip(RoundedCornerShape(AppTheme.sizing.borderMedium))
                 .border(
                     width = 1.dp,
-                    color = Color(0xFFCCCCCC),
+                    color = AppTheme.colors.borderColor,
                     shape = RoundedCornerShape(AppTheme.sizing.borderMedium)
                 )
                 .rippleEffectClickable {
+                    if (!isEnabled) return@rippleEffectClickable
+
                     val dateTime = TimeFuncs.dateTimeFromMilliseconds(startTimeMilliseconds)
                     currentDate = dateTime.date
                     isShowDatePicker = true
@@ -98,10 +104,12 @@ fun DurationSetting(
                 .clip(RoundedCornerShape(AppTheme.sizing.borderMedium))
                 .border(
                     width = 1.dp,
-                    color = Color(0xFFCCCCCC),
+                    color = AppTheme.colors.borderColor,
                     shape = RoundedCornerShape(AppTheme.sizing.borderMedium)
                 )
                 .rippleEffectClickable {
+                    if (!isEnabled) return@rippleEffectClickable
+
                     val dateTime = TimeFuncs.dateTimeFromMilliseconds(endTimeMilliseconds)
                     currentDate = dateTime.date
                     isShowDatePicker = true

@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -18,6 +19,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -46,6 +48,7 @@ import com.flosun.pomodoro.presentation.week_year.year_detail.components.YearDet
 import com.flosun.pomodoro.presentation.week_year.year_detail.components.YearDetailReward
 import com.flosun.pomodoro.ui.components.shared.CommonBackHeading
 import com.flosun.pomodoro.ui.theme.AppTheme
+import com.flosunn.core.extensions.tapGesture
 import timber.log.Timber
 
 @SuppressLint("ConfigurationScreenWidthHeight")
@@ -62,7 +65,10 @@ fun YearDetailView(
         .collectAsState(emptyList())
 
     val weeks by database
-        .findWeeksByYearId(navRoute.yearId)
+        .findWeekByYearIdAndBeforeStartTime(
+            yearId = navRoute.yearId,
+            startTime = System.currentTimeMillis(),
+        )
         .collectAsState(emptyList())
 
     var currentTimeMilliseconds by remember { mutableLongStateOf(System.currentTimeMillis()) }
@@ -94,15 +100,20 @@ fun YearDetailView(
                     title = yearEntity?.name ?: "Unknown Year",
                     actions = {
                         Icon(
-                            painter = painterResource(R.drawable.ic_upload),
+                            painter = painterResource(R.drawable.ic_update),
                             contentDescription = null,
-                            modifier = Modifier.size(24.dp),
+                            modifier = Modifier
+                                .size(24.dp)
+                                .tapGesture(Unit) {
+                                    navBackStack.add(NavRoute.UpdateYear(yearId = navRoute.yearId))
+                                },
                             tint = Color.Black,
                         )
                     }
                 )
 
                 YearDetailBanner(
+                    name = yearEntity?.name ?: "Unknown Year",
                     coverUri = yearEntity?.cover
                         ?: "https://i.pinimg.com/736x/c8/0e/34/c80e34ebfc7b7ca87e11779b36d950a4.jpg",
                     startTimeMilliseconds = yearEntity?.startTimeMilliseconds ?: 0L,
@@ -160,6 +171,8 @@ fun YearDetailView(
                     navigateToWeek = { navBackStack.add(NavRoute.WeekDetail(weekId = week.id)) }
                 )
             }
+
+            item { VerticalDivider(modifier = Modifier.height(40.dp)) }
         }
     }
 }

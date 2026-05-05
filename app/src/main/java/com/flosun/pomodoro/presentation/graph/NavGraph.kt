@@ -31,6 +31,7 @@ import com.flosun.pomodoro.presentation.swipe.settings.notification.Notification
 import com.flosun.pomodoro.presentation.swipe.settings.preference.PreferenceView
 import com.flosun.pomodoro.presentation.swipe.settings.preference.choose_duration.ChooseDurationView
 import com.flosun.pomodoro.presentation.week_year.twelve_week_year.TwelveWeekYearView
+import com.flosun.pomodoro.presentation.week_year.update_year.UpdateYearView
 import com.flosun.pomodoro.presentation.week_year.week_detail.WeekDetailView
 import com.flosun.pomodoro.presentation.week_year.year_detail.YearDetailView
 import com.flosun.pomodoro.ui.components.shared.NotFoundView
@@ -96,6 +97,7 @@ fun NavGraph(
                 is NavRoute.AppLanguage -> NavEntry(key) { AppLanguageView(navBackStack) }
                 is NavRoute.TwelveWeekYear -> NavEntry(key) { TwelveWeekYearView(navBackStack) }
                 is NavRoute.AddNewYear -> NavEntry(key) { AddNewYearView(navBackStack) }
+                is NavRoute.UpdateYear -> NavEntry(key) { UpdateYearView(key) }
                 is NavRoute.YearDetail -> NavEntry(key) { YearDetailView(navBackStack, key) }
                 is NavRoute.DatePicker -> NavEntry(key) { DatePickerView(navBackStack) }
                 is NavRoute.WeekDetail -> NavEntry(key) { WeekDetailView(navBackStack, key) }

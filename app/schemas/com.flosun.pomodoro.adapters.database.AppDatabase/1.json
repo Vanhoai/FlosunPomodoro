@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "3325936188a71d79465ad99174eb296f",
+    "identityHash": "0d85b11d1418c4930f9c4b40a8dfac56",
     "entities": [
       {
         "tableName": "accounts",
@@ -396,7 +396,7 @@
       },
       {
         "tableName": "goals",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `created_at` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL, `week_id` TEXT NOT NULL, `lagging_indicator_id` TEXT NOT NULL, `name` TEXT NOT NULL, `icon` INTEGER NOT NULL, `color` INTEGER NOT NULL, `progress` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `created_at` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL, `week_id` TEXT NOT NULL, `lagging_indicator_id` TEXT NOT NULL, `name` TEXT NOT NULL, `icon` INTEGER NOT NULL, `color` TEXT NOT NULL, `progress` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -443,7 +443,7 @@
           {
             "fieldPath": "color",
             "columnName": "color",
-            "affinity": "INTEGER",
+            "affinity": "TEXT",
             "notNull": true
           },
           {
@@ -529,7 +529,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '3325936188a71d79465ad99174eb296f')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '0d85b11d1418c4930f9c4b40a8dfac56')"
     ]
   }
 }

@@ -1,9 +1,11 @@
 package com.flosun.pomodoro.adapters.database
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import com.flosun.pomodoro.adapters.database.entities.AccountEntity
 import com.flosun.pomodoro.adapters.database.entities.GoalEntity
 import com.flosun.pomodoro.adapters.database.entities.LaggingIndicatorEntity
@@ -39,6 +41,9 @@ interface DatabaseDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun addNewTwelveWeekYear(twelveWeekYear: TwelveWeekYearEntity): Long
 
+    @Update
+    fun updateTwelveWeekYear(twelveWeekYear: TwelveWeekYearEntity): Int
+
     // Find One Year - date in range of start and end time
     @Query(
         """
@@ -51,6 +56,21 @@ interface DatabaseDao {
     // endregion ================================ YEAR QUERIES ================================
 
     // region ================================ LAGGING INDICATORS QUERIES ================================
+    @Query("SELECT * FROM lagging_indicators WHERE id = :id")
+    fun findLaggingIndicatorById(id: String): Flow<LaggingIndicatorEntity?>
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    fun addNewLaggingIndicator(laggingIndicator: LaggingIndicatorEntity): Long
+
+    @Update
+    fun updateLaggingIndicator(laggingIndicator: LaggingIndicatorEntity): Int
+
+    @Query("DELETE FROM lagging_indicators WHERE id = :id")
+    fun deleteLaggingIndicator(id: String): Int
+
+    @Query("DELETE FROM lagging_indicators WHERE id IN (:ids)")
+    fun deleteMultiLaggingIndicators(ids: List<String>): Int
+
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun addAllLaggingIndicators(laggingIndicators: List<LaggingIndicatorEntity>): List<Long>
 
@@ -59,19 +79,41 @@ interface DatabaseDao {
     // endregion ================================ LAGGING INDICATORS QUERIES ================================
 
     // region ================================ WEEKS QUERIES ================================
+    @Update
+    fun updateWeek(week: WeekEntity): Int
+
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun addAllWeeks(weeks: List<WeekEntity>): List<Long>
 
     @Query("SELECT * FROM weeks WHERE year_id = :yearId")
     fun findWeeksByYearId(yearId: String): Flow<List<WeekEntity>>
 
+    @Query(
+        """
+        SELECT * FROM weeks
+        WHERE year_id = :yearId AND start_time_milliseconds <= :currentTime AND end_time_milliseconds >= :currentTime
+        LIMIT 1
+        """
+    )
+    fun findCurrentWeekByYearId(yearId: String, currentTime: Long): Flow<WeekEntity?>
+
+    @Query(
+        """
+        SELECT * FROM weeks
+        WHERE year_id = :yearId AND start_time_milliseconds <= :startTime
+        """
+    )
+    fun findWeekByYearIdAndBeforeStartTime(yearId: String, startTime: Long): Flow<List<WeekEntity>>
+
     @Query("SELECT * FROM weeks WHERE id = :weekId")
     fun findWeekById(weekId: String): Flow<WeekEntity?>
     // endregion ================================ WEEKS QUERIES ================================
 
     // region ================================ GOALS QUERIES ================================
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    fun addNewGoal(goal: GoalEntity): Long
+
     @Query("SELECT * FROM goals WHERE week_id = :weekId")
     fun findGoalsByWeekId(weekId: String): Flow<List<GoalEntity>>
-
     // endregion ================================ GOALS QUERIES ================================
 }

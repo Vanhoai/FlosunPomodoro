@@ -19,10 +19,13 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -44,12 +47,12 @@ import com.flosunn.core.extensions.noRippleEffectClickable
 import com.flosunn.core.extensions.tapGesture
 import com.flosun.pomodoro.R
 import com.flosun.pomodoro.adapters.database.LocalDatabase
-import com.flosun.pomodoro.core.functions.TimeFuncs
-import com.flosun.pomodoro.core.functions.ViewFuncs
 import com.flosun.pomodoro.presentation.graph.NavRoute
-import com.flosun.pomodoro.presentation.week_year.week_detail.components.SelfReward
-import com.flosun.pomodoro.ui.components.core.CoreAsyncImage
 import com.flosun.pomodoro.ui.components.shared.CommonBackHeading
+import com.flosun.pomodoro.ui.components.shared.GoalCard
+import com.flosun.pomodoro.ui.components.shared.RewardSection
+import com.flosun.pomodoro.ui.components.shared.SwipeableCard
+import com.flosun.pomodoro.ui.components.shared.TwoOptionActions
 import com.flosun.pomodoro.ui.theme.AppTheme
 
 @Composable
@@ -60,173 +63,133 @@ fun WeekDetailView(
 ) {
     val focusManager = LocalFocusManager.current
     val database = LocalDatabase.current
-    val screenWidth = ViewFuncs.screenWidthDp()
-    val containerProgressWidth = screenWidth - 40 * 2 - 12 * 2 - 50 - 12
+
+    val goals by database.findGoalsByWeekId(navRoute.weekId).collectAsState(emptyList())
+    val uiState by viewModel.uiState.collectAsState()
 
     // States
-    val weekEntity by database.findWeekById(navRoute.weekId).collectAsState(null)
-    if (weekEntity == null) return
-    val goals by database.findGoalsByWeekId(navRoute.weekId).collectAsState(emptyList())
 
-    val duration = TimeFuncs.formatDuration(
-        weekEntity!!.startTimeMilliseconds,
-        weekEntity!!.endTimeMilliseconds
-    )
+    LaunchedEffect(Unit) { viewModel.initialize(navRoute.weekId) }
 
     Scaffold(containerColor = Color.White) { paddingValues ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .tapGesture(Unit) { focusManager.clearFocus() }
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.BottomCenter,
         ) {
-            item { CommonBackHeading(title = weekEntity!!.name) }
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .tapGesture(Unit) { focusManager.clearFocus() }
+            ) {
+                item { CommonBackHeading(title = uiState.name) }
 
-            item {
-                Box(
-                    modifier = Modifier.fillMaxWidth(),
-                    contentAlignment = Alignment.Center
-                ) {
+                item {
                     Box(
-                        modifier = Modifier.size(100.dp),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        CircularProgressIndicator(
-                            progress = { 0.6f },
-                            modifier = Modifier
-                                .size(100.dp)
-                                .background(Color.Transparent),
-                            color = Color(0xFF3FA039),
-                            trackColor = Color(0xFFE0E0E0),
-                            strokeWidth = 8.dp,
-                        )
-
-                        Text(
-                            text = "${weekEntity!!.progress}%",
-                            fontSize = 20.sp,
-                            color = Color.Black,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                }
-
-                Text(
-                    text = duration,
-                    fontSize = 18.sp,
-                    color = Color.Black,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 20.dp)
-                        .padding(top = 12.dp, bottom = 32.dp),
-                    textAlign = TextAlign.Center,
-                )
-
-                SelfReward(
-                    reward = weekEntity!!.reward,
-                    onChangedReward = {},
-                    rewardImages = weekEntity!!.rewardImages,
-                )
-            }
-
-            item {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 20.dp)
-                        .padding(top = 20.dp, bottom = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                ) {
-                    Text(
-                        text = "Goals:",
-                        fontSize = 18.sp,
-                        modifier = Modifier
-                    )
-
-                    Icon(
-                        painter = painterResource(R.drawable.ic_add),
-                        contentDescription = null,
-                        tint = Color(0xFF616161),
-                        modifier = Modifier
-                            .size(24.dp)
-                            .noRippleEffectClickable { navBackStack.add(NavRoute.AddGoal) },
-                    )
-                }
-            }
-
-            items(goals) { goal ->
-                Row(
-                    modifier = Modifier
-                        .padding(horizontal = 20.dp)
-                        .padding(bottom = 12.dp)
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(8.dp))
-                        .border(
-                            width = 1.dp,
-                            color = Color(0xFFE0E0E0),
-                            shape = RoundedCornerShape(8.dp)
-                        )
-                        .padding(12.dp),
-                    verticalAlignment = Alignment.Top,
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .padding(end = 12.dp)
-                            .size(40.dp)
-                            .clip(CircleShape)
-                            .background(Color(0xFF75D06A)),
+                        modifier = Modifier.fillMaxWidth(),
                         contentAlignment = Alignment.Center
                     ) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_grid),
-                            contentDescription = null,
-                            modifier = Modifier.size(20.dp),
-                            tint = Color.White,
-                        )
-                    }
-
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(
-                            text = goal.name,
-                            fontSize = 16.sp,
-                            color = Color.Black,
-                            maxLines = 2,
-                            overflow = TextOverflow.Ellipsis,
-                        )
-
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 8.dp),
-                            verticalAlignment = Alignment.CenterVertically,
+                        Box(
+                            modifier = Modifier.size(100.dp),
+                            contentAlignment = Alignment.Center,
                         ) {
-                            Box(
+                            CircularProgressIndicator(
+                                progress = { uiState.progress / 100f },
                                 modifier = Modifier
-                                    .padding(top = 2.dp)
-                                    .width(containerProgressWidth.dp)
-                                    .height(8.dp)
-                                    .clip(RoundedCornerShape(2.dp))
-                                    .background(Color(0xFFEBEBEB)),
-                                contentAlignment = Alignment.CenterStart
-                            ) {
-                                Box(
-                                    modifier = Modifier
-                                        .height(8.dp)
-                                        .width((containerProgressWidth * (goal.progress / 100f)).dp)
-                                        .clip(RoundedCornerShape(2.dp))
-                                        .background(Color(0xFF75D06A)),
-                                )
-                            }
+                                    .size(100.dp)
+                                    .background(Color.Transparent),
+                                color = Color(0xFF3FA039),
+                                trackColor = Color(0xFFE0E0E0),
+                                strokeWidth = 8.dp,
+                            )
 
                             Text(
-                                text = "${goal.progress}%",
-                                fontSize = 14.sp,
-                                modifier = Modifier.width(50.dp),
-                                textAlign = TextAlign.End,
+                                text = "${uiState.progress}%",
+                                fontSize = 20.sp,
+                                color = Color(0xFF3FA039),
+                                fontWeight = FontWeight.Bold
                             )
                         }
                     }
+
+                    Text(
+                        text = uiState.duration,
+                        fontSize = 18.sp,
+                        color = Color.Black,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 20.dp)
+                            .padding(top = 12.dp, bottom = 32.dp),
+                        textAlign = TextAlign.Center,
+                    )
+
+                    RewardSection(
+                        reward = uiState.reward,
+                        rewardImages = uiState.rewardImages,
+                        onChangedReward = viewModel::updateReward,
+                        onChangedRewardImages = viewModel::updateRewardImages,
+                        onDeleteRewardImage = viewModel::deleteRewardImage,
+                    )
                 }
+
+                item {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 20.dp)
+                            .padding(top = 20.dp, bottom = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                    ) {
+                        Text(
+                            text = "Goals:",
+                            fontSize = 18.sp,
+                            modifier = Modifier
+                        )
+
+                        Icon(
+                            painter = painterResource(R.drawable.ic_add),
+                            contentDescription = null,
+                            tint = Color(0xFF616161),
+                            modifier = Modifier
+                                .size(24.dp)
+                                .noRippleEffectClickable { navBackStack.add(NavRoute.AddGoal) },
+                        )
+                    }
+                }
+
+                items(goals) { goal ->
+                    SwipeableCard(
+                        modifier = Modifier
+                            .padding(horizontal = 20.dp)
+                            .padding(bottom = 12.dp),
+                        isRevealed = false
+                    ) {
+                        GoalCard(
+                            name = goal.name,
+                            progress = goal.progress,
+                        )
+                    }
+                }
+
+                item { VerticalDivider(modifier = Modifier.height(200.dp)) }
+            }
+
+            Column(modifier = Modifier.fillMaxWidth()) {
+                HorizontalDivider(
+                    thickness = 1.dp,
+                    color = AppTheme.colors.borderColor
+                )
+
+                TwoOptionActions(
+                    modifier = Modifier
+                        .background(Color.White)
+                        .padding(20.dp),
+                    okLabel = "Update",
+                    cancelLabel = "Reset",
+                    onOk = { viewModel.updateWeek() },
+                    onCancel = viewModel::resetState,
+                )
             }
         }
     }

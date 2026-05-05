@@ -97,7 +97,7 @@ fun GoalIcon(
                 painter = painterResource(R.drawable.ic_add_2),
                 contentDescription = null,
                 modifier = Modifier.size(24.dp),
-                tint = Color(0xFFBEBEBE),
+                tint = if (color != null) Color.White else Color(0xFFBEBEBE),
             )
         }
     }

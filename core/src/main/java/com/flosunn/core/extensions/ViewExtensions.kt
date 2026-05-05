@@ -46,13 +46,14 @@ fun Modifier.dashed(strokeWidth: Dp, color: Color, cornerRadius: Dp) = composed(
 )
 
 @SuppressLint("UnnecessaryComposedModifier")
-fun Modifier.tapGesture(key1: Any?, key2: Any? = null, onTap: () -> Unit): Modifier = composed {
-    pointerInput(key1, key2) {
-        detectTapGestures {
-            onTap()
+fun Modifier.tapGesture(key1: Any? = Unit, key2: Any? = null, onTap: () -> Unit): Modifier =
+    composed {
+        pointerInput(key1, key2) {
+            detectTapGestures {
+                onTap()
+            }
         }
     }
-}
 
 @Composable
 fun Modifier.rippleEffectClickable(

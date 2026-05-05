@@ -1,16 +1,13 @@
 package com.flosun.pomodoro.presentation.week_year.add_new_year
 
 import android.app.Application
-import android.net.Uri
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.room.ColumnInfo
 import com.flosun.pomodoro.adapters.database.entities.TwelveWeekYearEntity
 import com.flosun.pomodoro.core.constants.CURRENT_ACCOUNT_ID_KEY
 import com.flosun.pomodoro.core.constants.DEBUG_TAG
 import com.flosun.pomodoro.core.utils.AppStorage
-import com.flosun.pomodoro.core.utils.StringArray
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -34,6 +31,7 @@ import androidx.core.net.toUri
 import com.flosun.pomodoro.adapters.database.PomodoroDatabase
 import com.flosun.pomodoro.adapters.database.entities.LaggingIndicatorEntity
 import com.flosun.pomodoro.adapters.database.entities.WeekEntity
+import com.flosun.pomodoro.core.functions.InternalStorageFuncs
 import com.flosun.pomodoro.core.functions.TimeFuncs
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -48,9 +46,8 @@ class AddNewYearViewModel @Inject constructor(
     private val appStorage: AppStorage,
     private val database: PomodoroDatabase,
 ) : ViewModel() {
-
-    private val _uiState = MutableStateFlow(AddNewYearUIState())
-    val uiState: StateFlow<AddNewYearUIState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow(AddNewYearUiState())
+    val uiState: StateFlow<AddNewYearUiState> = _uiState.asStateFlow()
 
     init {
         val startTime = Clock.System.todayIn(TimeZone.currentSystemDefault())
@@ -149,7 +146,7 @@ class AddNewYearViewModel @Inject constructor(
             .toInstant(TimeZone.currentSystemDefault())
             .toEpochMilliseconds()
 
-        _uiState.value = AddNewYearUIState(
+        _uiState.value = AddNewYearUiState(
             name = "",
             coverUri = null,
             reward = "",
@@ -161,10 +158,7 @@ class AddNewYearViewModel @Inject constructor(
     }
 
     @OptIn(ExperimentalUuidApi::class)
-    fun addNewYear(
-        onAddSuccess: () -> Unit = {},
-        onAddFailure: () -> Unit = {},
-    ) = viewModelScope.launch(Dispatchers.IO) {
+    fun addNewYear(onAddSuccess: () -> Unit = {}) = viewModelScope.launch(Dispatchers.IO) {
         // Validate input data
         if (!validateInputDate()) return@launch
         // Check if the duration overlaps with other years
@@ -205,7 +199,8 @@ class AddNewYearViewModel @Inject constructor(
             // copy cover image
             val coverPath = "$folder/COVER-${Uuid.random()}.jpg"
             val coverDeferred = async {
-                copyImageToInternalStorageApp(
+                InternalStorageFuncs.copyImageToInternalStorageApp(
+                    context = application,
                     uri = uiState.value.coverUri!!,
                     path = coverPath,
                 )
@@ -215,7 +210,8 @@ class AddNewYearViewModel @Inject constructor(
             val rewardImagesDeferred = uiState.value.rewardImages.mapIndexed { index, string ->
                 val rewardImagePath = "$folder/REWARD-${index}-${Uuid.random()}.jpg"
                 async {
-                    copyImageToInternalStorageApp(
+                    InternalStorageFuncs.copyImageToInternalStorageApp(
+                        context = application,
                         uri = string,
                         path = rewardImagePath,
                     )
@@ -333,34 +329,6 @@ class AddNewYearViewModel @Inject constructor(
         }
 
         return result.all { it > 0 }
-    }
-
-    private fun copyImageToInternalStorageApp(
-        uri: String,
-        path: String,
-    ): String {
-        try {
-            val contentResolver = application.contentResolver
-            val inputStream = contentResolver.openInputStream(uri.toUri())
-                ?: throw Exception("Failed to open input stream from URI: $uri")
-
-            val file = java.io.File(path).apply { parentFile?.mkdirs() }
-            inputStream.use { inputStream ->
-                file.outputStream().use { outputStream ->
-                    inputStream.copyTo(outputStream)
-                }
-            }
-
-            return path
-        } catch (exception: Exception) {
-            exception.printStackTrace()
-            Toast.makeText(
-                application.applicationContext,
-                "Failed to copy image to internal storage. Please try again.",
-                Toast.LENGTH_SHORT
-            ).show()
-            return ""
-        }
     }
 
     private suspend fun validateInputDate(): Boolean {

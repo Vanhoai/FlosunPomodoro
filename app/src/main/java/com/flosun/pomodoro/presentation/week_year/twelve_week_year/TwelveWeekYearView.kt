@@ -47,6 +47,7 @@ import com.flosun.pomodoro.ui.components.shared.CommonBackHeading
 import com.flosun.pomodoro.ui.components.shared.NamedDivider
 import com.flosun.pomodoro.ui.components.shared.TwelveWeekYearCard
 import com.flosun.pomodoro.ui.theme.AppTheme
+import com.flosunn.core.extensions.tapGesture
 import timber.log.Timber
 
 @Composable
@@ -74,11 +75,7 @@ fun TwelveWeekYearView(
                             tint = Color(0xFF141B34),
                             modifier = Modifier
                                 .size(24.dp)
-                                .pointerInput(Unit) {
-                                    detectTapGestures {
-                                        navBackStack.add(NavRoute.AddNewYear)
-                                    }
-                                },
+                                .tapGesture { navBackStack.add(NavRoute.AddNewYear) },
                         )
                     }
                 )

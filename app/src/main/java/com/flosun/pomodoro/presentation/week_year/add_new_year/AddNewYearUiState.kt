@@ -1,7 +1,7 @@
 package com.flosun.pomodoro.presentation.week_year.add_new_year
 
 
-data class AddNewYearUIState(
+data class AddNewYearUiState(
     val coverUri: String? = null,
     val name: String = "",
     val startTimeMilliseconds: Long = 0L,

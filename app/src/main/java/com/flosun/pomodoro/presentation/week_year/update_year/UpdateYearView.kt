@@ -1,4 +1,4 @@
-package com.flosun.pomodoro.presentation.week_year.add_new_year
+package com.flosun.pomodoro.presentation.week_year.update_year
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
@@ -8,43 +8,53 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.navigation3.runtime.NavBackStack
-import androidx.navigation3.runtime.NavKey
+import com.flosun.pomodoro.LocalNavBackStack
+import com.flosun.pomodoro.R
+import com.flosun.pomodoro.presentation.graph.NavRoute
+import com.flosun.pomodoro.ui.components.core.CoreTextField
+import com.flosun.pomodoro.ui.components.shared.UploadCover
+import com.flosun.pomodoro.ui.components.shared.CommonBackHeading
 import com.flosun.pomodoro.ui.components.shared.DurationSetting
 import com.flosun.pomodoro.ui.components.shared.LaggingIndicators
 import com.flosun.pomodoro.ui.components.shared.RewardSection
-import com.flosun.pomodoro.ui.components.shared.UploadCover
-import com.flosun.pomodoro.ui.components.core.CoreTextField
-import com.flosun.pomodoro.ui.components.shared.CommonBackHeading
 import com.flosun.pomodoro.ui.components.shared.TwoOptionActions
-import kotlin.uuid.ExperimentalUuidApi
+import com.flosunn.core.extensions.tapGesture
 
 private val contracts = ActivityResultContracts.PickVisualMedia()
 
-@OptIn(ExperimentalUuidApi::class)
 @Composable
-fun AddNewYearView(
-    navBackStack: NavBackStack<NavKey>,
-    viewModel: AddNewYearViewModel = hiltViewModel<AddNewYearViewModel>(),
+fun UpdateYearView(
+    navRoute: NavRoute.UpdateYear,
+    viewModel: UpdateYearViewModel = hiltViewModel<UpdateYearViewModel>(),
 ) {
+    val navBackStack = LocalNavBackStack.current
     val focusManager = LocalFocusManager.current
     val uiState by viewModel.uiState.collectAsState()
     val pickMedia = rememberLauncherForActivityResult(contracts) { uri ->
-        if (uri != null) viewModel.updateCoverUri(uri.toString())
+        if (uri == null) return@rememberLauncherForActivityResult
+
+        viewModel.updateCoverUri(uri.toString())
     }
+
+    // Run initialization logic when the view is first composed
+    LaunchedEffect(Unit) { viewModel.initialize(navRoute.yearId) }
 
     Scaffold(containerColor = Color.White) { paddingValues ->
         Box(
@@ -65,6 +75,16 @@ fun AddNewYearView(
                     CommonBackHeading(
                         onBack = { navBackStack.removeLastOrNull() },
                         title = "Add New Year",
+                        actions = {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_delete),
+                                contentDescription = null,
+                                tint = Color(0xFFF44336),
+                                modifier = Modifier
+                                    .size(24.dp)
+                                    .tapGesture {}
+                            )
+                        }
                     )
                 }
 
@@ -98,10 +118,11 @@ fun AddNewYearView(
 
                 item {
                     DurationSetting(
+                        isEnabled = false,
                         startTimeMilliseconds = uiState.startTimeMilliseconds,
                         endTimeMilliseconds = uiState.endTimeMilliseconds,
-                        onStartTimeChanged = viewModel::updateStartTime,
-                        onEndTimeChanged = viewModel::updateEndTime,
+                        onStartTimeChanged = {},
+                        onEndTimeChanged = {},
                     )
                 }
 
@@ -127,15 +148,9 @@ fun AddNewYearView(
                 item {
                     TwoOptionActions(
                         modifier = Modifier.padding(20.dp),
-                        okLabel = "Add",
+                        okLabel = "Update",
                         cancelLabel = "Reset",
-                        onOk = {
-                            viewModel.addNewYear(
-                                onAddSuccess = {
-                                    navBackStack.removeLastOrNull()
-                                }
-                            )
-                        },
+                        onOk = { viewModel.updateYear(onUpdateSuccess = { navBackStack.removeLastOrNull() }) },
                         onCancel = viewModel::resetState,
                     )
                 }
