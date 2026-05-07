@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "e00da131991fa4f6c8df921e6a9b3eb0",
+    "identityHash": "25ebbe4ebe793cb377029bccd8830b24",
     "entities": [
       {
         "tableName": "accounts",
@@ -186,7 +186,7 @@
       },
       {
         "tableName": "twelve_week_years",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `created_at` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL, `account_id` TEXT NOT NULL, `name` TEXT NOT NULL, `cover` TEXT NOT NULL, `reward` TEXT NOT NULL, `reward_images` TEXT NOT NULL, `review` TEXT NOT NULL, `longitude` REAL, `latitude` REAL, `is_completed` INTEGER NOT NULL, `start_time_milliseconds` INTEGER NOT NULL, `end_time_milliseconds` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `created_at` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL, `account_id` TEXT NOT NULL, `name` TEXT NOT NULL, `cover` TEXT NOT NULL, `reward` TEXT NOT NULL, `reward_images` TEXT NOT NULL, `review` TEXT NOT NULL, `stars` INTEGER NOT NULL, `longitude` REAL NOT NULL, `latitude` REAL NOT NULL, `address` TEXT NOT NULL, `is_completed` INTEGER NOT NULL, `start_time_milliseconds` INTEGER NOT NULL, `end_time_milliseconds` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -243,14 +243,28 @@
             "notNull": true
           },
           {
+            "fieldPath": "stars",
+            "columnName": "stars",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
             "fieldPath": "longitude",
             "columnName": "longitude",
-            "affinity": "REAL"
+            "affinity": "REAL",
+            "notNull": true
           },
           {
             "fieldPath": "latitude",
             "columnName": "latitude",
-            "affinity": "REAL"
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "address",
+            "columnName": "address",
+            "affinity": "TEXT",
+            "notNull": true
           },
           {
             "fieldPath": "isCompleted",
@@ -334,7 +348,7 @@
       },
       {
         "tableName": "weeks",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `created_at` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL, `year_id` TEXT NOT NULL, `name` TEXT NOT NULL, `reward` TEXT NOT NULL, `reward_images` TEXT NOT NULL, `review` TEXT NOT NULL, `longitude` REAL, `latitude` REAL, `is_completed` INTEGER NOT NULL, `progress` INTEGER NOT NULL, `start_time_milliseconds` INTEGER NOT NULL, `end_time_milliseconds` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `created_at` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL, `year_id` TEXT NOT NULL, `name` TEXT NOT NULL, `reward` TEXT NOT NULL, `reward_images` TEXT NOT NULL, `review` TEXT NOT NULL, `stars` INTEGER NOT NULL, `longitude` REAL NOT NULL, `latitude` REAL NOT NULL, `address` TEXT NOT NULL, `is_completed` INTEGER NOT NULL, `progress` INTEGER NOT NULL, `start_time_milliseconds` INTEGER NOT NULL, `end_time_milliseconds` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -385,14 +399,28 @@
             "notNull": true
           },
           {
+            "fieldPath": "stars",
+            "columnName": "stars",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
             "fieldPath": "longitude",
             "columnName": "longitude",
-            "affinity": "REAL"
+            "affinity": "REAL",
+            "notNull": true
           },
           {
             "fieldPath": "latitude",
             "columnName": "latitude",
-            "affinity": "REAL"
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "address",
+            "columnName": "address",
+            "affinity": "TEXT",
+            "notNull": true
           },
           {
             "fieldPath": "isCompleted",
@@ -494,7 +522,7 @@
       },
       {
         "tableName": "tasks",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `created_at` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL, `goal_id` TEXT NOT NULL, `lagging_indicator_id` TEXT NOT NULL, `name` TEXT NOT NULL, `icon` INTEGER NOT NULL, `tags` TEXT NOT NULL, `num_pomodoro` INTEGER NOT NULL, `num_pomodoro_completed` INTEGER NOT NULL, `pomodoro_duration` INTEGER NOT NULL, `date` INTEGER NOT NULL, `is_completed` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `created_at` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL, `goal_id` TEXT NOT NULL, `lagging_indicator_id` TEXT NOT NULL, `name` TEXT NOT NULL, `icon` INTEGER NOT NULL, `tags` TEXT NOT NULL, `pomodoro_duration` INTEGER NOT NULL, `num_pomodoro` INTEGER NOT NULL, `num_pomodoro_completed` INTEGER NOT NULL, `date` INTEGER NOT NULL, `is_completed` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -545,6 +573,12 @@
             "notNull": true
           },
           {
+            "fieldPath": "pomodoroDuration",
+            "columnName": "pomodoro_duration",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
             "fieldPath": "numPomodoro",
             "columnName": "num_pomodoro",
             "affinity": "INTEGER",
@@ -553,12 +587,6 @@
           {
             "fieldPath": "numPomodoroCompleted",
             "columnName": "num_pomodoro_completed",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "pomodoroDuration",
-            "columnName": "pomodoro_duration",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -627,7 +655,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'e00da131991fa4f6c8df921e6a9b3eb0')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '25ebbe4ebe793cb377029bccd8830b24')"
     ]
   }
 }

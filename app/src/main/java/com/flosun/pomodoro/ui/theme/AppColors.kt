@@ -12,7 +12,7 @@ import androidx.compose.ui.graphics.Color
 
 @Stable
 class AppColors(
-    primaryColor: Color = Color(0xFFFF474A),
+    primaryColor: Color = Color(0xFF75D06A),
     backgroundColor: Color = Color(0xFFF5F5F5),
     typographyColor: Color = Color(0xFF383838),
     isAnimated: Boolean = false,

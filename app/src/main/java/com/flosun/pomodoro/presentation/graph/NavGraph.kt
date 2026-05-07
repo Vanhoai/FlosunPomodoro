@@ -12,18 +12,17 @@ import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDe
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavKey
-import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.flosun.pomodoro.presentation.account.AccountView
 import com.flosun.pomodoro.presentation.auth.AuthView
-import com.flosun.pomodoro.presentation.datepicker.DatePickerView
+import com.flosun.pomodoro.presentation.experiment.ExperimentView
 import com.flosun.pomodoro.presentation.encrypt.EncryptView
 import com.flosun.pomodoro.presentation.goals.add_goal.AddGoalView
 import com.flosun.pomodoro.presentation.goals.update_goal.UpdateGoalView
 import com.flosun.pomodoro.presentation.swipe.SwipeView
 import com.flosun.pomodoro.presentation.swipe.home.fullscreen.FullScreenView
-import com.flosun.pomodoro.presentation.week_year.add_new_year.AddNewYearView
+import com.flosun.pomodoro.presentation.year.add_new_year.AddNewYearView
 import com.flosun.pomodoro.presentation.swipe.settings.appearance.AppearanceView
 import com.flosun.pomodoro.presentation.swipe.settings.biometric_authentication.BiometricAuthenticationView
 import com.flosun.pomodoro.presentation.swipe.settings.language.AppLanguageView
@@ -31,10 +30,10 @@ import com.flosun.pomodoro.presentation.swipe.settings.notification.Notification
 import com.flosun.pomodoro.presentation.swipe.settings.preference.PreferenceView
 import com.flosun.pomodoro.presentation.swipe.settings.preference.choose_duration.ChooseDurationView
 import com.flosun.pomodoro.presentation.task.add_task.AddTaskView
-import com.flosun.pomodoro.presentation.week_year.twelve_week_year.TwelveWeekYearView
-import com.flosun.pomodoro.presentation.week_year.update_year.UpdateYearView
-import com.flosun.pomodoro.presentation.week_year.week_detail.WeekDetailView
-import com.flosun.pomodoro.presentation.week_year.year_detail.YearDetailView
+import com.flosun.pomodoro.presentation.year.twelve_week_year.TwelveWeekYearView
+import com.flosun.pomodoro.presentation.year.update_year.UpdateYearView
+import com.flosun.pomodoro.presentation.year.week_detail.WeekDetailView
+import com.flosun.pomodoro.presentation.year.year_detail.YearDetailView
 import com.flosun.pomodoro.ui.components.shared.NotFoundView
 import com.flosun.pomodoro.ui.theme.AppTheme
 
@@ -100,7 +99,7 @@ fun NavGraph(
                 is NavRoute.AddNewYear -> NavEntry(key) { AddNewYearView(navBackStack) }
                 is NavRoute.UpdateYear -> NavEntry(key) { UpdateYearView(key) }
                 is NavRoute.YearDetail -> NavEntry(key) { YearDetailView(navBackStack, key) }
-                is NavRoute.DatePicker -> NavEntry(key) { DatePickerView(navBackStack) }
+                is NavRoute.Experiment -> NavEntry(key) { ExperimentView() }
                 is NavRoute.WeekDetail -> NavEntry(key) { WeekDetailView(navBackStack, key) }
                 is NavRoute.UpdateGoal -> NavEntry(key) { UpdateGoalView() }
                 is NavRoute.AddGoal -> NavEntry(key) { AddGoalView() }

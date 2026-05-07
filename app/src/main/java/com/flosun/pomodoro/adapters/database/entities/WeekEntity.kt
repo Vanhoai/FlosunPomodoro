@@ -20,8 +20,10 @@ data class WeekEntity @OptIn(ExperimentalUuidApi::class) constructor(
     @ColumnInfo(name = "reward") val reward: String,
     @ColumnInfo(name = "reward_images") val rewardImages: StringArray = emptyList(),
     @ColumnInfo(name = "review") val review: String = "",
-    @ColumnInfo(name = "longitude") val longitude: Double? = null,
-    @ColumnInfo(name = "latitude") val latitude: Double? = null,
+    @ColumnInfo(name = "stars") val stars: Int = 0,
+    @ColumnInfo(name = "longitude") val longitude: Double = 0.0,
+    @ColumnInfo(name = "latitude") val latitude: Double = 0.0,
+    @ColumnInfo(name = "address") val address: String = "",
 
     @ColumnInfo(name = "is_completed") val isCompleted: Boolean = false,
     @ColumnInfo(name = "progress") val progress: Int = 0,

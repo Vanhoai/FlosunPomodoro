@@ -67,7 +67,7 @@ sealed interface NavRoute : NavKey {
     ) : NavRoute, NavKey
 
     @Serializable
-    data object DatePicker : NavRoute, NavKey
+    data object Experiment : NavRoute, NavKey
 
     @Serializable
     data object UpdateGoal : NavRoute, NavKey
@@ -137,8 +137,8 @@ val config = SavedStateConfiguration {
                 serializer = NavRoute.YearDetail.serializer()
             )
             subclass(
-                subclass = NavRoute.DatePicker::class,
-                serializer = NavRoute.DatePicker.serializer()
+                subclass = NavRoute.Experiment::class,
+                serializer = NavRoute.Experiment.serializer()
             )
             subclass(
                 subclass = NavRoute.WeekDetail::class,

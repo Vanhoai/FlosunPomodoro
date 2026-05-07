@@ -14,17 +14,31 @@ import com.flosun.pomodoro.adapters.database.entities.TwelveWeekYearEntity
 import com.flosun.pomodoro.adapters.database.entities.WeekEntity
 import kotlinx.serialization.json.Json
 
+private val json = Json { ignoreUnknownKeys = true }
+
 class StringArrayConverter {
+
     @TypeConverter
     fun fromString(value: String): List<String> {
-        val json = Json { ignoreUnknownKeys = true }
         return json.decodeFromString(value)
     }
 
     @TypeConverter
     fun fromList(list: List<String>): String {
-        val json = Json { ignoreUnknownKeys = true }
         return json.encodeToString(list)
+    }
+}
+
+class JsonConverter {
+
+    @TypeConverter
+    fun fromString(value: String): Map<String, String> {
+        return json.decodeFromString(value)
+    }
+
+    @TypeConverter
+    fun fromMap(map: Map<String, String>): String {
+        return json.encodeToString(map)
     }
 }
 
@@ -43,6 +57,7 @@ class StringArrayConverter {
 )
 @TypeConverters(
     StringArrayConverter::class,
+    JsonConverter::class,
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract val dao: DatabaseDao

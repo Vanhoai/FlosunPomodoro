@@ -6,9 +6,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -18,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import com.flosun.pomodoro.R
@@ -30,7 +33,11 @@ import com.flosun.pomodoro.ui.theme.AppTheme
 
 
 @Composable
-fun HomeView(navBackStack: NavBackStack<NavKey>) {
+fun HomeView(
+    navBackStack: NavBackStack<NavKey>,
+    viewModel: HomeViewModel = hiltViewModel<HomeViewModel>(),
+) {
+    val tasks by viewModel.tasks.collectAsState()
     var timer by rememberSaveable { mutableIntStateOf(12 * 60) }
 
     LazyColumn(
@@ -87,12 +94,18 @@ fun HomeView(navBackStack: NavBackStack<NavKey>) {
         }
 
         items(
-            count = 10,
-            key = { it }
-        ) {
+            items = tasks,
+            key = { task -> task.id }
+        ) { task ->
             TaskCard(
-                name = "Task $it",
-                modifier = Modifier.padding(vertical = 6.dp)
+                name = task.name,
+                icon = task.icon,
+                numPomodoro = task.numPomodoro,
+                numPomodoroCompleted = task.numPomodoroCompleted,
+                pomodoroDuration = task.pomodoroDuration,
+                modifier = Modifier
+                    .padding(horizontal = 20.dp)
+                    .padding(bottom = 12.dp)
             )
         }
     }

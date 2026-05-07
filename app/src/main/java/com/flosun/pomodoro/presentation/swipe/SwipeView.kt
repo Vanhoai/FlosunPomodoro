@@ -33,6 +33,7 @@ import androidx.navigation3.ui.NavDisplay
 import androidx.savedstate.serialization.SavedStateConfiguration
 import com.flosun.pomodoro.App
 import com.flosun.pomodoro.presentation.graph.BottomNavRoute
+import com.flosun.pomodoro.presentation.graph.BottomTabs
 import com.flosun.pomodoro.presentation.graph.bottomBarScreenSaver
 import com.flosun.pomodoro.presentation.graph.bottomNavRoutes
 import com.flosun.pomodoro.presentation.swipe.calendar.CalendarView
@@ -46,7 +47,6 @@ import kotlinx.serialization.modules.polymorphic
 
 @Composable
 fun SwipeView(navBackStack: NavBackStack<NavKey>) {
-
     val backStack = rememberNavBackStack(
         configuration = SavedStateConfiguration {
             serializersModule = SerializersModule {
@@ -69,52 +69,18 @@ fun SwipeView(navBackStack: NavBackStack<NavKey>) {
         modifier = Modifier.background(Color.Transparent),
         containerColor = Color.Transparent,
         bottomBar = {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(Color.Transparent)
-            ) {
-                NavigationBar(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(20.dp)
-                        .height(60.dp)
-                        .background(
-                            Color.White,
-                            shape = RoundedCornerShape(AppTheme.sizing.borderMedium)
-                        ),
-                    containerColor = Color.Transparent,
-                    windowInsets = WindowInsets(0, 0, 0, 0)
-                ) {
-                    bottomNavRoutes.forEach { destination ->
-                        Box(
-                            modifier = Modifier
-                                .weight(1f)
-                                .pointerInput(Unit) {
-                                    detectTapGestures {
-                                        if (backStack.lastOrNull() != destination) {
-                                            if (backStack.lastOrNull() in bottomNavRoutes)
-                                                backStack.removeAt(backStack.lastIndex)
+            BottomTabs(
+                currentBottomBarScreen = currentBottomBarScreen,
+                onClick = { destination ->
+                    if (backStack.lastOrNull() != destination) {
+                        if (backStack.lastOrNull() in bottomNavRoutes)
+                            backStack.removeAt(backStack.lastIndex)
 
-                                            backStack.add(destination)
-                                            currentBottomBarScreen = destination
-                                        }
-                                    }
-                                },
-                            contentAlignment = Alignment.Center,
-                        ) {
-                            Icon(
-                                painter = painterResource(id = destination.icon),
-                                contentDescription = destination.title,
-                                tint = if (currentBottomBarScreen == destination) AppTheme.colors.primaryColor else Color(
-                                    0xFF8C8C8C
-                                ),
-                                modifier = Modifier.size(26.dp)
-                            )
-                        }
+                        backStack.add(destination)
+                        currentBottomBarScreen = destination
                     }
                 }
-            }
+            )
         }
     ) { paddingValues ->
         NavDisplay(

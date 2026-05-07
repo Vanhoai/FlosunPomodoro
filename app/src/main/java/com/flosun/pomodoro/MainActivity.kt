@@ -15,6 +15,7 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 import com.flosun.pomodoro.adapters.database.LocalDatabase
 import com.flosun.pomodoro.adapters.database.PomodoroDatabase
+import com.flosun.pomodoro.core.services.LocationService
 import com.flosun.pomodoro.presentation.graph.NavGraph
 import com.flosun.pomodoro.presentation.graph.NavRoute
 import com.flosun.pomodoro.presentation.graph.config
@@ -32,6 +33,9 @@ class MainActivity : FragmentActivity() {
 
     @Inject
     lateinit var globalLoading: GlobalLoading
+
+    @Inject
+    lateinit var locationService: LocationService
 
     private val mainViewModel: MainViewModel by viewModels<MainViewModel>()
 
@@ -67,6 +71,11 @@ class MainActivity : FragmentActivity() {
     override fun onResume() {
         super.onResume()
         mainViewModel.checkAndSetCurrentYear()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        locationService.onDispose()
     }
 }
 

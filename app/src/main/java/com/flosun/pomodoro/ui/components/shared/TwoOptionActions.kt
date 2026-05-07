@@ -13,6 +13,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.flosun.pomodoro.ui.components.core.CoreButton
+import com.flosun.pomodoro.ui.theme.AppTheme
 
 @Composable
 fun TwoOptionActions(
@@ -41,8 +42,8 @@ fun TwoOptionActions(
         CoreButton(
             brush = Brush.horizontalGradient(
                 colors = listOf(
-                    Color(0xFFFFCACA),
-                    Color(0xFFFFCACA)
+                    AppTheme.colors.primaryColor.copy(alpha = 0.2f),
+                    AppTheme.colors.primaryColor.copy(alpha = 0.2f),
                 )
             ),
             modifier = Modifier.weight(1f),
@@ -51,7 +52,7 @@ fun TwoOptionActions(
             Text(
                 text = cancelLabel,
                 fontSize = 16.sp,
-                color = Color(0xFFFF6767),
+                color = AppTheme.colors.primaryColor,
             )
         }
     }

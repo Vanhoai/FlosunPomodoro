@@ -24,6 +24,12 @@ sealed class BottomNavRoute(
     )
 
     @Serializable
+    data object More : BottomNavRoute(
+        icon = R.drawable.ic_grid,
+        title = "More"
+    )
+
+    @Serializable
     data object Calendar : BottomNavRoute(
         icon = R.drawable.ic_calendar,
         title = "Calendar"
@@ -39,6 +45,7 @@ sealed class BottomNavRoute(
 val bottomNavRoutes = listOf(
     BottomNavRoute.Home,
     BottomNavRoute.Tasks,
+    BottomNavRoute.More,
     BottomNavRoute.Calendar,
     BottomNavRoute.Settings
 )

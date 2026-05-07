@@ -1,0 +1,18 @@
+package com.flosun.pomodoro.core.permissions
+
+import androidx.compose.runtime.Stable
+
+@Stable
+sealed interface PermissionStatus {
+    data object Granted : PermissionStatus
+    data class Denied(val shouldShowRationale: Boolean) : PermissionStatus
+}
+
+val PermissionStatus.isGranted: Boolean
+    get() = this is PermissionStatus.Granted
+
+val PermissionStatus.shouldShowRationale: Boolean
+    get() = when (this) {
+        is PermissionStatus.Granted -> false
+        is PermissionStatus.Denied -> this.shouldShowRationale
+    }

@@ -21,6 +21,7 @@ class MainViewModel @Inject constructor(
         val now = System.currentTimeMillis()
         database.findTwelveWeekYearByDate(now).collect {
             if (it != null) appStorage.write(CURRENT_YEAR_ID_KEY, it.id)
+            else appStorage.remove(CURRENT_YEAR_ID_KEY)
         }
     }
 

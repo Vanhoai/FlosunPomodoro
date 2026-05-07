@@ -41,14 +41,13 @@ class TasksViewModel @Inject constructor(
         .toInstant(TimeZone.currentSystemDefault())
         .toEpochMilliseconds()
 
-
     val tasks = uiState
         .map { it.selectedOptionIndex }
         .flatMapLatest { selectedOptionIndex ->
             val isCompleted = selectedOptionIndex == 1
             database.findTasksByDate(nowMilliseconds, isCompleted)
         }
-        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), emptyList())
 
     fun onChangedOptionIndex(optionIndex: Int) {
         _uiState.value = _uiState.value.copy(selectedOptionIndex = optionIndex)

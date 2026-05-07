@@ -24,6 +24,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Pomodoro"
+rootProject.name = "FlosunPomodoro"
 include(":app")
 include(":core")

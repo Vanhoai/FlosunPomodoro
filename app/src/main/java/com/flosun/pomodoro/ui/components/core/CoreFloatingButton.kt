@@ -26,6 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.flosun.pomodoro.R
+import com.flosun.pomodoro.ui.theme.AppTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -40,10 +41,10 @@ fun CoreFloatingButton(
 
     Box(
         modifier = Modifier
-            .padding(end = 20.dp)
+            .padding(end = 20.dp, bottom = 20.dp)
             .size(60.dp)
             .clip(CircleShape)
-            .background(Color(0xFFFF6767))
+            .background(AppTheme.colors.primaryColor)
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = ripple(),
@@ -56,8 +57,7 @@ fun CoreFloatingButton(
             contentDescription = null,
             tint = Color.White,
         )
-
-
+        
         CoreMenuOptions(
             expanded = expanded,
             onClose = { expanded = false },

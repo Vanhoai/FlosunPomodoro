@@ -157,6 +157,9 @@ dependencies {
     // Modules
     implementation(project(":core"))
 
+    // Libraries
+    implementation(files("../libraries/shared.aar"))
+
     // Navigation 3
     implementation(libs.androidx.navigation3.ui)
     implementation(libs.androidx.navigation3.runtime)
@@ -225,4 +228,11 @@ dependencies {
 
     // Datastore
     implementation(libs.datastore)
+
+    // Maps
+    implementation(libs.maps.compose)
+    implementation(libs.maplibre.compose)
+
+    // Location
+    implementation(libs.play.services.location)
 }
