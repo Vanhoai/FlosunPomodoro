@@ -13,4 +13,12 @@ object ViewFuncs {
         return configuration.screenWidthDp
     }
 
+
+    @SuppressLint("ConfigurationScreenWidthHeight")
+    @Composable
+    fun screenHeightDp(): Int {
+        val configuration = LocalConfiguration.current
+        return configuration.screenHeightDp
+    }
+
 }

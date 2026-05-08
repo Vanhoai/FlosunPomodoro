@@ -2,6 +2,8 @@ package com.flosun.pomodoro.core.utils
 
 sealed class DomainException(message: String) : Exception(message)
 
+class NetworkException(message: String?) : DomainException(message ?: "Network error occurred")
+
 class NotFoundException(message: String = "Resource not found") : DomainException(message)
 
 class ValidationException(message: String = "Validate Error") : DomainException(message)

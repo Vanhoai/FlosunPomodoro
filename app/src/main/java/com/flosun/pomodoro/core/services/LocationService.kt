@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.location.Geocoder
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.compose.dropUnlessResumed
+import com.flosun.pomodoro.domain.values.Location
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import kotlinx.coroutines.CoroutineScope
@@ -22,12 +23,6 @@ import javax.inject.Singleton
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
-
-data class Location(
-    val latitude: Double,
-    val longitude: Double,
-    val address: String? = null,
-)
 
 @Singleton
 class LocationService @Inject constructor(

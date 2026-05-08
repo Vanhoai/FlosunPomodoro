@@ -14,12 +14,14 @@ import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
+import com.flosun.pomodoro.core.utils.result_store.rememberResultStore
 import com.flosun.pomodoro.presentation.account.AccountView
 import com.flosun.pomodoro.presentation.auth.AuthView
 import com.flosun.pomodoro.presentation.experiment.ExperimentView
 import com.flosun.pomodoro.presentation.encrypt.EncryptView
 import com.flosun.pomodoro.presentation.goals.add_goal.AddGoalView
 import com.flosun.pomodoro.presentation.goals.update_goal.UpdateGoalView
+import com.flosun.pomodoro.presentation.map.MapView
 import com.flosun.pomodoro.presentation.swipe.SwipeView
 import com.flosun.pomodoro.presentation.swipe.home.fullscreen.FullScreenView
 import com.flosun.pomodoro.presentation.year.add_new_year.AddNewYearView
@@ -104,6 +106,7 @@ fun NavGraph(
                 is NavRoute.UpdateGoal -> NavEntry(key) { UpdateGoalView() }
                 is NavRoute.AddGoal -> NavEntry(key) { AddGoalView() }
                 is NavRoute.AddTask -> NavEntry(key) { AddTaskView() }
+                is NavRoute.Map -> NavEntry(key) { MapView() }
                 else -> NavEntry(key) { NotFoundView() }
             }
         }

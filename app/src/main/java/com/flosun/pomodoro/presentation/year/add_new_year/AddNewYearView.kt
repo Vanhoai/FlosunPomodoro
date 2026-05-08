@@ -23,6 +23,9 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
+import com.flosun.pomodoro.core.constants.DEBUG_TAG
+import com.flosun.pomodoro.core.constants.ResultStoreKeys
+import com.flosun.pomodoro.core.utils.result_store.LocalResultStore
 import com.flosun.pomodoro.ui.components.shared.DurationSetting
 import com.flosun.pomodoro.ui.components.shared.LaggingIndicators
 import com.flosun.pomodoro.ui.components.shared.RewardSection
@@ -31,6 +34,7 @@ import com.flosun.pomodoro.ui.components.core.CoreTextField
 import com.flosun.pomodoro.ui.components.shared.CommonBackHeading
 import com.flosun.pomodoro.ui.components.shared.SelectLocation
 import com.flosun.pomodoro.ui.components.shared.TwoOptionActions
+import timber.log.Timber
 import kotlin.uuid.ExperimentalUuidApi
 
 private val contracts = ActivityResultContracts.PickVisualMedia()
@@ -41,6 +45,11 @@ fun AddNewYearView(
     navBackStack: NavBackStack<NavKey>,
     viewModel: AddNewYearViewModel = hiltViewModel<AddNewYearViewModel>(),
 ) {
+    val resultStore = LocalResultStore.current
+    val location = resultStore.get<String>(ResultStoreKeys.LOCATION)
+
+    Timber.tag(DEBUG_TAG).d("Received location from result store: $location")
+
     val focusManager = LocalFocusManager.current
     val uiState by viewModel.uiState.collectAsState()
     val pickMedia = rememberLauncherForActivityResult(contracts) { uri ->

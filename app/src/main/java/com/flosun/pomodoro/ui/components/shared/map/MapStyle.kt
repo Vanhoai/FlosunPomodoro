@@ -1,8 +1,8 @@
-package com.flosun.pomodoro.presentation.experiment.map
+package com.flosun.pomodoro.ui.components.shared.map
 
-import org.flosun.shared.resources.Res
 import org.maplibre.compose.layers.Anchor
 import org.maplibre.compose.style.BaseStyle
+
 
 interface MapStyle {
     val displayName: String

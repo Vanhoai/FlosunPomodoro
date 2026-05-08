@@ -45,7 +45,7 @@ fun CoreSpinner(
         label = "angle"
     )
 
-    Canvas(modifier = modifier.fillMaxSize()) {
+    Canvas(modifier = modifier) {
         val center = size / 2f
         val orbitRadius = size.minDimension / 2f + 12f
         val arcWidth = 2f

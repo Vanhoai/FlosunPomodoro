@@ -1,14 +1,12 @@
-package com.flosun.pomodoro.presentation.experiment.map
+package com.flosun.pomodoro.ui.components.shared.map
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.unit.DpOffset
-import androidx.compose.ui.unit.dp
 import org.maplibre.compose.camera.CameraPosition
 import org.maplibre.compose.camera.CameraState
 import org.maplibre.compose.camera.rememberCameraState
@@ -17,7 +15,6 @@ import org.maplibre.compose.map.RenderOptions
 import org.maplibre.compose.style.StyleState
 import org.maplibre.compose.style.rememberStyleState
 import org.maplibre.spatialk.geojson.Position
-import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
 

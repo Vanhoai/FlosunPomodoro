@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -45,6 +46,7 @@ fun CoreTextField(
     value: String,
     onValueChanged: (String) -> Unit,
     height: Dp = 52.dp,
+    backgroundColor: Color = Color(0xFFF9F9F9),
     isEnabled: Boolean = true,
     placeholder: String = "e.g. Build Flosun Studio",
     padding: PaddingValues = PaddingValues(),
@@ -60,20 +62,24 @@ fun CoreTextField(
     val isFocused = interactionSource.collectIsFocusedAsState()
     val isValid = validate?.invoke(value) ?: false
 
-
     Row(
         modifier = modifier
             .padding(padding)
             .fillMaxWidth()
             .height(height)
             .background(
-                color = Color(0xFFF9F9F9),
+                color = backgroundColor,
                 shape = RoundedCornerShape(AppTheme.sizing.borderMedium)
             )
             .pointerInput(Unit) { detectTapGestures {} },
         verticalAlignment = Alignment.CenterVertically
     ) {
-        if (prefix != null) prefix()
+        if (prefix != null) Box(
+            modifier = Modifier.padding(start = 12.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            prefix()
+        }
 
         Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
             BasicTextField(

@@ -77,6 +77,9 @@ sealed interface NavRoute : NavKey {
 
     @Serializable
     data object AddTask : NavRoute, NavKey
+
+    @Serializable
+    data object Map : NavRoute, NavKey
 }
 
 val config = SavedStateConfiguration {
@@ -155,6 +158,10 @@ val config = SavedStateConfiguration {
             subclass(
                 subclass = NavRoute.AddTask::class,
                 serializer = NavRoute.AddTask.serializer()
+            )
+            subclass(
+                subclass = NavRoute.Map::class,
+                serializer = NavRoute.Map.serializer()
             )
         }
     }

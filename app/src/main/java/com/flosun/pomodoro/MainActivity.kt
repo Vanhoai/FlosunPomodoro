@@ -15,7 +15,10 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 import com.flosun.pomodoro.adapters.database.LocalDatabase
 import com.flosun.pomodoro.adapters.database.PomodoroDatabase
+import com.flosun.pomodoro.core.constants.DEBUG_TAG
 import com.flosun.pomodoro.core.services.LocationService
+import com.flosun.pomodoro.core.utils.result_store.LocalResultStore
+import com.flosun.pomodoro.core.utils.result_store.rememberResultStore
 import com.flosun.pomodoro.presentation.graph.NavGraph
 import com.flosun.pomodoro.presentation.graph.NavRoute
 import com.flosun.pomodoro.presentation.graph.config
@@ -23,6 +26,7 @@ import com.flosun.pomodoro.ui.components.shared.GlobalLoading
 import com.flosun.pomodoro.ui.components.shared.LocalGlobalLoading
 import com.flosun.pomodoro.ui.theme.PomodoroTheme
 import dagger.hilt.android.AndroidEntryPoint
+import timber.log.Timber
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -51,13 +55,16 @@ class MainActivity : FragmentActivity() {
         setContent {
             val navBackStack = rememberNavBackStack(
                 configuration = config,
-                NavRoute.Auth
+                NavRoute.Map
             )
+
+            val resultStore = rememberResultStore()
 
             CompositionLocalProvider(
                 LocalDatabase provides database,
                 LocalGlobalLoading provides globalLoading,
                 LocalNavBackStack provides navBackStack,
+                LocalResultStore provides resultStore,
             ) {
                 PomodoroTheme {
                     GlobalLoading {

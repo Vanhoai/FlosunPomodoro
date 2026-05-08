@@ -26,8 +26,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.flosun.pomodoro.R
 import com.flosun.pomodoro.presentation.experiment.map.MapOptionsBottomSheet
-import com.flosun.pomodoro.presentation.experiment.map.MapView
-import com.flosun.pomodoro.presentation.experiment.map.rememberMapState
+import com.flosun.pomodoro.ui.components.shared.map.MapView
+import com.flosun.pomodoro.ui.components.shared.map.rememberMapState
 import com.flosunn.core.extensions.rippleEffectClickable
 import org.maplibre.compose.camera.CameraPosition
 import org.maplibre.compose.camera.CameraState

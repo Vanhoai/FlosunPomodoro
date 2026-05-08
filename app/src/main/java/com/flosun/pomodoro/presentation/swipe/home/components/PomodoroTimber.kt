@@ -42,9 +42,6 @@ import androidx.compose.ui.unit.sp
 import com.flosun.pomodoro.R
 import com.flosun.pomodoro.ui.theme.AppTheme
 
-val CoralRed = Color(0xFFFF6B6B)
-val TrackColor = Color(0xFFE1E1E1)
-
 @SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
 fun PomodoroTimber(
@@ -90,8 +87,8 @@ fun PomodoroTimber(
                 progress = animatedProgress,
                 arcSize = arcSize,
                 strokeWidth = strokeWidth,
-                foreground = CoralRed,
-                track = TrackColor,
+                foreground = AppTheme.colors.primaryColor,
+                track = Color(0xFFE1E1E1),
             )
 
             Text(
@@ -113,7 +110,7 @@ fun PomodoroTimber(
                 modifier = Modifier
                     .size(40.dp)
                     .clip(CircleShape)
-                    .background(Color(0xFFFFEAEA))
+                    .background(AppTheme.colors.primaryColor.copy(alpha = 0.1f))
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = ripple(),
@@ -124,7 +121,7 @@ fun PomodoroTimber(
                 Icon(
                     painter = painterResource(R.drawable.ic_refresh),
                     contentDescription = null,
-                    tint = Color(0xFFFF6767),
+                    tint = AppTheme.colors.primaryColor,
                     modifier = Modifier.size(20.dp)
                 )
             }
@@ -156,7 +153,7 @@ fun PomodoroTimber(
                 modifier = Modifier
                     .size(40.dp)
                     .clip(CircleShape)
-                    .background(Color(0xFFFFEAEA))
+                    .background(AppTheme.colors.primaryColor.copy(alpha = 0.1f))
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = ripple(),
@@ -167,7 +164,7 @@ fun PomodoroTimber(
                 Icon(
                     painter = painterResource(R.drawable.ic_next),
                     contentDescription = null,
-                    tint = Color(0xFFFF6767),
+                    tint = AppTheme.colors.primaryColor,
                     modifier = Modifier.size(20.dp)
                 )
             }
