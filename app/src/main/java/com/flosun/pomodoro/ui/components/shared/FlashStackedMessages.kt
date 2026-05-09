@@ -1,13 +1,18 @@
 package com.flosun.pomodoro.ui.components.shared
 
+import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.rememberTransition
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -22,8 +27,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -31,190 +40,88 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import com.flosun.pomodoro.R
 import com.flosun.pomodoro.core.constants.DEBUG_TAG
+import kotlinx.coroutines.delay
 import timber.log.Timber
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 
-class Message(
-    val id: String,
+data class Message @OptIn(ExperimentalUuidApi::class) constructor(
+    val id: String = Uuid.random().toString(),
     val title: String,
     val description: String,
-) {
-    fun copy(
-        id: String = this.id,
-        title: String = this.title,
-        description: String = this.description,
-    ) = Message(id, title, description)
-}
-
-@OptIn(ExperimentalUuidApi::class)
-val message = Message(
-    id = Uuid.toString(),
-    title = "Event has been created",
-    description = "Sunday, December 24, 2026 at 09:00 AM"
 )
 
-@OptIn(ExperimentalUuidApi::class)
-val messages = listOf(
-    message,
-    message.copy(id = Uuid.toString()),
-    message.copy(id = Uuid.toString()),
-    message.copy(id = Uuid.toString()),
-    message.copy(id = Uuid.toString()),
-    message.copy(id = Uuid.toString()),
-    message.copy(id = Uuid.toString()),
-)
-
+// Max skip visible messages to prevent too many cards on the screen
+private const val MAX_VISIBLE = 3
 
 @Composable
 fun FlashStackedMessages(
-    messages: List<Message>,
     modifier: Modifier = Modifier,
+    messages: List<Message> = emptyList(),
 ) {
-    val maxVisible = 3
-    val visible = messages.takeLast(maxVisible)
+    val visibleMessages = messages.takeLast(MAX_VISIBLE)
 
     Box(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 20.dp)
-            .padding(bottom = 40.dp),
+            .padding(top = 12.dp),
     ) {
-        visible.forEachIndexed { indexFromOldest, message ->
-            val fromTop = visible.size - 1 - indexFromOldest
-            val scaleX = 1f - fromTop * 0.04f
-            val offsetY = (fromTop * -8).dp
-
-            Timber.tag(DEBUG_TAG).d("Message ${message.id}")
-            Timber.tag(DEBUG_TAG).d("  scaleX: $scaleX")
-            Timber.tag(DEBUG_TAG).d("  offsetY: $offsetY")
-
+        visibleMessages.forEachIndexed { index, message ->
+            val fromTop = visibleMessages.size - 1 - index // 0 for top card, 1 for second card, etc
+            val scaleX = 1f - (fromTop * 0.05f) // Scale down by 5% for each card below
+            val offsetY = (fromTop * 10).dp // Move down by 12.dp for each card below
+            val zIndex = index.toFloat() // Higher zIndex for newer cards
 
             key(message.id) {
-                AnimatedFlashMessageCard(
+                FlashMessageCard(
                     message = message,
                     scaleX = scaleX,
                     offsetY = offsetY,
-                    zIndex = indexFromOldest.toFloat(),
-                    isTop = fromTop == 0
+                    zIndex = zIndex,
                 )
             }
         }
     }
 }
 
-@Composable
-fun AnimatedFlashMessageCard(
-    message: Message,
-    scaleX: Float,
-    offsetY: androidx.compose.ui.unit.Dp,
-    zIndex: Float,
-    isTop: Boolean
-) {
-    val animatedScale by animateFloatAsState(
-        targetValue = scaleX,
-        animationSpec = spring(
-            dampingRatio = Spring.DampingRatioMediumBouncy,
-            stiffness = Spring.StiffnessMedium
-        ),
-        label = "Scale_${message.id}"
-    )
+// Top Card
+//AnimatedVisibility(
+//visible = isExpanded,
+//enter = slideInVertically {
+//    // Slide in from 40 dp from the top.
+//    with(density) { -40.dp.roundToPx() }
+//} + expandVertically(
+//// Expand from the top.
+//expandFrom = Alignment.Top
+//) + fadeIn(
+//// Fade in with the initial alpha of 0.3f.
+//initialAlpha = 0.3f
+//),
+//exit = slideOutVertically() + shrinkVertically() + fadeOut()
+//)
 
-    val animatedOffsetY by animateDpAsState(
-        targetValue = offsetY,
-        animationSpec = spring(
-            dampingRatio = Spring.DampingRatioMediumBouncy,
-            stiffness = Spring.StiffnessMedium
-        ),
-        label = "OffsetY_${message.id}"
-    )
-
-    val animatedAlpha by animateFloatAsState(
-        targetValue = if (isTop) 1f else 0.7f,
-        animationSpec = tween(300),
-        label = "Alpha_${message.id}"
-    )
-
-    AnimatedVisibility(
-        visible = true,
-        enter = slideInVertically(
-            initialOffsetY = { -it },
-            animationSpec = spring(
-                dampingRatio = Spring.DampingRatioMediumBouncy,
-                stiffness = Spring.StiffnessMedium
-            )
-        ) + fadeIn(animationSpec = tween(200)),
-        modifier = Modifier
-            .zIndex(zIndex)
-            .offset(y = animatedOffsetY)
-    ) {
-        FlashMessageCard(
-            message = message,
-            modifier = Modifier
-                .fillMaxWidth()
-                .scale(scaleX = animatedScale, scaleY = 1f)
-                .graphicsLayer { alpha = animatedAlpha }
-        )
-    }
-}
-
+@SuppressLint("UseOfNonLambdaOffsetOverload")
 @Composable
 fun FlashMessageCard(
     message: Message,
-    modifier: Modifier = Modifier,
+    scaleX: Float = 1f,
+    offsetY: Dp = 0.dp,
+    zIndex: Float = 0f,
 ) {
-    Box(
-        modifier = modifier
-            .clip(RoundedCornerShape(8.dp))
-            .background(Color.White)
-            .border(
-                width = 1.dp,
-                color = Color(0xFFE0E0E0),
-                shape = RoundedCornerShape(8.dp)
-            ),
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(14.dp),
-            verticalAlignment = Alignment.Top,
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(48.dp)
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(Color(0xFFA8C83A)),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_flash_message),
-                    contentDescription = null,
-                    tint = Color.White,
-                    modifier = Modifier.size(22.dp)
-                )
-            }
-
-            Column {
-                Text(
-                    text = message.title,
-                    fontSize = 16.sp,
-                    color = Color(0xFF1A1A1A)
-                )
-
-                Text(
-                    text = message.description,
-                    fontSize = 14.sp,
-                    color = Color(0xFF888888),
-                    modifier = Modifier.padding(top = 2.dp)
-                )
-            }
-        }
-    }
+    MessageCard(
+        message = message,
+        modifier = Modifier
+            .zIndex(zIndex)
+            .offset(y = offsetY)
+            .scale(scaleX = scaleX, scaleY = 1f)
+    )
 }

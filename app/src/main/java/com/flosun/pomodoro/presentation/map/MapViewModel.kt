@@ -6,6 +6,7 @@ import com.flosun.pomodoro.core.constants.DEBUG_TAG
 import com.flosun.pomodoro.core.utils.BaseResult
 import com.flosun.pomodoro.core.utils.BaseViewModel
 import com.flosun.pomodoro.domain.repositories.CommonRepository
+import com.flosun.pomodoro.domain.values.Location
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -33,10 +34,18 @@ class MapViewModel @Inject constructor(
         listenSearchAddress()
     }
 
+    fun initialize(location: Location) {
+        _uiState.value = uiState.value.copy(
+            selectedAddress = location.address ?: "",
+            selectedLatitude = location.latitude,
+            selectedLongitude = location.longitude,
+        )
+    }
+
     fun listenSearchAddress() = ioRun {
         uiState
             .map { it.searchAddress }
-            .debounce(600L)
+            .debounce(1000L)
             .distinctUntilChanged()
             .collectLatest { address ->
                 if (address.isNotEmpty()) {
@@ -49,9 +58,6 @@ class MapViewModel @Inject constructor(
                             }
 
                             is BaseResult.Failure -> {
-                                Timber.tag(DEBUG_TAG)
-                                    .d("Geocoding forward failure for address: $address, error: ${it.exception}")
-
                                 _uiState.update { state ->
                                     state.copy(
                                         isSearching = false,
@@ -76,6 +82,44 @@ class MapViewModel @Inject constructor(
 
     fun onChangedSearchAddress(address: String) {
         _uiState.value = uiState.value.copy(searchAddress = address)
+    }
+
+    fun onSelectedLocation(location: Location) {
+        _uiState.value = uiState.value.copy(
+            searchAddress = location.address!!,
+            selectedAddress = location.address,
+            selectedLongitude = location.longitude,
+            selectedLatitude = location.latitude,
+            searchResults = emptyList(),
+        )
+    }
+
+    fun onChangedSelectedAddress(address: String) {
+        _uiState.value = uiState.value.copy(selectedAddress = address)
+    }
+
+    fun onChangedLngLatFromMap(longitude: Double, latitude: Double) = ioRun {
+        // Update the selected longitude and latitude in the UI state
+        _uiState.value = uiState.value.copy(
+            selectedLongitude = longitude,
+            selectedLatitude = latitude,
+        )
+
+        // Perform reverse geocoding to get the address from the longitude and latitude
+        commonRepository.geocodingReverse(
+            longitude = longitude,
+            latitude = latitude,
+        ).collect {
+            when (it) {
+                is BaseResult.Loading -> {}
+                is BaseResult.Failure -> {}
+                is BaseResult.Success -> _uiState.update { state ->
+                    state.copy(
+                        selectedAddress = it.data ?: state.selectedAddress
+                    )
+                }
+            }
+        }
     }
 
 }

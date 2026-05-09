@@ -33,7 +33,11 @@ import com.flosun.pomodoro.adapters.database.entities.WeekEntity
 import com.flosun.pomodoro.core.functions.InternalStorageFuncs
 import com.flosun.pomodoro.core.functions.TimeFuncs
 import com.flosun.pomodoro.core.services.LocationService
+import com.flosun.pomodoro.core.utils.BaseResult
 import com.flosun.pomodoro.core.utils.BaseViewModel
+import com.flosun.pomodoro.core.utils.isFailure
+import com.flosun.pomodoro.core.utils.isSuccess
+import com.flosun.pomodoro.domain.repositories.CommonRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -47,6 +51,7 @@ class AddNewYearViewModel @Inject constructor(
     private val appStorage: AppStorage,
     private val database: PomodoroDatabase,
     private val locationService: LocationService,
+    private val commonRepository: CommonRepository,
 ) : BaseViewModel(application) {
     private val _uiState = MutableStateFlow(AddNewYearUiState())
     val uiState: StateFlow<AddNewYearUiState> = _uiState.asStateFlow()
@@ -77,6 +82,10 @@ class AddNewYearViewModel @Inject constructor(
         }
 
         val location = locationService.location.first() ?: return@ioRun
+        val result = commonRepository.geocodingReverse(
+            longitude = location.longitude,
+            latitude = location.latitude,
+        ).first()
         _uiState.update {
             it.copy(
                 longitude = location.longitude,
@@ -84,6 +93,8 @@ class AddNewYearViewModel @Inject constructor(
                 address = location.address ?: ""
             )
         }
+
+        if (result is BaseResult.Success) _uiState.update { it.copy(address = result.data ?: "") }
     }
 
     fun updateCoverUri(uri: String) {
@@ -147,6 +158,10 @@ class AddNewYearViewModel @Inject constructor(
         _uiState.update { it.copy(rewardImages = newImages) }
     }
 
+    fun onUpdateAddressAndLngLat(address: String, longitude: Double, latitude: Double) {
+        _uiState.update { it.copy(address = address, longitude = longitude, latitude = latitude) }
+    }
+
     fun onChangedAddress(address: String) {
         _uiState.update { it.copy(address = address) }
     }
@@ -155,8 +170,16 @@ class AddNewYearViewModel @Inject constructor(
         _uiState.update { it.copy(longitude = longitude, latitude = latitude) }
 
         // Update Address based on new longitude and latitude
-        val newAddress = locationService.findAddressBaseOnLngLat(latitude, longitude) ?: ""
-        _uiState.update { it.copy(address = newAddress) }
+        ioRun {
+            val newAddress = commonRepository.geocodingReverse(
+                longitude = longitude,
+                latitude = latitude,
+            ).first()
+
+            if (newAddress is BaseResult.Success) {
+                _uiState.update { it.copy(address = newAddress.data ?: "") }
+            }
+        }
     }
 
     fun resetState() {
@@ -188,6 +211,7 @@ class AddNewYearViewModel @Inject constructor(
     fun addNewYear(onAddSuccess: () -> Unit = {}) = viewModelScope.launch(Dispatchers.IO) {
         // Validate input data
         if (!validateInputDate()) return@launch
+
         // Check if the duration overlaps with other years
         val isOverlap = checkDurationOverlapOthersYears(
             startTimeMilliseconds = uiState.value.startTimeMilliseconds,
@@ -195,26 +219,14 @@ class AddNewYearViewModel @Inject constructor(
         )
 
         if (isOverlap) {
-            withContext(Dispatchers.Main) {
-                Toast.makeText(
-                    application.applicationContext,
-                    "The duration overlaps with another year. Please adjust the start and end time.",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
+            showToast("The duration overlaps with another year. Please adjust the start and end time.")
             return@launch
         }
 
         // Find Current AccountId
         val accountId = appStorage.read(CURRENT_ACCOUNT_ID_KEY, "")
         if (accountId.isBlank()) {
-            withContext(Dispatchers.Main) {
-                Toast.makeText(
-                    application.applicationContext,
-                    "Failed to find current account. Please try again.",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
+            showToast("Failed to find current account. Please try again.")
             return@launch
         }
 
@@ -252,13 +264,7 @@ class AddNewYearViewModel @Inject constructor(
         }
 
         if (coverUri.isBlank() || rewardImageUris.any() { it.isBlank() }) {
-            withContext(Dispatchers.Main) {
-                Toast.makeText(
-                    application.applicationContext,
-                    "Failed to copy images to internal storage. Please try again.",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
+            showToast("Failed to copy images to internal storage. Please try again.")
             return@launch
         }
 
@@ -321,15 +327,8 @@ class AddNewYearViewModel @Inject constructor(
         }
 
         val result = database.addAllWeeks(weeks)
-        Timber.tag(DEBUG_TAG).d("Add all weeks result: $result")
         if (result.any { it <= 0 }) {
-            withContext(Dispatchers.Main) {
-                Toast.makeText(
-                    application.applicationContext,
-                    "Failed to add weeks to database. Please try again.",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
+            showToast("Failed to add weeks to database. Please try again.")
             return false
         }
 
@@ -345,115 +344,62 @@ class AddNewYearViewModel @Inject constructor(
         }
 
         val result = database.addAllLaggingIndicators(laggingIndicators)
-        Timber.tag(DEBUG_TAG).d("Add all lagging indicators result: $result")
-        if (result.any { it <= 0 }) {
-            withContext(Dispatchers.Main) {
-                Toast.makeText(
-                    application.applicationContext,
-                    "Failed to add lagging indicators to database. Please try again.",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        }
-
+        if (result.any { it <= 0 }) showToast("Failed to add lagging indicators to database. Please try again.")
         return result.all { it > 0 }
     }
 
     private suspend fun validateInputDate(): Boolean {
         if (uiState.value.coverUri == null) {
-            withContext(Dispatchers.Main) {
-                Toast.makeText(
-                    application.applicationContext,
-                    "Please select a cover image.",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-
+            showToast("Please select a cover image.")
             return false
         }
 
         if (uiState.value.name.trim().isBlank()) {
-            withContext(Dispatchers.Main) {
-                Toast.makeText(
-                    application.applicationContext,
-                    "Please enter a name for the year.",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
+            showToast("Please enter a name for the year.")
             return false
         }
 
         if (uiState.value.startTimeMilliseconds >= uiState.value.endTimeMilliseconds) {
-            withContext(Dispatchers.Main) {
-                Toast.makeText(
-                    application.applicationContext,
-                    "Start time must be before end time.",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
+            showToast("Start time must be before end time.")
             return false
         }
 
-        val startDate = Instant.fromEpochMilliseconds(uiState.value.startTimeMilliseconds)
-            .toLocalDateTime(TimeZone.currentSystemDefault()).date
-        val endDate = Instant.fromEpochMilliseconds(uiState.value.endTimeMilliseconds)
-            .toLocalDateTime(TimeZone.currentSystemDefault()).date
+        val startDate = Instant
+            .fromEpochMilliseconds(uiState.value.startTimeMilliseconds)
+            .toLocalDateTime(TimeZone.currentSystemDefault())
+            .date
+
+        val endDate = Instant
+            .fromEpochMilliseconds(uiState.value.endTimeMilliseconds)
+            .toLocalDateTime(TimeZone.currentSystemDefault())
+            .date
+
         val startDateAfter12Week = startDate.plus(12, DateTimeUnit.WEEK)
 
         if (endDate != startDateAfter12Week) {
-            withContext(Dispatchers.Main) {
-                Toast.makeText(
-                    application.applicationContext,
-                    "The end date must be exactly 12 weeks after the start date.",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
+            showToast("The end date must be exactly 12 weeks after the start date.")
             return false
         }
 
         if (uiState.value.laggingIndicators.isEmpty()) {
-            withContext(Dispatchers.Main) {
-                Toast.makeText(
-                    application.applicationContext,
-                    "Please add at least one lagging indicator.",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
+            showToast("Please add at least one lagging indicator.")
             return false
         }
 
         // Max lagging indicators is 5
         if (uiState.value.laggingIndicators.size > 5) {
-            withContext(Dispatchers.Main) {
-                Toast.makeText(
-                    application.applicationContext,
-                    "You can add up to 5 lagging indicators.",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
+            showToast("You can add up to 5 lagging indicators.")
             return false
         }
 
         if (uiState.value.reward.trim().isBlank()) {
-            withContext(Dispatchers.Main) {
-                Toast.makeText(
-                    application.applicationContext,
-                    "Please enter a reward.",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
+            showToast("Please enter a reward.")
             return false
         }
 
         // Max reward images is 5
         if (uiState.value.rewardImages.size > 5) {
-            withContext(Dispatchers.Main) {
-                Toast.makeText(
-                    application.applicationContext,
-                    "You can add up to 5 reward images.",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
+            showToast("You can add up to 5 reward images.")
             return false
         }
 

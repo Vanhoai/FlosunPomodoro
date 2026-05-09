@@ -106,7 +106,7 @@ fun NavGraph(
                 is NavRoute.UpdateGoal -> NavEntry(key) { UpdateGoalView() }
                 is NavRoute.AddGoal -> NavEntry(key) { AddGoalView() }
                 is NavRoute.AddTask -> NavEntry(key) { AddTaskView() }
-                is NavRoute.Map -> NavEntry(key) { MapView() }
+                is NavRoute.Map -> NavEntry(key) { MapView(key) }
                 else -> NavEntry(key) { NotFoundView() }
             }
         }

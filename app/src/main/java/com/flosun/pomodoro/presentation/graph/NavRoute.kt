@@ -3,6 +3,7 @@ package com.flosun.pomodoro.presentation.graph
 import androidx.navigation3.runtime.NavKey
 import androidx.savedstate.serialization.SavedStateConfiguration
 import com.flosun.pomodoro.core.constants.DurationType
+import com.flosun.pomodoro.domain.values.Location
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
@@ -79,7 +80,10 @@ sealed interface NavRoute : NavKey {
     data object AddTask : NavRoute, NavKey
 
     @Serializable
-    data object Map : NavRoute, NavKey
+    data class Map(
+        val key: String, // Key to store in the result store
+        val location: Location? = null // Initial location to show on the map (optional)
+    ) : NavRoute, NavKey
 }
 
 val config = SavedStateConfiguration {

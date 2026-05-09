@@ -11,6 +11,7 @@ import com.flosun.pomodoro.core.utils.api.FailureApiException
 import com.flosun.pomodoro.domain.values.Location
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
+import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.client.request.put
 import io.ktor.http.HttpMethod
@@ -37,12 +38,12 @@ class MapTilerApi @Inject constructor(
                 url = "$baseUrl/$address.json",
             ) {
                 applyInterceptors(MapTilerInterceptor::class.java.simpleName)
+                parameter("country", "vn")
+                parameter("language", "vi")
             }
 
             emit(BaseResult.Success(mapFeatureCollectionToLocations(featureCollection)))
         } catch (exception: FailureApiException) {
-            exception.printStackTrace()
-
             emit(BaseResult.Failure(NetworkException(exception.message)))
         }
     }
@@ -50,15 +51,23 @@ class MapTilerApi @Inject constructor(
     fun geocodingReverse(longitude: Double, latitude: Double): Flow<BaseResult<String?>> = flow {
         emit(BaseResult.Loading)
         try {
-            val featureCollection = run<String?>(
+            val featureCollection = run<FeatureCollection>(
                 method = HttpMethod.Get,
                 url = "$baseUrl/$longitude,$latitude.json",
             ) {
                 applyInterceptors(MapTilerInterceptor::class.java.simpleName)
+                parameter("country", "vn")
+                parameter("language", "vi")
             }
 
-            Timber.tag(DEBUG_TAG).d("Geocoding reverse response: $featureCollection")
-            emit(BaseResult.Success(featureCollection))
+
+            val locations = mapFeatureCollectionToLocations(featureCollection)
+            if (locations.isEmpty()) {
+                emit(BaseResult.Success(null))
+                return@flow
+            }
+
+            emit(BaseResult.Success(locations.first().address))
         } catch (exception: FailureApiException) {
             emit(BaseResult.Failure(NetworkException(exception.message)))
         }
@@ -68,7 +77,7 @@ class MapTilerApi @Inject constructor(
         if (featureCollection.features.isEmpty()) return emptyList()
         return featureCollection.features.map { feature ->
             Location(
-                address = feature.text,
+                address = feature.placeName,
                 longitude = feature.geometry.coordinates[0],
                 latitude = feature.geometry.coordinates[1],
             )

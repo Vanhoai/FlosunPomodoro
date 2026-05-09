@@ -54,9 +54,8 @@ class PasswordHasher @Inject constructor() {
         try {
             keyStore.load(null)
             if (!keyStore.containsAlias(Cryptography.ASYMMETRIC_KEY_ALIAS)) createECKeyPair()
-            else Timber.tag("EncryptStorage").d("Asymmetric key pair already exists")
         } catch (exception: Exception) {
-            Timber.e(exception, "Failed to initialize KeyStore")
+            exception.printStackTrace()
         }
     }
 
@@ -138,7 +137,7 @@ class PasswordHasher @Inject constructor() {
             deserializer = EncryptedMessage.serializer(),
             string = hashedPassword
         )
-        
+
         // Verify the signature using EC key
         val isSignatureValid = verifyWithEC(hashedPassword.ciphertext, hashedPassword.extraBytes)
         if (!isSignatureValid) return false

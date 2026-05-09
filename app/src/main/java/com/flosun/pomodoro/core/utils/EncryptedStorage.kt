@@ -30,7 +30,7 @@ class EncryptedStorage @Inject constructor(
             application.encryptedStore.edit { it[key] = jsonValue }
             true
         } catch (exception: Exception) {
-            Timber.tag("EncryptedStorage").e(exception, "Failed to write encrypted data")
+            exception.printStackTrace()
             false
         }
     }
@@ -45,7 +45,7 @@ class EncryptedStorage @Inject constructor(
 
             encryptedMessage
         } catch (exception: Exception) {
-            Timber.tag("EncryptedStorage").e(exception, "Failed to read encrypted data")
+            exception.printStackTrace()
             null
         }
     }
@@ -55,7 +55,7 @@ class EncryptedStorage @Inject constructor(
             val encryptedMessage = cryptography.encrypt(value)
             writeEncryptedMessage(key, encryptedMessage)
         } catch (exception: Exception) {
-            Timber.tag("EncryptedStorage").e(exception, "Failed to write encrypted data")
+            exception.printStackTrace()
             false
         }
     }
@@ -65,7 +65,7 @@ class EncryptedStorage @Inject constructor(
             val encryptedMessage = readEncryptedMessage(key) ?: return null
             cryptography.decrypt(encryptedMessage)
         } catch (exception: Exception) {
-            Timber.tag("EncryptedStorage").e(exception, "Failed to read encrypted data")
+            exception.printStackTrace()
             null
         }
     }
@@ -75,7 +75,7 @@ class EncryptedStorage @Inject constructor(
             application.encryptedStore.edit { it.remove(key) }
             true
         } catch (exception: Exception) {
-            Timber.tag("EncryptedStorage").e(exception, "Failed to delete encrypted data")
+            exception.printStackTrace()
             false
         }
     }
@@ -85,7 +85,7 @@ class EncryptedStorage @Inject constructor(
             application.encryptedStore.edit { it.clear() }
             true
         } catch (exception: Exception) {
-            Timber.tag("EncryptedStorage").e(exception, "Failed to clear encrypted data")
+            exception.printStackTrace()
             false
         }
     }
@@ -94,7 +94,7 @@ class EncryptedStorage @Inject constructor(
         return try {
             application.encryptedStore.data.firstOrNull()?.contains(key) ?: false
         } catch (exception: Exception) {
-            Timber.tag("EncryptedStorage").e(exception, "Failed to check encrypted data existence")
+            exception.printStackTrace()
             false
         }
     }

@@ -1,7 +1,9 @@
 package com.flosun.pomodoro.ui.components.shared
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -23,25 +25,31 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.flosun.pomodoro.LocalNavBackStack
 import com.flosun.pomodoro.R
+import com.flosun.pomodoro.domain.values.Location
 import com.flosun.pomodoro.presentation.graph.NavRoute
 import com.flosun.pomodoro.ui.components.core.CoreTextField
 import com.flosun.pomodoro.ui.components.shared.map.MapClickEvent
+import com.flosun.pomodoro.ui.components.shared.map.MapState
 import com.flosun.pomodoro.ui.components.shared.map.MapView
 import com.flosun.pomodoro.ui.components.shared.map.rememberMapState
+import com.flosun.pomodoro.ui.theme.AppTheme
 import com.flosunn.core.extensions.rippleEffectClickable
+import com.flosunn.core.extensions.tapGesture
 import org.maplibre.spatialk.geojson.Position
 import timber.log.Timber
 
 @Composable
 fun SelectLocation(
+    mapState: MapState,
+    locationKey: String,
     address: String,
     longitude: Double? = null,
     latitude: Double? = null,
     onChangedAddress: (String) -> Unit = {},
     onChangedLngLat: (Double, Double) -> Unit = { _, _ -> },
+    onUseCurrentLocation: () -> Unit = {},
 ) {
     val navBackStack = LocalNavBackStack.current
-    val mapState = rememberMapState()
 
     LaunchedEffect(mapState.selectedLocation) {
         if (mapState.selectedLocation == null) return@LaunchedEffect
@@ -61,11 +69,26 @@ fun SelectLocation(
         )
     }
 
-    Text(
-        text = "Location (Optional)",
-        fontSize = 18.sp,
-        modifier = Modifier.padding(start = 20.dp, top = 20.dp, bottom = 12.dp)
-    )
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 20.dp, end = 20.dp, top = 20.dp, bottom = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
+        Text(
+            text = "Location",
+            fontSize = 18.sp,
+            modifier = Modifier
+        )
+
+        Text(
+            text = "use current location",
+            fontSize = 16.sp,
+            color = AppTheme.colors.primaryColor,
+            modifier = Modifier.tapGesture { onUseCurrentLocation() },
+        )
+    }
 
     Box(
         modifier = Modifier
@@ -83,9 +106,20 @@ fun SelectLocation(
             modifier = Modifier
                 .padding(12.dp)
                 .size(40.dp)
-                .clip(RoundedCornerShape(4.dp))
+                .clip(RoundedCornerShape(8.dp))
                 .background(Color.Black.copy(alpha = 0.3f))
-                .rippleEffectClickable { navBackStack.add(NavRoute.Map) },
+                .rippleEffectClickable {
+                    navBackStack.add(
+                        NavRoute.Map(
+                            key = locationKey,
+                            location = Location(
+                                longitude = longitude ?: 0.0,
+                                latitude = latitude ?: 0.0,
+                                address = address,
+                            )
+                        )
+                    )
+                },
             contentAlignment = Alignment.Center,
         ) {
             Icon(
@@ -104,6 +138,14 @@ fun SelectLocation(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 20.dp)
-            .padding(top = 12.dp)
+            .padding(top = 12.dp),
+        prefix = {
+            Icon(
+                painter = painterResource(R.drawable.ic_location),
+                contentDescription = null,
+                tint = Color(0xFF454545),
+                modifier = Modifier.size(24.dp),
+            )
+        }
     )
 }

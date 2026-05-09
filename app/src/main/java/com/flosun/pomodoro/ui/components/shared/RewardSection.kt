@@ -45,16 +45,12 @@ fun RewardSection(
     onDeleteRewardImage: (String) -> Unit,
 ) {
     val pickMultipleMedia = rememberLauncherForActivityResult(contract) { uris ->
-        if (uris.isNotEmpty()) {
-            Timber.tag(DEBUG_TAG).d("Selected media URIs: $uris")
-            val newImages = emptySet<String>()
-                .plus(rewardImages)
-                .plus(uris.map { it.toString() })
+        if (uris.isEmpty()) return@rememberLauncherForActivityResult
+        val newImages = emptySet<String>()
+            .plus(rewardImages)
+            .plus(uris.map { it.toString() })
 
-            onChangedRewardImages(newImages.toList())
-        } else {
-            Timber.tag(DEBUG_TAG).d("No media selected")
-        }
+        onChangedRewardImages(newImages.toList())
     }
 
     Text(

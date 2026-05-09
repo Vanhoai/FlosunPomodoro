@@ -118,12 +118,7 @@ fun AccountView(
 
             CoreButton(
                 modifier = Modifier.padding(horizontal = 20.dp, vertical = 20.dp),
-                onPress = {
-                    coroutine.launch {
-                        val account = accountViewModel.readCurrentAccount()
-                        Timber.tag("AccountView").d("Current account: $account")
-                    }
-                },
+                onPress = {},
             ) {
                 Text(
                     text = "Save",

@@ -85,7 +85,6 @@ fun TasksView(
             .fillMaxSize()
             .onGloballyPositioned {
                 val bounds = it.boundsInRoot()
-                Timber.tag("TasksView").d("Bounds: $bounds")
             },
         contentAlignment = Alignment.BottomEnd
     ) {

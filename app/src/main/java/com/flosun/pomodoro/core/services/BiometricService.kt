@@ -59,21 +59,17 @@ class BiometricService @Inject constructor(
             object : BiometricPrompt.AuthenticationCallback() {
                 // Handle successful authentication
                 override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
-                    Timber.tag("AuthViewModel")
-                        .d("Authentication Succeeded: ${result.cryptoObject}")
                     // Execute custom action on successful authentication
                     onAuthSucceed(result)
                 }
 
                 // Handle authentication errors
                 override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
-                    Timber.tag("AuthViewModel").d("Authentication Error: $errorCode $errString")
                     onAuthFailed(errString.toString())
                 }
 
                 // Handle authentication failures
                 override fun onAuthenticationFailed() {
-                    Timber.tag("AuthViewModel").d("Authentication Failed")
                     onAuthFailed("Authentication Failed")
                 }
             }

@@ -20,6 +20,8 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,7 +39,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.flosun.pomodoro.R
+import com.flosun.pomodoro.core.constants.DEBUG_TAG
 import com.flosun.pomodoro.ui.theme.AppTheme
+import timber.log.Timber
 
 @Composable
 fun CoreTextField(
@@ -57,10 +61,13 @@ fun CoreTextField(
     validate: ((String) -> Boolean)? = null,
     maxLines: Int = 1,
     singleLine: Boolean = true,
+    onFocusChanged: ((Boolean) -> Unit)? = null,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
-    val isFocused = interactionSource.collectIsFocusedAsState()
+    val isFocused by interactionSource.collectIsFocusedAsState()
     val isValid = validate?.invoke(value) ?: false
+    
+    LaunchedEffect(isFocused) { onFocusChanged?.invoke(isFocused) }
 
     Row(
         modifier = modifier

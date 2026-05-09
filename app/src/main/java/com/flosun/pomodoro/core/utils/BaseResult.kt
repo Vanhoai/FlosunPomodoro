@@ -8,3 +8,4 @@ sealed class BaseResult<out T> {
 }
 
 fun BaseResult<*>.isFailure(): Boolean = this is BaseResult.Failure
+fun BaseResult<*>.isSuccess(): Boolean = this is BaseResult.Success

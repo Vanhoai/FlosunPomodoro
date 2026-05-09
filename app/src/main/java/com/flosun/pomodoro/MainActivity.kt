@@ -55,7 +55,7 @@ class MainActivity : FragmentActivity() {
         setContent {
             val navBackStack = rememberNavBackStack(
                 configuration = config,
-                NavRoute.Map
+                NavRoute.Experiment
             )
 
             val resultStore = rememberResultStore()

@@ -94,13 +94,11 @@ fun FullScreenView(navBackStack: NavBackStack<NavKey>) {
             Configuration.ORIENTATION_LANDSCAPE -> {
                 // Landscape orientation
                 isLandscape = true
-                Timber.tag("FullScreenView").d("Landscape orientation")
             }
 
             else -> {
                 // Portrait orientation
                 isLandscape = false
-                Timber.tag("FullScreenView").d("Portrait orientation")
             }
         }
     }

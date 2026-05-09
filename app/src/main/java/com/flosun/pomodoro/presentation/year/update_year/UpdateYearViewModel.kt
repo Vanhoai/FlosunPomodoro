@@ -72,19 +72,6 @@ class UpdateYearViewModel @Inject constructor(
         yearEntity = year
         yearToUpdate = year
         initialLaggingIndicators = laggingIndicators.map { Pair(it.id, it.name) }
-
-        deleteLaggingIndicatorsInit()
-    }
-
-    fun deleteLaggingIndicatorsInit() = ioRun {
-        val ids = listOf(
-            "98bc954a-581f-4e4f-8139-52ba15ac9662",
-            "26022a08-5a59-44fa-8b38-56bd849bdbe9",
-            "7ce36f89-079e-4359-8da9-06c571f44d13",
-        )
-
-        val deleteResults = database.deleteMultiLaggingIndicators(ids)
-        Timber.tag(DEBUG_TAG).d("Delete lagging indicators results: $deleteResults")
     }
 
     fun updateName(name: String) {
@@ -160,7 +147,6 @@ class UpdateYearViewModel @Inject constructor(
     }
 
     fun updateYear(onUpdateSuccess: () -> Unit) = ioRun {
-        Timber.tag(DEBUG_TAG).d("Updating year with state: ${uiState.value}")
         if (!validateInputDate()) return@ioRun
         globalLoading.setLoading(true, "Updating Year")
 
@@ -169,9 +155,7 @@ class UpdateYearViewModel @Inject constructor(
             showToast("Failed to find current account. Please try again.")
             return@ioRun
         }
-
-        Timber.tag(DEBUG_TAG).d("Current account ID: $accountId")
-
+        
         val directory = application.applicationContext.filesDir
         val folder = "${directory.absolutePath}/AC-$accountId/YE-${yearEntity.id}"
 

@@ -33,9 +33,6 @@ abstract class BaseApi(
                 HttpStatusCode.Created,
                 HttpStatusCode.Accepted -> {
                     val httpResponse = response.body<T>()
-
-                    Timber.tag(DEBUG_TAG).d("API call successful: $url, Response: $httpResponse")
-
                     httpResponse
                 }
 
@@ -56,17 +53,8 @@ abstract class BaseApi(
     }
 
     protected fun HttpRequestBuilder.applyInterceptors(vararg clazz: String) {
-        Timber
-            .tag(DEBUG_TAG)
-            .d("Applying interceptors: ${interceptors.map { it::class.java.simpleName }}")
-
         interceptors.forEach { interceptor ->
             val interceptorClass = interceptor::class.java.simpleName
-
-            Timber
-                .tag(DEBUG_TAG)
-                .d("Checking interceptor: $clazz")
-
             if (clazz.isEmpty() || clazz.contains(interceptorClass)) {
                 interceptor(this)
             }
