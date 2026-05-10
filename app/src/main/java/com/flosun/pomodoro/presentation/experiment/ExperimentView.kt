@@ -16,6 +16,7 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -26,6 +27,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -50,6 +52,7 @@ import com.flosun.pomodoro.ui.components.shared.Message
 import com.flosun.pomodoro.ui.components.shared.MessageCard
 import com.flosun.pomodoro.ui.components.shared.map.MapView
 import com.flosun.pomodoro.ui.components.shared.map.rememberMapState
+import com.flosun.pomodoro.ui.theme.AppTheme
 import com.flosunn.core.extensions.rippleEffectClickable
 import org.maplibre.compose.camera.CameraPosition
 import org.maplibre.compose.camera.CameraState
@@ -74,32 +77,7 @@ val message = Message(
 fun ExperimentView(
     viewModel: ExperimentViewModel = hiltViewModel<ExperimentViewModel>()
 ) {
-    val density = LocalDensity.current
-
-    var isExpanded by remember { mutableStateOf(false) }
-    var messages by remember {
-        mutableStateOf(
-            listOf(
-                message,
-                message.copy(id = Uuid.toString()),
-                message.copy(id = Uuid.toString()),
-                message.copy(id = Uuid.toString()),
-                message.copy(id = Uuid.toString()),
-            )
-        )
-    }
-
-    val animatedOffsetY by animateDpAsState(
-        targetValue = if (isExpanded) 20.dp else 0.dp,
-        animationSpec = tween(durationMillis = 300),
-        label = "AnimatedOffsetY"
-    )
-
-    val animatedScale by animateFloatAsState(
-        targetValue = if (isExpanded) 0.9f else 1f,
-        animationSpec = tween(durationMillis = 300),
-        label = "AnimatedScaleX"
-    )
+    var messages by remember { mutableStateOf<List<Message>>(emptyList()) }
 
     Scaffold(
         containerColor = Color.White,
@@ -109,7 +87,7 @@ fun ExperimentView(
                     .padding(20.dp)
                     .size(60.dp)
                     .clip(CircleShape)
-                    .background(Color(0xFF4CAF50))
+                    .background(AppTheme.colors.primaryColor)
                     .rippleEffectClickable {},
                 contentAlignment = Alignment.Center,
             ) {
@@ -132,36 +110,12 @@ fun ExperimentView(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(20.dp),
-                onPress = {
-//                    val newMessage = Message(
-//                        title = "New Login Detected",
-//                        description = "Your account was accessed from a new device. If this wasn't you, please secure your account immediately.",
-//                    )
-//
-//                    messages = messages + newMessage.copy(id = Uuid.random().toString())
-
-                    isExpanded = !isExpanded
-                },
+                onPress = {},
             ) {
                 Text(
                     text = "Add Message",
                     color = Color.White,
                 )
-            }
-
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.TopCenter,
-            ) {
-                MessageCard(
-                    message = message,
-                    modifier = Modifier
-                        .padding(20.dp)
-                        .offset(y = animatedOffsetY)
-                        .scale(scaleX = animatedScale, scaleY = animatedScale)
-                )
-
-                FlashStackedMessages(messages = emptyList())
             }
         }
     }

@@ -46,6 +46,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
+import com.flosun.pomodoro.core.functions.ViewFuncs
 import com.flosun.pomodoro.ui.components.core.CoreSpinner
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -79,14 +80,9 @@ fun rememberGlobalLoading(): GlobalLoading {
 
 @SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
-fun GlobalLoading(
-    modifier: Modifier = Modifier,
-    content: @Composable () -> Unit,
-) {
-    val configuration = LocalConfiguration.current
-    val screenWidth = configuration.screenWidthDp.dp
-
+fun GlobalLoading(modifier: Modifier = Modifier) {
     val globalLoading = rememberGlobalLoading()
+    val screenWidth = ViewFuncs.screenWidthDp()
 
     val scale by animateFloatAsState(
         targetValue = if (globalLoading.isLoading) 1.0f else 0.6f,
@@ -96,61 +92,58 @@ fun GlobalLoading(
         ), label = "LoadingScaleAnimation"
     )
 
-    Box(modifier = modifier.fillMaxSize()) {
-        content()
-        AnimatedVisibility(
-            visible = globalLoading.isLoading,
-            enter = fadeIn(),
-            exit = fadeOut()
-        ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.Black.copy(alpha = 0.3f))
-                    .clickable(
-                        interactionSource = remember { MutableInteractionSource() },
-                        indication = null,
-                        onClick = {}
-                    )
-                    .pointerInput(Unit) {
-                        awaitPointerEventScope {
-                            while (true) {
-                                awaitPointerEvent()
-                            }
+    AnimatedVisibility(
+        visible = globalLoading.isLoading,
+        enter = fadeIn(),
+        exit = fadeOut()
+    ) {
+        Box(
+            modifier = modifier
+                .fillMaxSize()
+                .background(Color.Black.copy(alpha = 0.3f))
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null,
+                    onClick = {}
+                )
+                .pointerInput(Unit) {
+                    awaitPointerEventScope {
+                        while (true) {
+                            awaitPointerEvent()
                         }
                     }
-                    .zIndex(Float.MAX_VALUE),
-                contentAlignment = Alignment.Center
-            ) {
-                Column(
-                    modifier = Modifier
-                        .width(screenWidth)
-                        .height(160.dp)
-                        .scale(scale)
-                        .padding(horizontal = 40.dp)
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(Color.White)
-                        .padding(vertical = 20.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    CoreSpinner(
-                        circleColors = listOf(
-                            Color(0xFF828282),
-                            Color(0xFF828282),
-                            Color(0xFF828282),
-                        ),
-                        modifier = Modifier.size(32.dp)
-                    )
-
-                    Spacer(modifier = Modifier.height(24.dp))
-
-                    Text(
-                        text = globalLoading.message,
-                        fontSize = 18.sp,
-                        textAlign = TextAlign.Center
-                    )
                 }
+                .zIndex(Float.MAX_VALUE),
+            contentAlignment = Alignment.Center
+        ) {
+            Column(
+                modifier = Modifier
+                    .width(screenWidth.dp)
+                    .height(160.dp)
+                    .scale(scale)
+                    .padding(horizontal = 40.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(Color.White)
+                    .padding(vertical = 20.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                CoreSpinner(
+                    circleColors = listOf(
+                        Color(0xFF828282),
+                        Color(0xFF828282),
+                        Color(0xFF828282),
+                    ),
+                    modifier = Modifier.size(32.dp)
+                )
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                Text(
+                    text = globalLoading.message,
+                    fontSize = 18.sp,
+                    textAlign = TextAlign.Center
+                )
             }
         }
     }

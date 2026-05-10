@@ -7,24 +7,19 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
-import com.flosun.pomodoro.R
+import com.flosun.pomodoro.ui.theme.AppTheme
 
 @Composable
 fun MessageCard(
@@ -48,25 +43,10 @@ fun MessageCard(
             verticalAlignment = Alignment.Top,
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Box(
-                modifier = Modifier
-                    .size(48.dp)
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(Color(0xFFA8C83A)),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_flash_message),
-                    contentDescription = null,
-                    tint = Color.White,
-                    modifier = Modifier.size(22.dp)
-                )
-            }
-
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = message.title,
-                    fontSize = 16.sp,
+                    fontSize = 15.sp,
                     color = Color(0xFF1A1A1A),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -74,11 +54,26 @@ fun MessageCard(
 
                 Text(
                     text = message.description,
-                    fontSize = 14.sp,
+                    fontSize = 13.sp,
                     color = Color(0xFF888888),
                     modifier = Modifier.padding(top = 2.dp),
-                    maxLines = 2,
+                    maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
+                )
+            }
+
+            Box(
+                modifier = Modifier
+                    .height(28.dp)
+                    .clip(RoundedCornerShape(4.dp))
+                    .background(AppTheme.colors.primaryColor)
+                    .padding(horizontal = 8.dp),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    text = "Action",
+                    fontSize = 13.sp,
+                    color = Color.White,
                 )
             }
         }

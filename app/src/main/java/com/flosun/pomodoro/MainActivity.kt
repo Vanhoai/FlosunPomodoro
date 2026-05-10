@@ -41,6 +41,9 @@ class MainActivity : FragmentActivity() {
     @Inject
     lateinit var locationService: LocationService
 
+    @Inject
+    lateinit var messageManager: MessageManager
+
     private val mainViewModel: MainViewModel by viewModels<MainViewModel>()
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -55,7 +58,7 @@ class MainActivity : FragmentActivity() {
         setContent {
             val navBackStack = rememberNavBackStack(
                 configuration = config,
-                NavRoute.Experiment
+                NavRoute.Auth
             )
 
             val resultStore = rememberResultStore()
@@ -63,11 +66,12 @@ class MainActivity : FragmentActivity() {
             CompositionLocalProvider(
                 LocalDatabase provides database,
                 LocalGlobalLoading provides globalLoading,
+                LocalMessageManager provides messageManager,
                 LocalNavBackStack provides navBackStack,
                 LocalResultStore provides resultStore,
             ) {
                 PomodoroTheme {
-                    GlobalLoading {
+                    AppWrapper {
                         NavGraph(navBackStack = navBackStack)
                     }
                 }
