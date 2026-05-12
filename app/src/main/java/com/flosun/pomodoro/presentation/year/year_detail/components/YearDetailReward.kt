@@ -1,10 +1,11 @@
 package com.flosun.pomodoro.presentation.year.year_detail.components
 
-import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
@@ -37,13 +38,17 @@ fun YearDetailReward(
             .padding(horizontal = 20.dp)
             .padding(bottom = 12.dp)
             .fillMaxWidth()
+            .height(80.dp)
             .clip(RoundedCornerShape(8.dp))
-            .background(Color(0xFF3FA039))
+            .border(
+                width = 1.dp,
+                color = Color(0xFFE0E0E0),
+                shape = RoundedCornerShape(8.dp),
+            )
             .padding(12.dp),
     ) {
         Text(
             text = reward,
-            color = Color.White,
             fontSize = 16.sp,
         )
     }

@@ -1,8 +1,7 @@
 package com.flosun.pomodoro.core.services
 
 import android.app.Application
-import android.widget.Toast
-import com.flosun.pomodoro.BuildConfig
+import com.flosunn.core.BuildConfig
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.auth.auth

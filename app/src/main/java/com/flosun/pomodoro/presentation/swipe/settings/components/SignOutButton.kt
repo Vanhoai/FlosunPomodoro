@@ -27,7 +27,6 @@ import androidx.compose.ui.unit.sp
 import com.flosun.pomodoro.LocalNavBackStack
 import com.flosun.pomodoro.R
 import com.flosun.pomodoro.presentation.graph.NavRoute
-import com.flosun.pomodoro.rememberMessageManager
 import com.flosun.pomodoro.ui.components.shared.LocalGlobalLoading
 import com.flosun.pomodoro.ui.theme.AppTheme
 import com.flosunn.core.extensions.rippleEffectClickable
@@ -39,23 +38,17 @@ import kotlinx.coroutines.launch
 fun SignOutButton() {
     val navBackStack = LocalNavBackStack.current
     val globalLoading = LocalGlobalLoading.current
-
-    val messageManager = rememberMessageManager()
+    
     val scope = rememberCoroutineScope()
 
     fun signOut() {
-//        scope.launch {
-//            globalLoading.setLoading(true, "Signing Out")
-//            Firebase.auth.signOut()
-//            navBackStack.clear()
-//            globalLoading.setLoading(false)
-//            navBackStack.add(NavRoute.Auth)
-//        }
-
-        messageManager.addMessage(
-            title = "Feature Unavailable",
-            description = "Sign out functionality is currently unavailable. Please try again later."
-        )
+        scope.launch {
+            globalLoading.setLoading(true, "Signing Out")
+            Firebase.auth.signOut()
+            navBackStack.clear()
+            globalLoading.setLoading(false)
+            navBackStack.add(NavRoute.Auth)
+        }
     }
 
     Row(

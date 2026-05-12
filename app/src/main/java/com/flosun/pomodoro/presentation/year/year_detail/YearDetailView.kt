@@ -30,6 +30,8 @@ import androidx.navigation3.runtime.NavKey
 import com.flosun.pomodoro.R
 import com.flosun.pomodoro.adapters.database.LocalDatabase
 import com.flosun.pomodoro.presentation.graph.NavRoute
+import com.flosun.pomodoro.presentation.year.year_detail.components.LocationSection
+import com.flosun.pomodoro.presentation.year.year_detail.components.ReviewSection
 import com.flosun.pomodoro.presentation.year.year_detail.components.WeekProgressedCard
 import com.flosun.pomodoro.presentation.year.year_detail.components.YearDetailBanner
 import com.flosun.pomodoro.presentation.year.year_detail.components.YearDetailReward
@@ -45,6 +47,7 @@ fun YearDetailView(
 ) {
     val database = LocalDatabase.current
     val yearEntity by database.findTwelveWeekYearById(navRoute.yearId).collectAsState(null)
+    if (yearEntity == null) return
 
     val laggingIndicators by database
         .findLaggingIndicatorsByYearId(navRoute.yearId)
@@ -74,7 +77,7 @@ fun YearDetailView(
         }
     }
 
-    Scaffold(containerColor = AppTheme.colors.backgroundColor) { paddingValues ->
+    Scaffold(containerColor = Color.White) { paddingValues ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
@@ -83,27 +86,26 @@ fun YearDetailView(
             item {
                 CommonBackHeading(
                     onBack = { navBackStack.removeLastOrNull() },
-                    title = yearEntity?.name ?: "Unknown Year",
+                    title = yearEntity!!.name,
                     actions = {
                         Icon(
-                            painter = painterResource(R.drawable.ic_update),
+                            painter = painterResource(R.drawable.ic_copy),
                             contentDescription = null,
                             modifier = Modifier
-                                .size(24.dp)
+                                .size(28.dp)
                                 .tapGesture(Unit) {
                                     navBackStack.add(NavRoute.UpdateYear(yearId = navRoute.yearId))
                                 },
-                            tint = Color.Black,
+                            tint = Color(0xFF8E8E8E),
                         )
                     }
                 )
 
                 YearDetailBanner(
-                    name = yearEntity?.name ?: "Unknown Year",
-                    coverUri = yearEntity?.cover
-                        ?: "https://i.pinimg.com/736x/c8/0e/34/c80e34ebfc7b7ca87e11779b36d950a4.jpg",
-                    startTimeMilliseconds = yearEntity?.startTimeMilliseconds ?: 0L,
-                    endTimeMilliseconds = yearEntity?.endTimeMilliseconds ?: 0L,
+                    name = yearEntity!!.name,
+                    coverUri = yearEntity!!.cover,
+                    startTimeMilliseconds = yearEntity!!.startTimeMilliseconds,
+                    endTimeMilliseconds = yearEntity!!.endTimeMilliseconds,
                     currentTimeMilliseconds = currentTimeMilliseconds,
                 )
             }
@@ -133,8 +135,23 @@ fun YearDetailView(
 
             item {
                 YearDetailReward(
-                    reward = yearEntity?.reward ?: "No reward set",
-                    rewardImages = yearEntity?.rewardImages ?: emptyList(),
+                    reward = yearEntity!!.reward,
+                    rewardImages = yearEntity!!.rewardImages,
+                )
+            }
+
+            item {
+                ReviewSection(
+                    stars = yearEntity!!.stars,
+                    review = yearEntity!!.review,
+                )
+            }
+
+            item {
+                LocationSection(
+                    address = yearEntity!!.address,
+                    longitude = yearEntity!!.longitude,
+                    latitude = yearEntity!!.latitude,
                 )
             }
 

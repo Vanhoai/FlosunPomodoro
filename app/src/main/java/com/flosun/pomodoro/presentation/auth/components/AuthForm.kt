@@ -19,10 +19,10 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.flosun.pomodoro.R
-import com.flosun.pomodoro.core.extensions.isValidEmail
 import com.flosun.pomodoro.ui.components.core.CoreButton
 import com.flosun.pomodoro.ui.components.core.CoreTextField
 import com.flosun.pomodoro.ui.theme.AppTheme
+import com.flosunn.core.extensions.isValidEmail
 
 @Composable
 fun AuthForm(navigateToSwipe: () -> Unit = {}) {

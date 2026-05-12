@@ -5,9 +5,10 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import com.flosun.pomodoro.core.cryptography.Cryptography
 import com.flosun.pomodoro.core.cryptography.EncryptedMessage
+import com.flosunn.core.libraries.datastore.encryptedstore
+import com.flosunn.core.libraries.datastore.get
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.serialization.json.Json
-import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -27,7 +28,7 @@ class EncryptedStorage @Inject constructor(
                 EncryptedMessage.serializer(),
                 encryptedMessage
             )
-            application.encryptedStore.edit { it[key] = jsonValue }
+            application.encryptedstore.edit { it[key] = jsonValue }
             true
         } catch (exception: Exception) {
             exception.printStackTrace()
@@ -37,7 +38,7 @@ class EncryptedStorage @Inject constructor(
 
     fun readEncryptedMessage(key: Preferences.Key<String>): EncryptedMessage? {
         return try {
-            val jsonValue = application.encryptedStore[key] ?: return null
+            val jsonValue = application.encryptedstore[key] ?: return null
             val encryptedMessage = json.decodeFromString(
                 EncryptedMessage.serializer(),
                 jsonValue
@@ -72,7 +73,7 @@ class EncryptedStorage @Inject constructor(
 
     suspend fun delete(key: Preferences.Key<String>): Boolean {
         return try {
-            application.encryptedStore.edit { it.remove(key) }
+            application.encryptedstore.edit { it.remove(key) }
             true
         } catch (exception: Exception) {
             exception.printStackTrace()
@@ -82,7 +83,7 @@ class EncryptedStorage @Inject constructor(
 
     suspend fun clear(): Boolean {
         return try {
-            application.encryptedStore.edit { it.clear() }
+            application.encryptedstore.edit { it.clear() }
             true
         } catch (exception: Exception) {
             exception.printStackTrace()
@@ -92,7 +93,7 @@ class EncryptedStorage @Inject constructor(
 
     suspend fun contains(key: Preferences.Key<String>): Boolean {
         return try {
-            application.encryptedStore.data.firstOrNull()?.contains(key) ?: false
+            application.encryptedstore.data.firstOrNull()?.contains(key) ?: false
         } catch (exception: Exception) {
             exception.printStackTrace()
             false

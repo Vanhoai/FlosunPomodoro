@@ -5,23 +5,44 @@ import com.flosun.pomodoro.adapters.database.PomodoroDatabase
 import com.flosun.pomodoro.adapters.database.entities.WeekEntity
 import com.flosun.pomodoro.core.functions.InternalStorageFuncs
 import com.flosun.pomodoro.core.functions.TimeFuncs
+import com.flosun.pomodoro.core.services.LocationService
+import com.flosun.pomodoro.core.utils.BaseResult
 import com.flosun.pomodoro.core.utils.BaseViewModel
+import com.flosun.pomodoro.domain.repositories.CommonRepository
+import com.flosun.pomodoro.domain.values.Location
+import com.flosun.pomodoro.presentation.year.update_year.UpdateYearUiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
+
+sealed class WeekDetailUiEvent {
+
+    data class ZoomAndShowMapClickEvent(
+        val longitude: Double,
+        val latitude: Double
+    ) : WeekDetailUiEvent()
+
+}
 
 @OptIn(ExperimentalUuidApi::class)
 @HiltViewModel
 class WeekDetailViewModel @Inject constructor(
     private val application: Application,
     private val database: PomodoroDatabase,
+    private val locationService: LocationService,
+    private val commonRepository: CommonRepository,
 ) : BaseViewModel(application) {
+
+    private val _uiEvent = Channel<WeekDetailUiEvent>(Channel.BUFFERED)
+    val uiEvent = _uiEvent.receiveAsFlow()
 
     private lateinit var weekEntity: WeekEntity
     private lateinit var weekToUpdate: WeekEntity
@@ -41,6 +62,18 @@ class WeekDetailViewModel @Inject constructor(
             duration = duration,
             reward = weekEntity.reward,
             rewardImages = weekEntity.rewardImages,
+            stars = weekEntity.stars,
+            review = weekEntity.review,
+            address = weekEntity.address,
+            longitude = weekEntity.longitude,
+            latitude = weekEntity.latitude,
+        )
+
+        _uiEvent.send(
+            WeekDetailUiEvent.ZoomAndShowMapClickEvent(
+                longitude = weekEntity.longitude,
+                latitude = weekEntity.latitude,
+            )
         )
     }
 
@@ -59,10 +92,88 @@ class WeekDetailViewModel @Inject constructor(
         }
     }
 
+    fun onChangedStars(stars: Int) {
+        _uiState.update { it.copy(stars = stars) }
+    }
+
+    fun onChangedReview(review: String) {
+        _uiState.update { it.copy(review = review) }
+    }
+
+    fun onChangedAddress(address: String) {
+        _uiState.update { it.copy(address = address) }
+    }
+
+    fun onChangedLngLat(longitude: Double, latitude: Double, isRunTrigger: Boolean = true) {
+        _uiState.update { it.copy(longitude = longitude, latitude = latitude) }
+
+        // Run trigger to find current address and save to ui state
+        if (isRunTrigger) {
+            ioRun {
+                commonRepository.geocodingReverse(
+                    longitude = longitude,
+                    latitude = latitude,
+                ).collect { result ->
+                    when (result) {
+                        is BaseResult.Loading -> {}
+                        is BaseResult.Failure -> {
+                            val msg = result
+                                .exception
+                                .message ?: "Failed to fetch address for the location."
+
+                            showToast(msg)
+                        }
+
+                        is BaseResult.Success -> {
+                            _uiState.update { it.copy(address = result.data ?: "") }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    fun fetchCurrentLocationAndUpdate(
+        // callback to update camera position in map after fetching current location
+        onSuccess: (longitude: Double, latitude: Double) -> Unit = { _, _ -> }
+    ) = ioRun {
+        try {
+            val location = locationService.retrieveLastLocation()
+            commonRepository.geocodingReverse(
+                longitude = location.longitude,
+                latitude = location.latitude,
+            ).collect {
+                when (it) {
+                    is BaseResult.Loading -> {}
+                    is BaseResult.Failure -> showToast(
+                        it.exception.message ?: "Failed to fetch current location."
+                    )
+
+                    is BaseResult.Success -> {
+                        _uiState.update { state ->
+                            state.copy(
+                                longitude = location.longitude,
+                                latitude = location.latitude,
+                                address = it.data ?: "",
+                            )
+                        }
+
+                        onSuccess(location.longitude, location.latitude)
+                    }
+                }
+            }
+        } catch (exception: Exception) {
+            exception.printStackTrace()
+            showToast(exception.message ?: "Failed to fetch current location. Please try again.")
+        }
+    }
+
     fun resetState() {
         _uiState.value = WeekDetailUiState(
             reward = weekEntity.reward,
             rewardImages = weekEntity.rewardImages,
+            stars = weekEntity.stars,
+            review = weekEntity.review,
         )
     }
 
@@ -79,6 +190,12 @@ class WeekDetailViewModel @Inject constructor(
         weekToUpdate = weekEntity.copy(
             reward = uiState.value.reward.trim(),
             rewardImages = newRewardImages,
+            stars = uiState.value.stars,
+            review = uiState.value.review.trim(),
+            // Location
+            address = uiState.value.address.trim(),
+            longitude = uiState.value.longitude,
+            latitude = uiState.value.latitude,
         )
 
         val updatedResult = database.updateWeek(weekToUpdate)

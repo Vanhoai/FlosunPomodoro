@@ -1,7 +1,7 @@
 package com.flosun.pomodoro.core.cryptography
 
 import android.security.keystore.KeyProperties
-import com.flosun.pomodoro.BuildConfig
+import com.flosunn.core.BuildConfig
 import javax.crypto.Cipher
 
 interface Cryptography {

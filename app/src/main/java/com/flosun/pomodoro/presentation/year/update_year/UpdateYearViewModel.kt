@@ -7,16 +7,23 @@ import com.flosun.pomodoro.adapters.database.entities.TwelveWeekYearEntity
 import com.flosun.pomodoro.core.constants.CURRENT_ACCOUNT_ID_KEY
 import com.flosun.pomodoro.core.constants.DEBUG_TAG
 import com.flosun.pomodoro.core.functions.InternalStorageFuncs
+import com.flosun.pomodoro.core.services.LocationService
 import com.flosun.pomodoro.core.utils.AppStorage
+import com.flosun.pomodoro.core.utils.BaseResult
 import com.flosun.pomodoro.core.utils.BaseViewModel
+import com.flosun.pomodoro.domain.repositories.CommonRepository
+import com.flosun.pomodoro.presentation.auth.AuthNavigationEvent
 import com.flosun.pomodoro.ui.components.shared.GlobalLoading
+import com.flosunn.core.CoreModule
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.TimeZone
@@ -28,6 +35,15 @@ import kotlin.time.Instant
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
+sealed class UpdateYearUiEvent {
+
+    data class ZoomAndShowMapClickEvent(
+        val longitude: Double,
+        val latitude: Double
+    ) : UpdateYearUiEvent()
+
+}
+
 @OptIn(ExperimentalUuidApi::class)
 @HiltViewModel
 class UpdateYearViewModel @Inject constructor(
@@ -35,7 +51,12 @@ class UpdateYearViewModel @Inject constructor(
     private val database: PomodoroDatabase,
     private val appStorage: AppStorage,
     private val globalLoading: GlobalLoading,
+    private val commonRepository: CommonRepository,
+    private val locationService: LocationService,
 ) : BaseViewModel(application) {
+
+    private val _uiEvent = Channel<UpdateYearUiEvent>(Channel.BUFFERED)
+    val uiEvent = _uiEvent.receiveAsFlow()
 
     // For storing initial values to compare with updated values later when saving
     lateinit var yearEntity: TwelveWeekYearEntity
@@ -65,6 +86,11 @@ class UpdateYearViewModel @Inject constructor(
                 },
                 reward = year.reward,
                 rewardImages = year.rewardImages,
+                review = year.review,
+                stars = year.stars,
+                address = year.address,
+                longitude = year.longitude,
+                latitude = year.latitude,
             )
         }
 
@@ -72,6 +98,8 @@ class UpdateYearViewModel @Inject constructor(
         yearEntity = year
         yearToUpdate = year
         initialLaggingIndicators = laggingIndicators.map { Pair(it.id, it.name) }
+
+        _uiEvent.send(UpdateYearUiEvent.ZoomAndShowMapClickEvent(year.longitude, year.latitude))
     }
 
     fun updateName(name: String) {
@@ -134,6 +162,82 @@ class UpdateYearViewModel @Inject constructor(
         }
     }
 
+    fun onChangedReview(review: String) {
+        _uiState.update { it.copy(review = review) }
+    }
+
+    fun onChangedStars(stars: Int) {
+        _uiState.update { it.copy(stars = stars) }
+    }
+
+    fun onChangedAddress(address: String) {
+        _uiState.update { it.copy(address = address) }
+    }
+
+    fun onChangedLngLat(longitude: Double, latitude: Double, isRunTrigger: Boolean = true) {
+        _uiState.update { it.copy(longitude = longitude, latitude = latitude) }
+
+        // Run trigger to find current address and save to ui state
+        if (isRunTrigger) {
+            ioRun {
+                commonRepository.geocodingReverse(
+                    longitude = longitude,
+                    latitude = latitude,
+                ).collect { result ->
+                    when (result) {
+                        is BaseResult.Loading -> {}
+                        is BaseResult.Failure -> {
+                            val msg = result
+                                .exception
+                                .message ?: "Failed to fetch address for the location."
+
+                            showToast(msg)
+                        }
+
+                        is BaseResult.Success -> {
+                            _uiState.update { it.copy(address = result.data ?: "") }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    fun fetchCurrentLocationAndUpdate(
+        // callback to update camera position in map after fetching current location
+        onSuccess: (longitude: Double, latitude: Double) -> Unit = { _, _ -> }
+    ) = ioRun {
+        try {
+            val location = locationService.retrieveLastLocation()
+            commonRepository.geocodingReverse(
+                longitude = location.longitude,
+                latitude = location.latitude,
+            ).collect {
+                when (it) {
+                    is BaseResult.Loading -> {}
+                    is BaseResult.Failure -> showToast(
+                        it.exception.message ?: "Failed to fetch current location."
+                    )
+
+                    is BaseResult.Success -> {
+                        _uiState.update { state ->
+                            state.copy(
+                                longitude = location.longitude,
+                                latitude = location.latitude,
+                                address = it.data ?: "",
+                            )
+                        }
+
+                        onSuccess(location.longitude, location.latitude)
+                    }
+                }
+            }
+        } catch (exception: Exception) {
+            exception.printStackTrace()
+            showToast(exception.message ?: "Failed to fetch current location. Please try again.")
+        }
+    }
+
     fun resetState() {
         _uiState.update {
             it.copy(
@@ -142,6 +246,8 @@ class UpdateYearViewModel @Inject constructor(
                 laggingIndicators = initialLaggingIndicators,
                 reward = yearEntity.reward,
                 rewardImages = yearEntity.rewardImages,
+                review = yearEntity.review,
+                stars = yearEntity.stars,
             )
         }
     }
@@ -155,7 +261,7 @@ class UpdateYearViewModel @Inject constructor(
             showToast("Failed to find current account. Please try again.")
             return@ioRun
         }
-        
+
         val directory = application.applicationContext.filesDir
         val folder = "${directory.absolutePath}/AC-$accountId/YE-${yearEntity.id}"
 
@@ -169,6 +275,11 @@ class UpdateYearViewModel @Inject constructor(
             yearToUpdate.copy(
                 name = uiState.value.name,
                 reward = uiState.value.reward,
+                review = uiState.value.review,
+                stars = uiState.value.stars,
+                address = uiState.value.address,
+                longitude = uiState.value.longitude,
+                latitude = uiState.value.latitude,
                 updatedAt = System.currentTimeMillis(),
             )
         )

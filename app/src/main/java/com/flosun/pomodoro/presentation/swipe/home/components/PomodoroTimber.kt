@@ -40,16 +40,20 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.flosun.pomodoro.R
+import com.flosun.pomodoro.rememberPomodoroService
 import com.flosun.pomodoro.ui.theme.AppTheme
 
 @SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
 fun PomodoroTimber(
-    totalSeconds: Int = 25 * 60,
-    remainTime: Int = totalSeconds - 15,
     strokeWidth: Dp = 22.dp,
     modifier: Modifier,
 ) {
+    val pomodoroService = rememberPomodoroService()
+
+    val totalSeconds: Int = 25 * 60
+    val remainTime: Int = totalSeconds - 15
+
     val configuration = LocalConfiguration.current
     val screenWidthDp = configuration.screenWidthDp
     val arcSize = (screenWidthDp - 20 * 2 - 40 * 2).dp
@@ -135,7 +139,10 @@ fun PomodoroTimber(
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = ripple(),
-                        onClick = { isRunning = !isRunning }
+                        onClick = {
+                            pomodoroService.run()
+                            // isRunning = !isRunning
+                        }
                     ),
                 contentAlignment = Alignment.Center
             ) {

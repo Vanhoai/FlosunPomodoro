@@ -38,6 +38,7 @@ import com.flosun.pomodoro.core.utils.BaseViewModel
 import com.flosun.pomodoro.core.utils.isFailure
 import com.flosun.pomodoro.core.utils.isSuccess
 import com.flosun.pomodoro.domain.repositories.CommonRepository
+import com.flosunn.core.CoreModule
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -57,10 +58,10 @@ class AddNewYearViewModel @Inject constructor(
     val uiState: StateFlow<AddNewYearUiState> = _uiState.asStateFlow()
 
     init {
-        initializeLocation()
+        initialize()
     }
 
-    fun initializeLocation() = ioRun {
+    fun initialize() = ioRun {
         val startTime = Clock.System.todayIn(TimeZone.currentSystemDefault())
         val endTime = startTime.plus(12, DateTimeUnit.WEEK)
 
@@ -171,13 +172,24 @@ class AddNewYearViewModel @Inject constructor(
 
         // Update Address based on new longitude and latitude
         ioRun {
-            val newAddress = commonRepository.geocodingReverse(
+            commonRepository.geocodingReverse(
                 longitude = longitude,
                 latitude = latitude,
-            ).first()
+            ).collect { result ->
+                when (result) {
+                    is BaseResult.Loading -> {}
+                    is BaseResult.Failure -> {
+                        val msg = result
+                            .exception
+                            .message ?: "Failed to fetch address for the location."
 
-            if (newAddress is BaseResult.Success) {
-                _uiState.update { it.copy(address = newAddress.data ?: "") }
+                        showToast(msg)
+                    }
+
+                    is BaseResult.Success -> {
+                        _uiState.update { it.copy(address = result.data ?: "") }
+                    }
+                }
             }
         }
     }
@@ -205,6 +217,41 @@ class AddNewYearViewModel @Inject constructor(
             startTimeMilliseconds = startTimeMilliseconds,
             endTimeMilliseconds = endTimeMilliseconds,
         )
+    }
+
+    fun fetchCurrentLocationAndUpdate(
+        // callback to update camera position in map after fetching current location
+        onSuccess: (longitude: Double, latitude: Double) -> Unit = { _, _ -> }
+    ) = ioRun {
+        try {
+            val location = locationService.retrieveLastLocation()
+            commonRepository.geocodingReverse(
+                longitude = location.longitude,
+                latitude = location.latitude,
+            ).collect {
+                when (it) {
+                    is BaseResult.Loading -> {}
+                    is BaseResult.Failure -> showToast(
+                        it.exception.message ?: "Failed to fetch current location."
+                    )
+
+                    is BaseResult.Success -> {
+                        _uiState.update { state ->
+                            state.copy(
+                                longitude = location.longitude,
+                                latitude = location.latitude,
+                                address = it.data ?: "",
+                            )
+                        }
+
+                        onSuccess(location.longitude, location.latitude)
+                    }
+                }
+            }
+        } catch (exception: Exception) {
+            exception.printStackTrace()
+            showToast(exception.message ?: "Failed to fetch current location. Please try again.")
+        }
     }
 
     @OptIn(ExperimentalUuidApi::class)
@@ -277,6 +324,9 @@ class AddNewYearViewModel @Inject constructor(
             rewardImages = rewardImageUris,
             startTimeMilliseconds = uiState.value.startTimeMilliseconds,
             endTimeMilliseconds = uiState.value.endTimeMilliseconds,
+            longitude = uiState.value.longitude ?: 0.0,
+            latitude = uiState.value.latitude ?: 0.0,
+            address = uiState.value.address,
         )
 
         val (newYearResult, weekResult, indicatorResults) = coroutineScope {

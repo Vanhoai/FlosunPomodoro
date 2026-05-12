@@ -1,8 +1,52 @@
+import java.util.Locale
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
+}
+
+val localPropertiesFile: File = rootProject.file("local.properties")
+if (!localPropertiesFile.exists()) {
+    throw GradleException("Local properties file not found: ${localPropertiesFile.absolutePath}")
+}
+
+val localProperties = Properties()
+if (localPropertiesFile.exists()) localProperties.load(localPropertiesFile.inputStream())
+
+// Require datastoreName in local.properties
+if (!localProperties.containsKey("datastoreKey"))
+    throw GradleException("datastoreKey must be defined in local.properties")
+
+fun formatKeyBuildConfig(key: String): String {
+    val keys = mutableListOf<String>()
+    var s = ""
+
+    for (c in key.toCharArray()) {
+        if (c.isUpperCase()) {
+            keys.add(s)
+            s = c.toString()
+        } else s += c
+    }
+
+    keys.add(s)
+    return keys.joinToString("_").uppercase(Locale.ROOT)
+}
+
+fun parseLocalPropertiesToBuildConfig(buildConfigField: (type: String, name: String, value: String) -> Unit) {
+    // Parse local.properties and add all keys as BuildConfig fields
+    // noinspection WrongGradleMethod
+    localProperties.propertyNames().asIterator().forEach { propName ->
+        if (propName.toString() == "sdk.dir") return@forEach
+
+        buildConfigField(
+            "String",
+            formatKeyBuildConfig(propName.toString()),
+            "\"${localProperties.getProperty(propName.toString())}\""
+        )
+    }
 }
 
 android {
@@ -27,6 +71,12 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            parseLocalPropertiesToBuildConfig(buildConfigField = ::buildConfigField)
+        }
+
+        debug {
+            isMinifyEnabled = false
+            parseLocalPropertiesToBuildConfig(buildConfigField = ::buildConfigField)
         }
     }
 
@@ -45,7 +95,9 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
+
 }
 
 dependencies {
@@ -72,4 +124,10 @@ dependencies {
     implementation(libs.hilt.android)
     implementation(libs.hilt.navigation.compose)
     ksp(libs.hilt.android.compiler)
+
+    // Datastore
+    implementation(libs.datastore)
+
+    // Timber
+    implementation(libs.timber)
 }

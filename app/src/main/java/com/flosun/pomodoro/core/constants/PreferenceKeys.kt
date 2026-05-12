@@ -12,3 +12,4 @@ val CURRENT_THEME_KEY = stringPreferencesKey("CURRENT_THEME")
 
 val CURRENT_ACCOUNT_ID_KEY = stringPreferencesKey("CURRENT_ACCOUNT_ID")
 val CURRENT_YEAR_ID_KEY = stringPreferencesKey("${PREFIX}_CURRENT_YEAR_ID")
+val CURRENT_TASK_ID_KEY = stringPreferencesKey("${PREFIX}_CURRENT_TASK_ID")

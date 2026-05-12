@@ -84,6 +84,9 @@ sealed interface NavRoute : NavKey {
         val key: String, // Key to store in the result store
         val location: Location? = null // Initial location to show on the map (optional)
     ) : NavRoute, NavKey
+
+    @Serializable
+    data object Notifications : NavRoute, NavKey
 }
 
 val config = SavedStateConfiguration {
@@ -166,6 +169,10 @@ val config = SavedStateConfiguration {
             subclass(
                 subclass = NavRoute.Map::class,
                 serializer = NavRoute.Map.serializer()
+            )
+            subclass(
+                subclass = NavRoute.Notifications::class,
+                serializer = NavRoute.Notifications.serializer()
             )
         }
     }

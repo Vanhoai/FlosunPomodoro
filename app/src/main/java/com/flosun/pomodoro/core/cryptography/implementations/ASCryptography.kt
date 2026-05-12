@@ -2,11 +2,11 @@ package com.flosun.pomodoro.core.cryptography.implementations
 
 import android.app.Application
 import android.widget.Toast
-import com.flosun.pomodoro.BuildConfig
 import com.flosun.pomodoro.core.cryptography.BackendAlgorithm
 import com.flosun.pomodoro.core.cryptography.Cryptography
 import com.flosun.pomodoro.core.cryptography.EncryptedMessage
 import com.flosun.pomodoro.core.cryptography.toAlgorithmName
+import com.flosunn.core.BuildConfig
 import java.security.KeyStore
 import java.security.PublicKey
 import javax.crypto.Cipher
@@ -82,4 +82,5 @@ class ASCryptography @Inject constructor(
     override fun decrypt(encryptedMessage: EncryptedMessage): String {
         TODO("Not yet implemented")
     }
+    
 }

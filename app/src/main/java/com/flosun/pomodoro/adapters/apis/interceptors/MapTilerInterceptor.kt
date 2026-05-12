@@ -1,7 +1,7 @@
 package com.flosun.pomodoro.adapters.apis.interceptors
 
-import com.flosun.pomodoro.BuildConfig
 import com.flosun.pomodoro.core.utils.api.Interceptor
+import com.flosunn.core.BuildConfig
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.parameter
 import javax.inject.Inject

@@ -11,6 +11,7 @@ import org.maplibre.compose.util.ClickResult
 fun MapView(
     modifier: Modifier = Modifier,
     state: MapState = rememberMapState(),
+    isEnabledMapClick: Boolean = true,
 ) {
     MaplibreMap(
         modifier = modifier,
@@ -18,6 +19,7 @@ fun MapView(
         cameraState = state.cameraState,
         baseStyle = state.selectedStyle.base,
         onMapClick = { position, offset ->
+            if (!isEnabledMapClick) return@MaplibreMap ClickResult.Pass
             state.selectedLocation = MapClickEvent(position, offset)
             ClickResult.Pass
         },

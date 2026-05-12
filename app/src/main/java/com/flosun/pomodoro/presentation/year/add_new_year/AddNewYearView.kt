@@ -16,6 +16,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
@@ -26,10 +30,9 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
+import com.flosun.pomodoro.R
 import com.flosun.pomodoro.core.constants.DEBUG_TAG
 import com.flosun.pomodoro.core.constants.ResultStoreKeys
-import com.flosun.pomodoro.core.permissions.rememberMultiplePermissionManager
-import com.flosun.pomodoro.core.permissions.rememberMutablePermissionsManager
 import com.flosun.pomodoro.core.utils.result_store.LocalResultStore
 import com.flosun.pomodoro.domain.values.Location
 import com.flosun.pomodoro.ui.components.shared.DurationSetting
@@ -42,6 +45,9 @@ import com.flosun.pomodoro.ui.components.shared.SelectLocation
 import com.flosun.pomodoro.ui.components.shared.TwoOptionActions
 import com.flosun.pomodoro.ui.components.shared.map.MapClickEvent
 import com.flosun.pomodoro.ui.components.shared.map.rememberMapState
+import com.flosun.pomodoro.ui.components.shared.rememberAlertMessageManager
+import com.flosunn.core.libraries.permissions.multiple.rememberMultiplePermissionManager
+import kotlinx.coroutines.launch
 import org.maplibre.compose.camera.CameraPosition
 import org.maplibre.spatialk.geojson.Position
 import timber.log.Timber
@@ -59,49 +65,50 @@ fun AddNewYearView(
     val focusManager = LocalFocusManager.current
     val resultStore = LocalResultStore.current
 
-    val permissionsManager = rememberMultiplePermissionManager(
-        permissions = listOf(
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_COARSE_LOCATION,
-        ),
-        onPermissionResults = { permissionResults -> }
-    )
-
+    val scope = rememberCoroutineScope()
     val mapState = rememberMapState()
-    val location = resultStore.get<Location>(ResultStoreKeys.ADD_NEW_YEAR_LOCATION)
 
-    LaunchedEffect(location) {
-        // Receive the location after user selects a location in the map view, and update the state in view model
-        if (location == null) return@LaunchedEffect
+    val pickMedia = rememberLauncherForActivityResult(contracts) { uri ->
+        if (uri != null) viewModel.updateCoverUri(uri.toString())
+    }
 
-        // Update the map state to show the selected location
+    fun updateMapState(longitude: Double, latitude: Double) = scope.launch {
         mapState.selectedLocation = null
-        viewModel.onUpdateAddressAndLngLat(
-            address = location.address!!,
-            longitude = location.longitude,
-            latitude = location.latitude,
-        )
 
         // Move camera and update map click
         mapState.cameraState.animateTo(
             CameraPosition(
-                target = Position(location.longitude, location.latitude),
+                target = Position(longitude, latitude),
                 zoom = 14.0,
             ),
             500.milliseconds,
         )
 
         mapState.selectedLocation = MapClickEvent(
-            Position(location.longitude, location.latitude),
+            Position(longitude, latitude),
             DpOffset.Zero,
         )
     }
 
+    val location = resultStore.get<Location>(ResultStoreKeys.ADD_NEW_YEAR_LOCATION)
+    LaunchedEffect(location) {
+        // Receive the location after user selects a location in the map view, and update the state in view model
+        if (location == null) return@LaunchedEffect
+
+        // Update the map state to show the selected location
+        viewModel.onUpdateAddressAndLngLat(
+            address = location.address!!,
+            longitude = location.longitude,
+            latitude = location.latitude,
+        )
+
+        updateMapState(
+            longitude = location.longitude,
+            latitude = location.latitude,
+        )
+    }
 
     val uiState by viewModel.uiState.collectAsState()
-    val pickMedia = rememberLauncherForActivityResult(contracts) { uri ->
-        if (uri != null) viewModel.updateCoverUri(uri.toString())
-    }
 
     Scaffold(containerColor = Color.White) { paddingValues ->
         Box(
@@ -116,7 +123,7 @@ fun AddNewYearView(
                         detectTapGestures {
                             focusManager.clearFocus()
                         }
-                    }
+                    },
             ) {
                 item {
                     CommonBackHeading(
@@ -190,13 +197,11 @@ fun AddNewYearView(
                         latitude = uiState.latitude,
                         onChangedAddress = viewModel::onChangedAddress,
                         onChangedLngLat = viewModel::onChangedLngLat,
-                        onUseCurrentLocation = {
-                            if (permissionsManager.allPermissionGranted.not()) {
-                                permissionsManager.requestPermissions()
-                            } else {
-                                // Fetch the current location and update the state in view model
+                        onFetchLocation = {
+                            viewModel.fetchCurrentLocationAndUpdate { longitude, latitude ->
+                                updateMapState(longitude, latitude)
                             }
-                        },
+                        }
                     )
                 }
 

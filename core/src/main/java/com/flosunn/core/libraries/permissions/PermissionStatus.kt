@@ -1,4 +1,4 @@
-package com.flosun.pomodoro.core.permissions
+package com.flosunn.core.libraries.permissions
 
 import androidx.compose.runtime.Stable
 

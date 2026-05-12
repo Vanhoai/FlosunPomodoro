@@ -9,6 +9,7 @@ import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -50,7 +51,7 @@ fun CoreTextField(
     value: String,
     onValueChanged: (String) -> Unit,
     height: Dp = 52.dp,
-    backgroundColor: Color = Color(0xFFF9F9F9),
+    backgroundColor: Color = Color.White,
     isEnabled: Boolean = true,
     placeholder: String = "e.g. Build Flosun Studio",
     padding: PaddingValues = PaddingValues(),
@@ -66,7 +67,7 @@ fun CoreTextField(
     val interactionSource = remember { MutableInteractionSource() }
     val isFocused by interactionSource.collectIsFocusedAsState()
     val isValid = validate?.invoke(value) ?: false
-    
+
     LaunchedEffect(isFocused) { onFocusChanged?.invoke(isFocused) }
 
     Row(
@@ -78,12 +79,20 @@ fun CoreTextField(
                 color = backgroundColor,
                 shape = RoundedCornerShape(AppTheme.sizing.borderMedium)
             )
+            .border(
+                width = 1.dp,
+                color = AppTheme.colors.borderColor,
+                shape = RoundedCornerShape(AppTheme.sizing.borderMedium)
+            )
             .pointerInput(Unit) { detectTapGestures {} },
         verticalAlignment = Alignment.CenterVertically
     ) {
         if (prefix != null) Box(
-            modifier = Modifier.padding(start = 12.dp),
-            contentAlignment = Alignment.Center
+            modifier = Modifier
+                .padding(vertical = 12.dp)
+                .padding(start = 12.dp)
+                .fillMaxHeight(),
+            contentAlignment = if (singleLine) Alignment.Center else Alignment.TopStart
         ) {
             prefix()
         }
@@ -131,8 +140,10 @@ fun CoreTextField(
         }
 
         if (suffix != null) Box(
-            modifier = Modifier.padding(end = 20.dp),
-            contentAlignment = Alignment.Center
+            modifier = Modifier
+                .padding(vertical = 12.dp)
+                .padding(end = 20.dp),
+            contentAlignment = if (singleLine) Alignment.Center else Alignment.TopEnd
         ) {
             suffix()
         }

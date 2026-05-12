@@ -4,9 +4,9 @@ import android.app.Application
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import android.widget.Toast
-import com.flosun.pomodoro.BuildConfig
 import com.flosun.pomodoro.core.cryptography.Cryptography
 import com.flosun.pomodoro.core.cryptography.EncryptedMessage
+import com.flosunn.core.BuildConfig
 import java.nio.charset.Charset
 import java.security.KeyStore
 import javax.crypto.Cipher

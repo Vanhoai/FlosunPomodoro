@@ -19,10 +19,10 @@ import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import com.flosun.pomodoro.core.constants.IS_ENABLED_BIOMETRIC_KEY
 import com.flosun.pomodoro.core.constants.IS_ENABLED_FACE_RECOGNITION_KEY
-import com.flosun.pomodoro.core.utils.rememberPreference
 import com.flosun.pomodoro.ui.components.shared.CommonBackHeading
 import com.flosun.pomodoro.ui.components.shared.RowSwitch
 import com.flosun.pomodoro.ui.theme.AppTheme
+import com.flosunn.core.libraries.datastore.rememberPreference
 
 @Composable
 fun BiometricAuthenticationView(

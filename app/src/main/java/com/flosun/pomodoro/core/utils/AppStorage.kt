@@ -4,6 +4,8 @@ import android.app.Application
 import android.content.Context
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
+import com.flosunn.core.libraries.datastore.datastore
+import com.flosunn.core.libraries.datastore.encryptedstore
 import kotlinx.coroutines.flow.first
 import kotlinx.serialization.json.Json
 import javax.inject.Inject
@@ -19,7 +21,7 @@ class AppStorage @Inject constructor(val application: Application) {
         isCryptoStore: Boolean = false
     ): Boolean {
         return try {
-            val datastore = if (isCryptoStore) application.encryptedStore else application.datastore
+            val datastore = if (isCryptoStore) application.encryptedstore else application.datastore
             datastore.edit { preferences ->
                 when (value) {
                     is String -> preferences[key] = value
@@ -46,7 +48,7 @@ class AppStorage @Inject constructor(val application: Application) {
     ): Boolean {
         return try {
             val jsonString = json.encodeToString(value)
-            val datastore = if (isCryptoStore) application.encryptedStore else application.datastore
+            val datastore = if (isCryptoStore) application.encryptedstore else application.datastore
             datastore.edit { preferences ->
                 preferences[key] = jsonString
             }
@@ -64,7 +66,7 @@ class AppStorage @Inject constructor(val application: Application) {
         isCryptoStore: Boolean = false
     ): T {
         return try {
-            val datastore = if (isCryptoStore) application.encryptedStore else application.datastore
+            val datastore = if (isCryptoStore) application.encryptedstore else application.datastore
             val preferences = datastore.data.first()
             val jsonString = preferences[key]
 
@@ -85,7 +87,7 @@ class AppStorage @Inject constructor(val application: Application) {
         isCryptoStore: Boolean = false
     ): T {
         return try {
-            val datastore = if (isCryptoStore) application.encryptedStore else application.datastore
+            val datastore = if (isCryptoStore) application.encryptedstore else application.datastore
             val preferences = datastore.data.first()
             preferences[key] ?: defaultValue
         } catch (exception: Exception) {
@@ -96,7 +98,7 @@ class AppStorage @Inject constructor(val application: Application) {
 
     suspend fun clear(isCryptoStore: Boolean = false): Boolean {
         return try {
-            val datastore = if (isCryptoStore) application.encryptedStore else application.datastore
+            val datastore = if (isCryptoStore) application.encryptedstore else application.datastore
             datastore.edit { preferences ->
                 preferences.clear()
             }
@@ -113,7 +115,7 @@ class AppStorage @Inject constructor(val application: Application) {
         isCryptoStore: Boolean = false
     ): Boolean {
         return try {
-            val datastore = if (isCryptoStore) application.encryptedStore else application.datastore
+            val datastore = if (isCryptoStore) application.encryptedstore else application.datastore
             val preferences = datastore.data.first()
             preferences.contains(key)
         } catch (exception: Exception) {
@@ -127,7 +129,7 @@ class AppStorage @Inject constructor(val application: Application) {
         isCryptoStore: Boolean = false
     ): Boolean {
         return try {
-            val datastore = if (isCryptoStore) application.encryptedStore else application.datastore
+            val datastore = if (isCryptoStore) application.encryptedstore else application.datastore
             datastore.edit { preferences ->
                 preferences.remove(key)
             }

@@ -1,4 +1,4 @@
-package com.flosun.pomodoro.core.utils
+package com.flosunn.core.libraries.datastore
 
 import android.content.Context
 import androidx.compose.runtime.Composable
@@ -11,7 +11,8 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.preferencesDataStore
-import com.flosun.pomodoro.core.extensions.toEnum
+import com.flosunn.core.BuildConfig
+import com.flosunn.core.extensions.toEnum
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
@@ -20,8 +21,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlin.properties.ReadOnlyProperty
 
-val Context.datastore: DataStore<Preferences> by preferencesDataStore(name = "POMODORO")
-val Context.encryptedStore: DataStore<Preferences> by preferencesDataStore(name = "POMODORO_ENCRYPTED")
+val Context.datastore: DataStore<Preferences> by preferencesDataStore(name = BuildConfig.DATASTORE_KEY)
+val Context.encryptedstore: DataStore<Preferences> by preferencesDataStore(name = "${BuildConfig.DATASTORE_KEY}_ENCRYPTED")
 
 operator fun <T> DataStore<Preferences>.get(key: Preferences.Key<T>): T? =
     runBlocking(Dispatchers.IO) {
@@ -39,11 +40,13 @@ fun <T> preference(
     defaultValue: T,
 ) = ReadOnlyProperty<Any?, T> { _, _ -> context.datastore[key] ?: defaultValue }
 
+
 inline fun <reified T : Enum<T>> enumPreference(
     context: Context,
     key: Preferences.Key<String>,
     defaultValue: T,
 ) = ReadOnlyProperty<Any?, T> { _, _ -> context.datastore[key].toEnum(defaultValue) }
+
 
 @Composable
 fun <T> rememberPreference(
@@ -77,6 +80,7 @@ fun <T> rememberPreference(
     }
 }
 
+
 @Composable
 inline fun <reified T : Enum<T>> rememberEnumPreference(
     key: Preferences.Key<String>,
@@ -109,6 +113,3 @@ inline fun <reified T : Enum<T>> rememberEnumPreference(
         }
     }
 }
-
-
-

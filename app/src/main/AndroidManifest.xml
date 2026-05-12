@@ -23,6 +23,7 @@
         android:supportsRtl="true"
         android:name=".App"
         android:theme="@style/Theme.Pomodoro">
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -32,5 +33,19 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <service
+            android:name=".core.services.audio.AudioService"
+            android:exported="true"
+            android:enabled="true"
+            android:foregroundServiceType="mediaPlayback"
+            tools:ignore="ExportedService,ForegroundServicePermission">
+            <intent-filter>
+                <action android:name="androidx.media3.session.MediaSessionService" />
+                <action android:name="androidx.media3.session.MediaLibraryService" />
+                <action android:name="android.media.browse.MediaBrowserService" />
+            </intent-filter>
+        </service>
+
     </application>
 </manifest>

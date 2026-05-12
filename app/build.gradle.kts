@@ -71,6 +71,7 @@ android {
     defaultConfig {
         applicationId = "com.flosun.pomodoro"
         minSdk = 24
+        //noinspection OldTargetApi
         targetSdk = 36
         versionCode = localProperties["versionCode"].toString().toInt()
         versionName = localProperties["versionName"].toString()
@@ -102,7 +103,6 @@ android {
             )
 
             signingConfig = signingConfigs.getByName("release")
-            parseLocalPropertiesToBuildConfig(buildConfigField = this::buildConfigField)
         }
 
         debug {
@@ -110,7 +110,6 @@ android {
 
             // Use my own config
             signingConfig = signingConfigs.getByName("release")
-            parseLocalPropertiesToBuildConfig(buildConfigField = this::buildConfigField)
         }
     }
 
@@ -121,7 +120,6 @@ android {
 
     buildFeatures {
         compose = true
-        buildConfig = true
     }
 
     sourceSets {
@@ -210,6 +208,7 @@ dependencies {
     implementation(libs.media3.common)
     implementation(libs.media3.exoplayer)
     implementation(libs.media3.ui)
+    implementation(libs.media3.session)
 
     // Supabase
     implementation(platform(libs.supabase.bom))

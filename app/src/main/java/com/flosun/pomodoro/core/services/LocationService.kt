@@ -26,8 +26,11 @@ import kotlin.coroutines.suspendCoroutine
 
 @Singleton
 class LocationService @Inject constructor(
-    private val application: Application,
-) : CoroutineService(Dispatchers.IO) {
+    application: Application,
+) : CoroutineService(
+    application,
+    Dispatchers.IO
+) {
     private val geocoder = Geocoder(application, Locale.getDefault())
     private var fusedLocationClient = LocationServices.getFusedLocationProviderClient(application)
 
@@ -48,12 +51,6 @@ class LocationService @Inject constructor(
                 e.printStackTrace()
             }
         }
-    }
-
-    fun findAddressBaseOnLngLat(latitude: Double, longitude: Double): String? {
-        val addresses = geocoder.getFromLocation(latitude, longitude, 1)
-        val address = addresses?.firstOrNull()?.getAddressLine(0)
-        return address
     }
 
     suspend fun retrieveLastLocation(): Location = suspendCancellableCoroutine { continuation ->

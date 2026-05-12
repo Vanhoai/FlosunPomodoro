@@ -1,4 +1,4 @@
-package com.flosun.pomodoro.core.permissions
+package com.flosunn.core.libraries.permissions.single
 
 import android.app.Activity
 import android.content.Context
@@ -12,26 +12,49 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.core.content.ContextCompat
+import com.flosunn.core.libraries.permissions.PermissionStatus
+
 
 @Stable
-class MutablePermissionManager(
+class MutableSinglePermissionManager(
     override val permission: String,
     private val context: Context,
     private val activity: Activity,
-) : PermissionManager {
+) : SinglePermissionManager {
 
+    override var status by mutableStateOf(checkPermissionStatus(permission))
     override var isDeniedPermanently: Boolean by mutableStateOf(false)
-    override var status: PermissionStatus by mutableStateOf(checkPermissionStatus(permission))
+
     internal var launcher: ActivityResultLauncher<String>? = null
+    internal var isRequestingPermission by mutableStateOf(false)
 
-    internal fun updatePermissionStatus() {
+    internal fun updatePermissionStatus(onDeniedPermanently: (Boolean) -> Unit = {}) {
         status = checkPermissionStatus(permission)
-
-        // Update isDeniedPermanently based on the new status
-        isDeniedPermanently = when (status) {
-            is PermissionStatus.Granted -> false
-            is PermissionStatus.Denied -> !(status as PermissionStatus.Denied).shouldShowRationale
+        if (status == PermissionStatus.Granted) {
+            isDeniedPermanently = false
+            onDeniedPermanently(false)
         }
+
+        if (isRequestingPermission) {
+            isDeniedPermanently = when (status) {
+                PermissionStatus.Granted -> false
+                is PermissionStatus.Denied -> !(status as PermissionStatus.Denied).shouldShowRationale
+            }
+
+            onDeniedPermanently(isDeniedPermanently)
+            isRequestingPermission = false
+        }
+    }
+
+    fun initialize(isDeniedPermanently: Boolean) {
+        this.isDeniedPermanently = isDeniedPermanently
+    }
+
+    override fun requestPermission() {
+        if (launcher == null) throw IllegalStateException("PermissionManager is not initialized with a launcher")
+
+        isRequestingPermission = true
+        launcher!!.launch(permission)
     }
 
     override fun checkPermissionStatus(permission: String): PermissionStatus {
@@ -44,16 +67,13 @@ class MutablePermissionManager(
         }
     }
 
-    override fun requestPermission() = launcher?.launch(permission)
-        ?: throw IllegalStateException("PermissionManager is not initialized with a launcher")
-
     override fun openAppSettings() {
         val uri = Uri.fromParts("package", activity.packageName, null)
         val intent = Intent(
             Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
             uri
         ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-
         activity.startActivity(intent)
     }
+
 }

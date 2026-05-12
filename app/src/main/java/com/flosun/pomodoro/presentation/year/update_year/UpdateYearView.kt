@@ -17,16 +17,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.flosun.pomodoro.LocalNavBackStack
 import com.flosun.pomodoro.R
+import com.flosun.pomodoro.core.constants.DEBUG_TAG
+import com.flosun.pomodoro.core.constants.ResultStoreKeys
+import com.flosun.pomodoro.core.utils.result_store.rememberLocalResultStore
+import com.flosun.pomodoro.core.utils.result_store.rememberResultStore
+import com.flosun.pomodoro.domain.values.Location
 import com.flosun.pomodoro.presentation.graph.NavRoute
 import com.flosun.pomodoro.ui.components.core.CoreTextField
 import com.flosun.pomodoro.ui.components.shared.UploadCover
@@ -34,8 +41,18 @@ import com.flosun.pomodoro.ui.components.shared.CommonBackHeading
 import com.flosun.pomodoro.ui.components.shared.DurationSetting
 import com.flosun.pomodoro.ui.components.shared.LaggingIndicators
 import com.flosun.pomodoro.ui.components.shared.RewardSection
+import com.flosun.pomodoro.ui.components.shared.SelectLocation
 import com.flosun.pomodoro.ui.components.shared.TwoOptionActions
+import com.flosun.pomodoro.ui.components.shared.UpdateReview
+import com.flosun.pomodoro.ui.components.shared.map.MapClickEvent
+import com.flosun.pomodoro.ui.components.shared.map.rememberMapState
 import com.flosunn.core.extensions.tapGesture
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import org.maplibre.compose.camera.CameraPosition
+import org.maplibre.spatialk.geojson.Position
+import timber.log.Timber
+import kotlin.time.Duration.Companion.milliseconds
 
 private val contracts = ActivityResultContracts.PickVisualMedia()
 
@@ -46,15 +63,62 @@ fun UpdateYearView(
 ) {
     val navBackStack = LocalNavBackStack.current
     val focusManager = LocalFocusManager.current
-    val uiState by viewModel.uiState.collectAsState()
+
+    val resultStore = rememberLocalResultStore()
+    val scope = rememberCoroutineScope()
+    val mapState = rememberMapState()
     val pickMedia = rememberLauncherForActivityResult(contracts) { uri ->
         if (uri == null) return@rememberLauncherForActivityResult
 
         viewModel.updateCoverUri(uri.toString())
     }
 
+    fun updateMapState(longitude: Double, latitude: Double) = scope.launch {
+        mapState.selectedLocation = null
+        delay(300)
+
+        // Move camera and update map click
+        mapState.cameraState.animateTo(
+            CameraPosition(
+                target = Position(longitude, latitude),
+                zoom = 14.0,
+            ),
+            500.milliseconds,
+        )
+
+        delay(300)
+        mapState.selectedLocation = MapClickEvent(
+            Position(longitude, latitude),
+            DpOffset.Zero,
+        )
+    }
+
+    val location = resultStore.get<Location>(ResultStoreKeys.UPDATE_YEAR_LOCATION)
+    LaunchedEffect(location) {
+        if (location == null) return@LaunchedEffect
+        
+        viewModel.onChangedLngLat(location.longitude, location.latitude, isRunTrigger = false)
+        viewModel.onChangedAddress(location.address!!)
+        updateMapState(location.longitude, location.latitude)
+    }
+
     // Run initialization logic when the view is first composed
-    LaunchedEffect(Unit) { viewModel.initialize(navRoute.yearId) }
+    LaunchedEffect(Unit) {
+        viewModel.initialize(navRoute.yearId)
+
+        // Listen event from viewmodel
+        viewModel.uiEvent.collect { event ->
+            when (event) {
+                is UpdateYearUiEvent.ZoomAndShowMapClickEvent -> {
+                    val longitude = event.longitude
+                    val latitude = event.latitude
+                    updateMapState(longitude, latitude)
+                }
+            }
+        }
+    }
+
+    val uiState by viewModel.uiState.collectAsState()
 
     Scaffold(containerColor = Color.White) { paddingValues ->
         Box(
@@ -142,6 +206,32 @@ fun UpdateYearView(
                         onChangedReward = viewModel::updateReward,
                         onChangedRewardImages = viewModel::updateRewardImages,
                         onDeleteRewardImage = viewModel::deleteRewardImage,
+                    )
+                }
+
+                item {
+                    UpdateReview(
+                        stars = uiState.stars,
+                        review = uiState.review,
+                        onChangedStars = viewModel::onChangedStars,
+                        onChangedReview = viewModel::onChangedReview,
+                    )
+                }
+
+                item {
+                    SelectLocation(
+                        mapState = mapState,
+                        locationKey = ResultStoreKeys.UPDATE_YEAR_LOCATION,
+                        address = uiState.address,
+                        longitude = uiState.longitude,
+                        latitude = uiState.latitude,
+                        onChangedAddress = viewModel::onChangedAddress,
+                        onChangedLngLat = viewModel::onChangedLngLat,
+                        onFetchLocation = {
+                            viewModel.fetchCurrentLocationAndUpdate { longitude, latitude ->
+                                updateMapState(longitude, latitude)
+                            }
+                        }
                     )
                 }
 

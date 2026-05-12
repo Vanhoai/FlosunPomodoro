@@ -22,6 +22,7 @@ import com.flosun.pomodoro.presentation.encrypt.EncryptView
 import com.flosun.pomodoro.presentation.goals.add_goal.AddGoalView
 import com.flosun.pomodoro.presentation.goals.update_goal.UpdateGoalView
 import com.flosun.pomodoro.presentation.map.MapView
+import com.flosun.pomodoro.presentation.notification.NotificationView
 import com.flosun.pomodoro.presentation.swipe.SwipeView
 import com.flosun.pomodoro.presentation.swipe.home.fullscreen.FullScreenView
 import com.flosun.pomodoro.presentation.year.add_new_year.AddNewYearView
@@ -107,6 +108,7 @@ fun NavGraph(
                 is NavRoute.AddGoal -> NavEntry(key) { AddGoalView() }
                 is NavRoute.AddTask -> NavEntry(key) { AddTaskView() }
                 is NavRoute.Map -> NavEntry(key) { MapView(key) }
+                is NavRoute.Notifications -> NavEntry(key) { NotificationView() }
                 else -> NavEntry(key) { NotFoundView() }
             }
         }

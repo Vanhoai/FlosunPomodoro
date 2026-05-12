@@ -64,8 +64,13 @@ import com.flosun.pomodoro.R
 import com.flosun.pomodoro.core.constants.DEBUG_TAG
 import com.flosunn.core.extensions.tapGesture
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import javax.inject.Inject
+import javax.inject.Singleton
+import kotlin.collections.plus
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -75,6 +80,33 @@ data class Message @OptIn(ExperimentalUuidApi::class) constructor(
     val title: String,
     val description: String,
 )
+
+
+@Singleton
+class FlashStackedMessageManager @Inject constructor() {
+    private val _messages = MutableStateFlow<List<Message>>(emptyList())
+    val messages = _messages.asStateFlow()
+
+
+    fun addMessage(title: String, description: String) {
+        val newMessage = Message(title = title, description = description)
+        _messages.value += newMessage
+    }
+
+    fun removeMessage(id: String) {
+        _messages.value = _messages.value.filterNot { it.id == id }
+    }
+}
+
+val LocalFlashStackedMessageManager = compositionLocalOf<FlashStackedMessageManager> {
+    error("No LocalFlashStackedMessageManager provided")
+}
+
+@Composable
+fun rememberFlashStackedMessageManager(): FlashStackedMessageManager {
+    return LocalFlashStackedMessageManager.current
+}
+
 
 // Max skip visible messages to prevent too many cards on the screen
 private const val MAX_VISIBLE = 3

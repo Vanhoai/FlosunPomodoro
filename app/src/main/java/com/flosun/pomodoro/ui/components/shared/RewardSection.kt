@@ -33,7 +33,7 @@ import com.flosun.pomodoro.ui.components.core.CoreAsyncImage
 import com.flosun.pomodoro.ui.components.core.CoreTextField
 import timber.log.Timber
 
-private const val MAX_ITEMS = 5
+private const val MAX_ITEMS = 10
 private val contract = ActivityResultContracts.PickMultipleVisualMedia(MAX_ITEMS)
 
 @Composable

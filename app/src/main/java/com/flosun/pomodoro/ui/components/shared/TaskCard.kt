@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.flosun.pomodoro.R
 import com.flosun.pomodoro.ui.theme.AppTheme
+import com.flosunn.core.extensions.rippleEffectClickable
 
 @Composable
 fun TaskCard(
@@ -36,7 +37,10 @@ fun TaskCard(
     numPomodoroCompleted: Int = 0,
     pomodoroDuration: Int = 25,
     icon: Int = R.drawable.ic_task,
+    isShowPlayIcon: Boolean = true,
+    customIcon: @Composable (() -> Unit)? = null,
     onPress: () -> Unit = {},
+    onPlay: () -> Unit = {},
 ) {
     val numPomodoroLabel = "$numPomodoroCompleted/$numPomodoro"
     val durationLabel =
@@ -53,7 +57,7 @@ fun TaskCard(
                 onClick = { onPress() }
             )
             .padding(12.dp),
-        verticalAlignment = Alignment.Top,
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Box(
             modifier = Modifier
@@ -108,6 +112,25 @@ fun TaskCard(
                     color = Color(0xFF434343),
                 )
             }
+        }
+
+        if (!isShowPlayIcon && customIcon != null) customIcon()
+        if (isShowPlayIcon) Box(
+            modifier = Modifier
+                .size(40.dp)
+                .clip(CircleShape)
+                .background(AppTheme.colors.primaryColor.copy(alpha = 0.1f))
+                .rippleEffectClickable { onPlay() },
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.ic_play),
+                contentDescription = null,
+                modifier = Modifier
+                    .padding(start = 3.dp)
+                    .size(22.dp),
+                tint = AppTheme.colors.primaryColor,
+            )
         }
     }
 }

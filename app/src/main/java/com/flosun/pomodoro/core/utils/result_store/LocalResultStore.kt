@@ -7,6 +7,7 @@ val LocalResultStore = compositionLocalOf<ResultStore> {
     error("No ResultStore provided")
 }
 
-val currentResultStore: ResultStore
-    @Composable
-    get() = LocalResultStore.current
+@Composable
+fun rememberLocalResultStore(): ResultStore {
+    return LocalResultStore.current
+}

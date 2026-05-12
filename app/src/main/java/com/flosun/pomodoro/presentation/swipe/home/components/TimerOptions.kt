@@ -39,9 +39,9 @@ import kotlinx.coroutines.launch
 fun TimerOptions(navBackStack: NavBackStack<NavKey>) {
     val scope = rememberCoroutineScope()
 
-    val focusSheetState = rememberModalBottomSheetState()
-    val modeSheetState = rememberModalBottomSheetState()
-    val musicSheetState = rememberModalBottomSheetState()
+    val focusSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val modeSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val musicSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     var isShowFocusBottomSheet by remember { mutableStateOf(false) }
     var isShowModeBottomSheet by remember { mutableStateOf(false) }

@@ -22,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -29,6 +30,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -38,13 +40,26 @@ import com.flosunn.core.extensions.noRippleEffectClickable
 import com.flosunn.core.extensions.tapGesture
 import com.flosun.pomodoro.R
 import com.flosun.pomodoro.adapters.database.LocalDatabase
+import com.flosun.pomodoro.core.constants.ResultStoreKeys
+import com.flosun.pomodoro.core.utils.result_store.rememberLocalResultStore
+import com.flosun.pomodoro.domain.values.Location
 import com.flosun.pomodoro.presentation.graph.NavRoute
+import com.flosun.pomodoro.presentation.year.update_year.UpdateYearUiEvent
 import com.flosun.pomodoro.ui.components.shared.CommonBackHeading
 import com.flosun.pomodoro.ui.components.shared.GoalCard
 import com.flosun.pomodoro.ui.components.shared.RewardSection
+import com.flosun.pomodoro.ui.components.shared.SelectLocation
 import com.flosun.pomodoro.ui.components.shared.SwipeableCard
 import com.flosun.pomodoro.ui.components.shared.TwoOptionActions
+import com.flosun.pomodoro.ui.components.shared.UpdateReview
+import com.flosun.pomodoro.ui.components.shared.map.MapClickEvent
+import com.flosun.pomodoro.ui.components.shared.map.rememberMapState
 import com.flosun.pomodoro.ui.theme.AppTheme
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import org.maplibre.compose.camera.CameraPosition
+import org.maplibre.spatialk.geojson.Position
+import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 fun WeekDetailView(
@@ -55,12 +70,56 @@ fun WeekDetailView(
     val focusManager = LocalFocusManager.current
     val database = LocalDatabase.current
 
+    val scope = rememberCoroutineScope()
+    val mapState = rememberMapState()
+    val resultStore = rememberLocalResultStore()
+
     val goals by database.findGoalsByWeekId(navRoute.weekId).collectAsState(emptyList())
     val uiState by viewModel.uiState.collectAsState()
 
-    // States
+    fun updateMapState(longitude: Double, latitude: Double) = scope.launch {
+        mapState.selectedLocation = null
+        delay(300)
 
-    LaunchedEffect(Unit) { viewModel.initialize(navRoute.weekId) }
+        // Move camera and update map click
+        mapState.cameraState.animateTo(
+            CameraPosition(
+                target = Position(longitude, latitude),
+                zoom = 14.0,
+            ),
+            500.milliseconds,
+        )
+
+        delay(300)
+        mapState.selectedLocation = MapClickEvent(
+            Position(longitude, latitude),
+            DpOffset.Zero,
+        )
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.initialize(navRoute.weekId)
+
+        // Listen event from viewmodel
+        viewModel.uiEvent.collect { event ->
+            when (event) {
+                is WeekDetailUiEvent.ZoomAndShowMapClickEvent -> {
+                    val longitude = event.longitude
+                    val latitude = event.latitude
+                    updateMapState(longitude, latitude)
+                }
+            }
+        }
+    }
+
+    val location = resultStore.get<Location>(ResultStoreKeys.UPDATE_WEEK_LOCATION)
+    LaunchedEffect(location) {
+        if (location == null) return@LaunchedEffect
+
+        viewModel.onChangedLngLat(location.longitude, location.latitude, isRunTrigger = false)
+        viewModel.onChangedAddress(location.address!!)
+        updateMapState(location.longitude, location.latitude)
+    }
 
     Scaffold(containerColor = Color.White) { paddingValues ->
         Box(
@@ -120,6 +179,32 @@ fun WeekDetailView(
                         onChangedReward = viewModel::updateReward,
                         onChangedRewardImages = viewModel::updateRewardImages,
                         onDeleteRewardImage = viewModel::deleteRewardImage,
+                    )
+                }
+
+                item {
+                    UpdateReview(
+                        stars = uiState.stars,
+                        review = uiState.review,
+                        onChangedStars = viewModel::onChangedStars,
+                        onChangedReview = viewModel::onChangedReview,
+                    )
+                }
+
+                item {
+                    SelectLocation(
+                        mapState = mapState,
+                        locationKey = ResultStoreKeys.UPDATE_YEAR_LOCATION,
+                        address = uiState.address,
+                        longitude = uiState.longitude,
+                        latitude = uiState.latitude,
+                        onChangedAddress = viewModel::onChangedAddress,
+                        onChangedLngLat = viewModel::onChangedLngLat,
+                        onFetchLocation = {
+                            viewModel.fetchCurrentLocationAndUpdate { longitude, latitude ->
+                                updateMapState(longitude, latitude)
+                            }
+                        }
                     )
                 }
 

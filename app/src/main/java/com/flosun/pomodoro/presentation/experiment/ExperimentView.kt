@@ -1,5 +1,6 @@
 package com.flosun.pomodoro.presentation.experiment
 
+import android.Manifest
 import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Spring
@@ -45,15 +46,19 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.flosun.pomodoro.R
-import com.flosun.pomodoro.presentation.experiment.map.MapOptionsBottomSheet
+import com.flosun.pomodoro.core.constants.DEBUG_TAG
 import com.flosun.pomodoro.ui.components.core.CoreButton
 import com.flosun.pomodoro.ui.components.shared.FlashStackedMessages
 import com.flosun.pomodoro.ui.components.shared.Message
 import com.flosun.pomodoro.ui.components.shared.MessageCard
 import com.flosun.pomodoro.ui.components.shared.map.MapView
 import com.flosun.pomodoro.ui.components.shared.map.rememberMapState
+import com.flosun.pomodoro.ui.components.shared.rememberAlertMessageManager
 import com.flosun.pomodoro.ui.theme.AppTheme
 import com.flosunn.core.extensions.rippleEffectClickable
+import com.flosunn.core.libraries.permissions.isGranted
+import com.flosunn.core.libraries.permissions.multiple.rememberMultiplePermissionManager
+import com.flosunn.core.libraries.permissions.single.rememberSinglePermissionManager
 import org.maplibre.compose.camera.CameraPosition
 import org.maplibre.compose.camera.CameraState
 import org.maplibre.compose.camera.rememberCameraState
@@ -61,15 +66,10 @@ import org.maplibre.compose.map.MaplibreMap
 import org.maplibre.compose.style.BaseStyle
 import org.maplibre.compose.style.StyleState
 import org.maplibre.spatialk.geojson.Position
+import timber.log.Timber
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
-@OptIn(ExperimentalUuidApi::class)
-val message = Message(
-    id = Uuid.toString(),
-    title = "Event has been created",
-    description = "Sunday, December 24, 2026 at 09:00 AM"
-)
 
 @SuppressLint("UseOfNonLambdaOffsetOverload")
 @OptIn(ExperimentalUuidApi::class)
@@ -77,7 +77,42 @@ val message = Message(
 fun ExperimentView(
     viewModel: ExperimentViewModel = hiltViewModel<ExperimentViewModel>()
 ) {
-    var messages by remember { mutableStateOf<List<Message>>(emptyList()) }
+    val multiplePermissionManager = rememberMultiplePermissionManager(
+        permissions = listOf(
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION,
+        ),
+        onPermissionResults = { permissionResults ->
+            Timber.tag(DEBUG_TAG).d("Permission Results: $permissionResults")
+        }
+    )
+    val alertMessageManager = rememberAlertMessageManager()
+
+    fun onPress() {
+        Timber
+            .tag(DEBUG_TAG)
+            .d("Button pressed, checking permissions")
+
+        Timber
+            .tag(DEBUG_TAG)
+            .d("Is Denied Permanently: ${multiplePermissionManager.isDeniedPermanently}")
+
+        if (multiplePermissionManager.isAllDeniedPermanently) {
+            alertMessageManager.showMessage(
+                title = "Notification",
+                description = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.",
+                onConfirm = { multiplePermissionManager.openAppSettings() },
+            )
+            return
+        }
+
+        if (!multiplePermissionManager.allPermissionGranted) {
+            multiplePermissionManager.requestPermissions()
+            return
+        }
+
+        Timber.tag(DEBUG_TAG).d("Permission granted, proceed with the action")
+    }
 
     Scaffold(
         containerColor = Color.White,
@@ -110,7 +145,7 @@ fun ExperimentView(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(20.dp),
-                onPress = {},
+                onPress = ::onPress,
             ) {
                 Text(
                     text = "Add Message",

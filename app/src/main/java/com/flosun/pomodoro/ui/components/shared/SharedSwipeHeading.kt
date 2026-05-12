@@ -29,14 +29,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.flosun.pomodoro.LocalNavBackStack
 import com.flosun.pomodoro.R
 import com.flosun.pomodoro.presentation.graph.NavGraph
+import com.flosun.pomodoro.presentation.graph.NavRoute
+import com.flosun.pomodoro.rememberNavBackStack
 import com.flosun.pomodoro.ui.components.core.CoreAsyncImage
 import com.flosun.pomodoro.ui.theme.AppTheme
 import com.flosun.pomodoro.ui.theme.PomodoroTheme
+import com.flosunn.core.extensions.tapGesture
 
 @Composable
 fun SharedSwipeHeading(onPressAvatar: () -> Unit = {}) {
+    val navBackStack = rememberNavBackStack()
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -59,7 +65,6 @@ fun SharedSwipeHeading(onPressAvatar: () -> Unit = {}) {
             Text(
                 text = "Hi, Hinsun",
                 fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
             )
 
             Text(
@@ -67,5 +72,14 @@ fun SharedSwipeHeading(onPressAvatar: () -> Unit = {}) {
                 fontSize = 16.sp,
             )
         }
+
+        Icon(
+            painter = painterResource(R.drawable.ic_notification),
+            contentDescription = null,
+            tint = Color(0xFF797979),
+            modifier = Modifier
+                .size(28.dp)
+                .tapGesture { navBackStack.add(NavRoute.Notifications) },
+        )
     }
 }

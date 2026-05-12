@@ -2,10 +2,13 @@ package com.flosun.pomodoro.presentation.swipe.home
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Icon
@@ -19,6 +22,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -28,6 +32,7 @@ import androidx.navigation3.runtime.NavKey
 import com.flosun.pomodoro.R
 import com.flosun.pomodoro.presentation.graph.NavRoute
 import com.flosun.pomodoro.presentation.swipe.home.components.PomodoroTimber
+import com.flosun.pomodoro.presentation.swipe.home.components.SelectTask
 import com.flosun.pomodoro.presentation.swipe.home.components.TimerOptions
 import com.flosun.pomodoro.ui.components.shared.SharedSwipeHeading
 import com.flosun.pomodoro.ui.components.shared.TaskCard
@@ -40,7 +45,6 @@ fun HomeView(
     viewModel: HomeViewModel = hiltViewModel<HomeViewModel>(),
 ) {
     val tasks by viewModel.tasks.collectAsState()
-    var timer by rememberSaveable { mutableIntStateOf(12 * 60) }
 
     LazyColumn(
         modifier = Modifier
@@ -49,14 +53,9 @@ fun HomeView(
     ) {
         item {
             SharedSwipeHeading(onPressAvatar = { navBackStack.add(NavRoute.Account) })
-            TaskCard(
-                name = "Design a Pomodoro App",
-                modifier = Modifier.padding(horizontal = 20.dp),
-            )
+            SelectTask(tasks = tasks)
 
             PomodoroTimber(
-                totalSeconds = 25 * 60,
-                remainTime = timer,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(20.dp)
