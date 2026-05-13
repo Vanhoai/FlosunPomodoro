@@ -35,7 +35,7 @@ sealed class WeekDetailUiEvent {
 @OptIn(ExperimentalUuidApi::class)
 @HiltViewModel
 class WeekDetailViewModel @Inject constructor(
-    private val application: Application,
+    application: Application,
     private val database: PomodoroDatabase,
     private val locationService: LocationService,
     private val commonRepository: CommonRepository,

@@ -47,7 +47,7 @@ sealed class UpdateYearUiEvent {
 @OptIn(ExperimentalUuidApi::class)
 @HiltViewModel
 class UpdateYearViewModel @Inject constructor(
-    private val application: Application,
+    application: Application,
     private val database: PomodoroDatabase,
     private val appStorage: AppStorage,
     private val globalLoading: GlobalLoading,

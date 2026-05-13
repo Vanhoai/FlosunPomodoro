@@ -47,7 +47,7 @@ import kotlin.time.Clock
 @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
 @HiltViewModel
 class AddTaskViewModel @Inject constructor(
-    private val application: Application,
+    application: Application,
     private val database: PomodoroDatabase,
     val globalLoading: GlobalLoading,
 ) : BaseViewModel(application) {

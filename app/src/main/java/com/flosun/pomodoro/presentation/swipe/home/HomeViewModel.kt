@@ -18,7 +18,7 @@ import kotlin.time.Clock
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val application: Application,
+    application: Application,
     private val database: PomodoroDatabase,
 ) : BaseViewModel(application) {
 
@@ -30,5 +30,5 @@ class HomeViewModel @Inject constructor(
     val tasks = database
         .findTasksByDate(nowMilliseconds, false)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), emptyList())
-    
+
 }

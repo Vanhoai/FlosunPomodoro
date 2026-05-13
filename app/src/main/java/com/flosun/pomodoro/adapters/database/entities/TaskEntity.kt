@@ -23,6 +23,7 @@ data class TaskEntity @OptIn(ExperimentalUuidApi::class) constructor(
     @ColumnInfo(name = "pomodoro_duration") val pomodoroDuration: Int,
     @ColumnInfo(name = "num_pomodoro") val numPomodoro: Int,
     @ColumnInfo(name = "num_pomodoro_completed") val numPomodoroCompleted: Int = 0,
+    @ColumnInfo(name = "total_time_spent") val totalTimeSpent: Long = 0L,
     @ColumnInfo(name = "date") val date: Long = System.currentTimeMillis(),
     @ColumnInfo(name = "is_completed") val isCompleted: Boolean = false,
 )

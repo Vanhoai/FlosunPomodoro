@@ -7,45 +7,22 @@ import androidx.room.TypeConverters
 import com.flosun.pomodoro.adapters.database.entities.AccountEntity
 import com.flosun.pomodoro.adapters.database.entities.GoalEntity
 import com.flosun.pomodoro.adapters.database.entities.LaggingIndicatorEntity
+import com.flosun.pomodoro.adapters.database.entities.NotificationEntity
 import com.flosun.pomodoro.adapters.database.entities.SettingEntity
+import com.flosun.pomodoro.adapters.database.entities.SoundEntity
+import com.flosun.pomodoro.adapters.database.entities.SoundType
 import com.flosun.pomodoro.adapters.database.entities.TagEntity
 import com.flosun.pomodoro.adapters.database.entities.TaskEntity
 import com.flosun.pomodoro.adapters.database.entities.TwelveWeekYearEntity
 import com.flosun.pomodoro.adapters.database.entities.WeekEntity
 import kotlinx.serialization.json.Json
 
-private val json = Json { ignoreUnknownKeys = true }
-
-class StringArrayConverter {
-
-    @TypeConverter
-    fun fromString(value: String): List<String> {
-        return json.decodeFromString(value)
-    }
-
-    @TypeConverter
-    fun fromList(list: List<String>): String {
-        return json.encodeToString(list)
-    }
-}
-
-class JsonConverter {
-
-    @TypeConverter
-    fun fromString(value: String): Map<String, String> {
-        return json.decodeFromString(value)
-    }
-
-    @TypeConverter
-    fun fromMap(map: Map<String, String>): String {
-        return json.encodeToString(map)
-    }
-}
-
 @Database(
     entities = [
+        SoundEntity::class,
         AccountEntity::class,
         SettingEntity::class,
+        NotificationEntity::class,
         TwelveWeekYearEntity::class,
         LaggingIndicatorEntity::class,
         WeekEntity::class,
@@ -58,6 +35,7 @@ class JsonConverter {
 @TypeConverters(
     StringArrayConverter::class,
     JsonConverter::class,
+    SoundTypeConverter::class,
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract val dao: DatabaseDao

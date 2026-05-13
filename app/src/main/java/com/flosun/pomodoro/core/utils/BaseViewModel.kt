@@ -12,7 +12,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-open class BaseViewModel @Inject constructor(private val application: Application) : ViewModel() {
+open class BaseViewModel @Inject constructor(val application: Application) : ViewModel() {
 
     fun ioRun(block: suspend () -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {

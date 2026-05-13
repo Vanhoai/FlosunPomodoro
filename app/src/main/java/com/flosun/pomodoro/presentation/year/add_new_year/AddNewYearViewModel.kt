@@ -48,7 +48,7 @@ import kotlinx.coroutines.withContext
 
 @HiltViewModel
 class AddNewYearViewModel @Inject constructor(
-    private val application: Application,
+    application: Application,
     private val appStorage: AppStorage,
     private val database: PomodoroDatabase,
     private val locationService: LocationService,

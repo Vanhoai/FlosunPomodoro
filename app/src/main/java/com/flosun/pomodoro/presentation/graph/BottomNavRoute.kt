@@ -25,7 +25,7 @@ sealed class BottomNavRoute(
 
     @Serializable
     data object More : BottomNavRoute(
-        icon = R.drawable.ic_grid,
+        icon = R.drawable.ic_thunder,
         title = "More"
     )
 

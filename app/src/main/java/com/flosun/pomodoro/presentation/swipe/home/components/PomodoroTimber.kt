@@ -22,6 +22,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,6 +41,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.flosun.pomodoro.R
+import com.flosun.pomodoro.core.functions.ViewFuncs
 import com.flosun.pomodoro.rememberPomodoroService
 import com.flosun.pomodoro.ui.theme.AppTheme
 
@@ -51,21 +53,19 @@ fun PomodoroTimber(
 ) {
     val pomodoroService = rememberPomodoroService()
 
-    val totalSeconds: Int = 25 * 60
-    val remainTime: Int = totalSeconds - 15
+    val totalSeconds by pomodoroService.totalTime.collectAsState()
+    val remainTime by pomodoroService.remainTime.collectAsState()
+    val isRunning by pomodoroService.isRunning.collectAsState()
 
-    val configuration = LocalConfiguration.current
-    val screenWidthDp = configuration.screenWidthDp
+    val screenWidthDp = ViewFuncs.screenWidthDp()
     val arcSize = (screenWidthDp - 20 * 2 - 40 * 2).dp
 
     val progress = remainTime.toFloat() / totalSeconds.toFloat()
     val animatedProgress by animateFloatAsState(
         targetValue = progress,
         animationSpec = tween(durationMillis = 600, easing = LinearEasing),
-        label = "arcProgress"
+        label = "Arc Progress"
     )
-
-    var isRunning by remember { mutableStateOf(false) }
 
     val minutes = remainTime / 60
     val seconds = remainTime % 60
@@ -97,7 +97,7 @@ fun PomodoroTimber(
 
             Text(
                 text = timeText,
-                fontSize = 60.sp,
+                fontSize = 48.sp,
                 style = AppTheme.typography.clock,
                 modifier = Modifier.padding(bottom = 20.dp)
             )

@@ -29,7 +29,7 @@ data class TasksUiState(
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class TasksViewModel @Inject constructor(
-    private val application: Application,
+    application: Application,
     private val database: PomodoroDatabase,
 ) : BaseViewModel(application) {
 

@@ -1,23 +1,37 @@
 package com.flosun.pomodoro
 
+import android.app.Application
+import android.net.Uri
+import androidx.core.net.toFile
+import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.flosun.pomodoro.adapters.database.PomodoroDatabase
+import com.flosun.pomodoro.adapters.database.entities.alarm
+import com.flosun.pomodoro.adapters.database.entities.audios
 import com.flosun.pomodoro.core.constants.CURRENT_YEAR_ID_KEY
 import com.flosun.pomodoro.core.constants.DEBUG_TAG
 import com.flosun.pomodoro.core.utils.AppStorage
+import com.flosun.pomodoro.core.utils.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import timber.log.Timber
+import java.io.File
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val database: PomodoroDatabase,
+    application: Application,
     private val appStorage: AppStorage,
-) : ViewModel() {
+    private val database: PomodoroDatabase,
+) : BaseViewModel(application) {
 
-    fun checkAndSetCurrentYear() = viewModelScope.launch(Dispatchers.IO) {
+    init {
+        insertDefaultSounds()
+    }
+
+    fun checkAndSetCurrentYear() = ioRun {
         val now = System.currentTimeMillis()
         database.findTwelveWeekYearByDate(now).collect {
             if (it != null) appStorage.write(CURRENT_YEAR_ID_KEY, it.id)
@@ -25,4 +39,41 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    fun isUriAccessible(assetPath: String): Boolean {
+        return try {
+            val relativePath = if (assetPath.startsWith("file:///android_asset/")) {
+                assetPath.removePrefix("file:///android_asset/")
+            } else {
+                assetPath
+            }
+
+            application.applicationContext.assets.open(relativePath).use { true }
+        } catch (exception: Exception) {
+            exception.printStackTrace()
+            false
+        }
+    }
+
+    // Insert Default Sounds
+    fun insertDefaultSounds() = ioRun {
+        // Validate uri
+        var isValidUri = true
+
+        for (sound in audios + alarm) {
+            val uri = sound.uri
+            if (!isUriAccessible(uri)) {
+                Timber.tag(DEBUG_TAG).e("URI not accessible: $uri")
+                isValidUri = false
+                break
+            }
+        }
+
+        if (!isValidUri) {
+            showToast("Failed to load default sounds. Please check your app installation.")
+            return@ioRun
+        }
+
+        database.addAllSounds(audios)
+        database.addAllSounds(alarm)
+    }
 }

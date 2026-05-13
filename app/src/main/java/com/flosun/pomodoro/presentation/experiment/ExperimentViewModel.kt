@@ -14,10 +14,10 @@ data class ExperimentUiState(
 
 @HiltViewModel
 class ExperimentViewModel @Inject constructor(
-    private val application: Application,
+    application: Application,
 ) : BaseViewModel(application) {
 
     private val _uiState = MutableStateFlow(ExperimentUiState())
     val uiState: StateFlow<ExperimentUiState> = _uiState.asStateFlow()
-    
+
 }

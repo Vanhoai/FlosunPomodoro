@@ -29,9 +29,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.flosun.pomodoro.R
+import com.flosun.pomodoro.core.constants.TimerModeKey
+import com.flosun.pomodoro.core.services.TimerMode
 import com.flosun.pomodoro.ui.components.core.CoreBottomSheet
 import com.flosun.pomodoro.ui.components.core.CoreButton
 import com.flosun.pomodoro.ui.theme.AppTheme
+import com.flosunn.core.libraries.datastore.rememberEnumPreference
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -40,7 +43,7 @@ fun TimerModeBottomSheet(
     sheetState: SheetState,
     closeBottomSheet: () -> Unit = {},
 ) {
-    var selectedOption by remember { mutableIntStateOf(0) }
+    var timerMode by rememberEnumPreference(TimerModeKey, TimerMode.COUNTDOWN)
 
     CoreBottomSheet(
         sheetState = sheetState,
@@ -54,7 +57,7 @@ fun TimerModeBottomSheet(
                 .clickable(
                     interactionSource = remember { MutableInteractionSource() },
                     indication = ripple(),
-                    onClick = { selectedOption = 0 }
+                    onClick = { timerMode = TimerMode.COUNTDOWN }
                 )
                 .padding(vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
@@ -76,7 +79,7 @@ fun TimerModeBottomSheet(
             }
 
             Box(modifier = Modifier.width(40.dp)) {
-                if (selectedOption == 0) Icon(
+                if (timerMode == TimerMode.COUNTDOWN) Icon(
                     painter = painterResource(R.drawable.ic_checked),
                     contentDescription = null,
                     modifier = Modifier.size(24.dp),
@@ -97,7 +100,7 @@ fun TimerModeBottomSheet(
                 .clickable(
                     interactionSource = remember { MutableInteractionSource() },
                     indication = ripple(),
-                    onClick = { selectedOption = 1 }
+                    onClick = { timerMode = TimerMode.INFINITY }
                 )
                 .padding(vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
@@ -119,7 +122,7 @@ fun TimerModeBottomSheet(
             }
 
             Box(modifier = Modifier.width(40.dp)) {
-                if (selectedOption == 1) Icon(
+                if (timerMode == TimerMode.INFINITY) Icon(
                     painter = painterResource(R.drawable.ic_checked),
                     contentDescription = null,
                     modifier = Modifier.size(24.dp),

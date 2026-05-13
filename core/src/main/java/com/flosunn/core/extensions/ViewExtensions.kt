@@ -67,6 +67,13 @@ fun Modifier.rippleEffectClickable(
     onClick = onClick
 )
 
+@Composable
+fun Modifier.onLongPress(onLongPress: () -> Unit): Modifier = this.pointerInput(Unit) {
+    detectTapGestures(
+        onLongPress = { onLongPress() }
+    )
+}
+
 fun Modifier.noRippleEffectClickable(enabled: Boolean = true, onClick: () -> Unit): Modifier =
     composed {
         clickable(

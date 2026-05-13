@@ -71,7 +71,7 @@ class MainActivity : FragmentActivity() {
     private var audioConnection by mutableStateOf<AudioConnection?>(null)
     private val serviceConnection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, binder: IBinder?) {
-            audioService = (binder as AudioService.AudioBinder).getService()
+            audioService = (binder as AudioService.AudioBinder).service
             audioConnection = AudioConnection(
                 context = this@MainActivity,
                 binder = binder,

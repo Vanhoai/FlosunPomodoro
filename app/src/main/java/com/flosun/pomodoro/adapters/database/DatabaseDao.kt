@@ -9,6 +9,8 @@ import androidx.room.Update
 import com.flosun.pomodoro.adapters.database.entities.AccountEntity
 import com.flosun.pomodoro.adapters.database.entities.GoalEntity
 import com.flosun.pomodoro.adapters.database.entities.LaggingIndicatorEntity
+import com.flosun.pomodoro.adapters.database.entities.SoundEntity
+import com.flosun.pomodoro.adapters.database.entities.SoundType
 import com.flosun.pomodoro.adapters.database.entities.TaskEntity
 import com.flosun.pomodoro.adapters.database.entities.TwelveWeekYearEntity
 import com.flosun.pomodoro.adapters.database.entities.WeekEntity
@@ -143,4 +145,15 @@ interface DatabaseDao {
     fun findTaskById(id: String): Flow<TaskEntity?>
 
     // endregion ======================================= TASK QUERIES =======================================
+
+    // region ======================================= SOUND QUERIES =======================================
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    fun addSound(sound: SoundEntity): Long
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    fun addAllSounds(sounds: List<SoundEntity>): List<Long>
+
+    @Query("SELECT * FROM sounds WHERE sound_type = :soundType")
+    fun findSoundsByType(soundType: SoundType): Flow<List<SoundEntity>>
+    // endregion ======================================= SOUND QUERIES =======================================
 }

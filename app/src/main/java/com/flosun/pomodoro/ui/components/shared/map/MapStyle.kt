@@ -46,7 +46,7 @@ enum class Versatiles(override val isDark: Boolean = false) : MapStyle {
 
     override val displayName = name
 
-    override val base = BaseStyle.Uri("file:///android_asset/${name.lowercase()}.json")
+    override val base = BaseStyle.Uri("file:///android_asset/styles/${name.lowercase()}.json")
 
     override val anchorBelowSymbols = Anchor.Below("label-address-housenumber")
 }
@@ -59,7 +59,7 @@ enum class OtherStyles(
 ) : MapStyle {
     OpenStreetMaps(
         displayName = "OpenStreetMaps Carto",
-        base = BaseStyle.Uri("file:///android_asset/osm-raster.json"),
+        base = BaseStyle.Uri("file:///android_asset/styles/osm-raster.json"),
     ),
     Americana(
         displayName = "Americana",
