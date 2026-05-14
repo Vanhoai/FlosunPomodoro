@@ -1,24 +1,20 @@
 package com.flosun.pomodoro
 
 import android.app.Application
-import android.net.Uri
-import androidx.core.net.toFile
-import androidx.core.net.toUri
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.flosun.pomodoro.adapters.database.PomodoroDatabase
 import com.flosun.pomodoro.adapters.database.entities.alarm
 import com.flosun.pomodoro.adapters.database.entities.audios
+import com.flosun.pomodoro.adapters.database.entities.ticking
 import com.flosun.pomodoro.core.constants.CURRENT_YEAR_ID_KEY
 import com.flosun.pomodoro.core.constants.DEBUG_TAG
 import com.flosun.pomodoro.core.utils.AppStorage
 import com.flosun.pomodoro.core.utils.BaseViewModel
+import com.flosun.pomodoro.events.GlobalEvent
+import com.flosun.pomodoro.events.GlobalEventBus
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.io.File
 import javax.inject.Inject
+
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
@@ -59,7 +55,7 @@ class MainViewModel @Inject constructor(
         // Validate uri
         var isValidUri = true
 
-        for (sound in audios + alarm) {
+        for (sound in audios + alarm + ticking) {
             val uri = sound.uri
             if (!isUriAccessible(uri)) {
                 Timber.tag(DEBUG_TAG).e("URI not accessible: $uri")
@@ -75,5 +71,6 @@ class MainViewModel @Inject constructor(
 
         database.addAllSounds(audios)
         database.addAllSounds(alarm)
+        database.addAllSounds(ticking)
     }
 }

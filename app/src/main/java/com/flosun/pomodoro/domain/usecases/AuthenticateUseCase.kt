@@ -1,7 +1,8 @@
 package com.flosun.pomodoro.domain.usecases
 
+import com.flosun.pomodoro.events.GlobalEvent
+import com.flosun.pomodoro.events.GlobalEventBus
 import com.flosun.pomodoro.core.cryptography.PasswordHasher
-import com.flosun.pomodoro.core.utils.BaseResult
 import com.flosun.pomodoro.core.utils.BaseUseCase
 import com.flosun.pomodoro.core.utils.ValidationException
 import com.flosun.pomodoro.domain.entities.Account
@@ -19,7 +20,8 @@ data class AuthParams(
 @Singleton
 class AuthenticateUseCase @Inject constructor(
     private val passwordHasher: PasswordHasher,
-    private val accountRepository: AccountRepository
+    private val accountRepository: AccountRepository,
+    private val globalEventBus: GlobalEventBus,
 ) : BaseUseCase<AuthParams, Account>() {
 
     override suspend fun execute(params: AuthParams): Account {
@@ -39,6 +41,8 @@ class AuthenticateUseCase @Inject constructor(
         )
 
         val createdAccount = accountRepository.create(account = newAccount)
+
+        globalEventBus.sendEvent(GlobalEvent.CreateSetting(accountId = createdAccount.id))
         return createdAccount
     }
 

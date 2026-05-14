@@ -44,10 +44,11 @@ import com.flosun.pomodoro.R
 import com.flosun.pomodoro.core.functions.ViewFuncs
 import com.flosun.pomodoro.rememberPomodoroService
 import com.flosun.pomodoro.ui.theme.AppTheme
+import com.flosunn.core.extensions.rippleEffectClickable
 
 @SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
-fun PomodoroTimber(
+fun PomodoroTimer(
     strokeWidth: Dp = 22.dp,
     modifier: Modifier,
 ) {
@@ -136,14 +137,7 @@ fun PomodoroTimber(
                     .size(60.dp)
                     .clip(CircleShape)
                     .background(AppTheme.colors.primaryColor)
-                    .clickable(
-                        interactionSource = remember { MutableInteractionSource() },
-                        indication = ripple(),
-                        onClick = {
-                            pomodoroService.run()
-                            // isRunning = !isRunning
-                        }
-                    ),
+                    .rippleEffectClickable { pomodoroService.togglePlayPause() },
                 contentAlignment = Alignment.Center
             ) {
                 Icon(

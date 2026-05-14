@@ -9,6 +9,7 @@ import androidx.room.Update
 import com.flosun.pomodoro.adapters.database.entities.AccountEntity
 import com.flosun.pomodoro.adapters.database.entities.GoalEntity
 import com.flosun.pomodoro.adapters.database.entities.LaggingIndicatorEntity
+import com.flosun.pomodoro.adapters.database.entities.SettingEntity
 import com.flosun.pomodoro.adapters.database.entities.SoundEntity
 import com.flosun.pomodoro.adapters.database.entities.SoundType
 import com.flosun.pomodoro.adapters.database.entities.TaskEntity
@@ -144,6 +145,15 @@ interface DatabaseDao {
     @Query("SELECT * FROM tasks WHERE id = :id")
     fun findTaskById(id: String): Flow<TaskEntity?>
 
+    @Query(
+        """
+        SELECT * FROM tasks
+        WHERE id = :id AND date = :date
+        LIMIT 1
+        """
+    )
+    fun findTaskByIdAndDate(id: String, date: Long): Flow<TaskEntity?>
+
     // endregion ======================================= TASK QUERIES =======================================
 
     // region ======================================= SOUND QUERIES =======================================
@@ -156,4 +166,22 @@ interface DatabaseDao {
     @Query("SELECT * FROM sounds WHERE sound_type = :soundType")
     fun findSoundsByType(soundType: SoundType): Flow<List<SoundEntity>>
     // endregion ======================================= SOUND QUERIES =======================================
+
+    // region ======================================= SETTING QUERIES =======================================
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    fun addSetting(setting: SettingEntity): Long
+
+    @Update
+    fun updateSetting(setting: SettingEntity): Int
+
+    @Query(
+        """
+        SELECT * FROM settings
+        WHERE account_id = :accountId
+        LIMIT 1
+        """
+    )
+    fun findSettingByAccountId(accountId: String): Flow<SettingEntity?>
+
+    // endregion ======================================= SETTING QUERIES =======================================
 }

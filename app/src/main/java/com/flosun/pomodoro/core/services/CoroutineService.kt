@@ -31,8 +31,8 @@ open class CoroutineService(
         ).show()
     }
 
-    fun onDispose() {
+    open fun onDispose() {
         job.cancel()
     }
-
+    
 }

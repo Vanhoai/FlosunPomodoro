@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "daca19a6cd751fbf78b151139285a686",
+    "identityHash": "c96412d7800e4de688711be0df161c57",
     "entities": [
       {
         "tableName": "sounds",
@@ -242,7 +242,18 @@
           "columnNames": [
             "id"
           ]
-        }
+        },
+        "indices": [
+          {
+            "name": "index_settings_account_id",
+            "unique": true,
+            "columnNames": [
+              "account_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_settings_account_id` ON `${TABLE_NAME}` (`account_id`)"
+          }
+        ]
       },
       {
         "tableName": "notifications",
@@ -781,7 +792,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'daca19a6cd751fbf78b151139285a686')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'c96412d7800e4de688711be0df161c57')"
     ]
   }
 }

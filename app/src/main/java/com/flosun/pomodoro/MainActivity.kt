@@ -13,6 +13,7 @@ import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -24,7 +25,6 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 import com.flosun.pomodoro.adapters.database.LocalDatabase
 import com.flosun.pomodoro.adapters.database.PomodoroDatabase
-import com.flosun.pomodoro.core.constants.DEBUG_TAG
 import com.flosun.pomodoro.core.services.LocationService
 import com.flosun.pomodoro.core.services.PomodoroService
 import com.flosun.pomodoro.core.services.audio.AudioConnection
@@ -32,6 +32,9 @@ import com.flosun.pomodoro.core.services.audio.AudioService
 import com.flosun.pomodoro.core.services.audio.LocalAudioConnection
 import com.flosun.pomodoro.core.utils.result_store.LocalResultStore
 import com.flosun.pomodoro.core.utils.result_store.rememberResultStore
+import com.flosun.pomodoro.events.DatabaseConsumer
+import com.flosun.pomodoro.events.GlobalEventBus
+import com.flosun.pomodoro.events.LocalEventBus
 import com.flosun.pomodoro.presentation.graph.NavGraph
 import com.flosun.pomodoro.presentation.graph.NavRoute
 import com.flosun.pomodoro.presentation.graph.config
@@ -43,7 +46,6 @@ import com.flosun.pomodoro.ui.components.shared.LocalFlashStackedMessageManager
 import com.flosun.pomodoro.ui.components.shared.LocalGlobalLoading
 import com.flosun.pomodoro.ui.theme.PomodoroTheme
 import dagger.hilt.android.AndroidEntryPoint
-import timber.log.Timber
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -66,6 +68,12 @@ class MainActivity : FragmentActivity() {
 
     @Inject
     lateinit var alertMessageManager: AlertMessageManager
+
+    @Inject
+    lateinit var globalEventBus: GlobalEventBus
+
+    @Inject
+    lateinit var databaseConsumer: DatabaseConsumer
 
     private var audioService: AudioService? = null
     private var audioConnection by mutableStateOf<AudioConnection?>(null)
@@ -103,6 +111,8 @@ class MainActivity : FragmentActivity() {
                 NavRoute.Auth,
             )
 
+            LaunchedEffect(Unit) { databaseConsumer.listenGlobalEvents() }
+
             CompositionLocalProvider(
                 LocalDatabase provides database,
                 LocalGlobalLoading provides globalLoading,
@@ -110,6 +120,7 @@ class MainActivity : FragmentActivity() {
                 LocalAlertMessageManager provides alertMessageManager,
                 LocalPomodoroService provides pomodoroService,
                 LocalAudioConnection provides audioConnection,
+                LocalEventBus provides globalEventBus,
                 LocalNavBackStack provides navBackStack,
                 LocalResultStore provides resultStore,
             ) {
@@ -146,6 +157,7 @@ class MainActivity : FragmentActivity() {
         super.onDestroy()
         locationService.onDispose()
         pomodoroService.onDispose()
+        databaseConsumer.onDispose()
 
         if (isFinishing) {
             stopService(Intent(this, AudioService::class.java))

@@ -91,3 +91,11 @@ val alarm = listOf(
         uri = "file:///android_asset/alarm/racing_countdown.wav",
     ),
 )
+
+val ticking = listOf(
+    SoundEntity(
+        soundType = SoundType.TICKING,
+        title = "Classic Ticking",
+        uri = "file:///android_asset/ticking/classic.mp3",
+    ),
+)
