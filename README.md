@@ -330,10 +330,6 @@ For issues, feature requests, or contributions:
 2. Fork and create a feature branch
 3. Submit a pull request with tests
 
-## License
-
-This project is proprietary. Contact the maintainers for licensing information.
-
 ## Resources
 
 - [Pomodoro Technique](https://en.wikipedia.org/wiki/Pomodoro_Technique)
@@ -342,8 +338,3 @@ This project is proprietary. Contact the maintainers for licensing information.
 - [Room Database](https://developer.android.com/training/data-storage/room)
 - [Hilt Documentation](https://dagger.dev/hilt/)
 - [Supabase Documentation](https://supabase.com/docs)
-
----
-
-**Last Updated**: May 2026  
-**Repository**: [Vanhoai/Pomodoro](https://github.com/Vanhoai/Pomodoro)
