@@ -24,9 +24,7 @@ import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -35,13 +33,13 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.flosun.pomodoro.R
 import com.flosun.pomodoro.core.functions.ViewFuncs
+import com.flosun.pomodoro.core.services.TimerState
 import com.flosun.pomodoro.rememberPomodoroService
 import com.flosun.pomodoro.ui.theme.AppTheme
 import com.flosunn.core.extensions.rippleEffectClickable
@@ -54,14 +52,21 @@ fun PomodoroTimer(
 ) {
     val pomodoroService = rememberPomodoroService()
 
-    val totalSeconds by pomodoroService.totalTime.collectAsState()
-    val remainTime by pomodoroService.remainTime.collectAsState()
-    val isRunning by pomodoroService.isRunning.collectAsState()
+    val session by pomodoroService.session.collectAsState()
+
+    val totalSeconds = session.totalTime
+    val remainTime = session.remainTime
+    val isRunning = session.timerState == TimerState.RUNNING
 
     val screenWidthDp = ViewFuncs.screenWidthDp()
     val arcSize = (screenWidthDp - 20 * 2 - 40 * 2).dp
 
-    val progress = remainTime.toFloat() / totalSeconds.toFloat()
+    val progress = if (totalSeconds > 0) {
+        remainTime.toFloat() / totalSeconds.toFloat()
+    } else {
+        1f
+    }
+
     val animatedProgress by animateFloatAsState(
         targetValue = progress,
         animationSpec = tween(durationMillis = 600, easing = LinearEasing),
@@ -137,7 +142,10 @@ fun PomodoroTimer(
                     .size(60.dp)
                     .clip(CircleShape)
                     .background(AppTheme.colors.primaryColor)
-                    .rippleEffectClickable { pomodoroService.togglePlayPause() },
+                    .rippleEffectClickable {
+                        if (isRunning) pomodoroService.pause()
+                        else pomodoroService.play()
+                    },
                 contentAlignment = Alignment.Center
             ) {
                 Icon(

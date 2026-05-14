@@ -2,9 +2,12 @@ package com.flosun.pomodoro.core.functions
 
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.atTime
 import kotlinx.datetime.number
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
+import kotlinx.datetime.todayIn
+import kotlin.time.Clock
 import kotlin.time.Instant
 
 object TimeFuncs {
@@ -62,5 +65,12 @@ object TimeFuncs {
 
     fun formatDuration(startTimeMilliseconds: Long, endTimeMilliseconds: Long): String {
         return "${formatTimeString(startTimeMilliseconds)} - ${formatTimeString(endTimeMilliseconds)}"
+    }
+
+    fun nowMilliseconds(): Long {
+        return Clock.System.todayIn(TimeZone.currentSystemDefault())
+            .atTime(0, 0, 0)
+            .toInstant(TimeZone.currentSystemDefault())
+            .toEpochMilliseconds()
     }
 }

@@ -31,11 +31,8 @@ class AudioService : MediaLibraryService(), Player.Listener {
     override fun onGetSession(p0: MediaSession.ControllerInfo) = mediaSession
 
     inner class AudioBinder : Binder() {
-        val service: AudioService
-            get() = this@AudioService
-
-        val player: ExoPlayer
-            get() = exoplayer
+        val service: AudioService get() = this@AudioService
+        val player: ExoPlayer get() = exoplayer
     }
 
     override fun onBind(intent: Intent?) = super.onBind(intent) ?: binder
@@ -82,4 +79,5 @@ class AudioService : MediaLibraryService(), Player.Listener {
         exoplayer.prepare()
         exoplayer.repeatMode = Player.REPEAT_MODE_ALL
     }
+    
 }
