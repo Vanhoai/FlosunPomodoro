@@ -30,10 +30,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.dropShadow
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.boundsInRoot
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.DpOffset
@@ -67,7 +70,10 @@ data class QuickAction(
 fun BottomTabs(
     currentBottomBarScreen: BottomNavRoute,
     onClick: (BottomNavRoute) -> Unit,
+    onOpenAIAssistant: (Offset) -> Unit,
 ) {
+    var position by remember { mutableStateOf(Offset.Zero) }
+
     val quickActions = listOf(
         QuickAction(R.drawable.ic_star, "Focus Mode", Color(0xFF6ED1CF)),
         QuickAction(R.drawable.ic_grid, "AI Assistant", Color(0xFF7274ED)),
@@ -157,6 +163,10 @@ fun BottomTabs(
                     Box(
                         modifier = Modifier
                             .graphicsLayer { rotationZ = fabRotation }
+                            .onGloballyPositioned {
+                                val rect = it.boundsInRoot()
+                                position = rect.center
+                            }
                             .size(68.dp)
                             .clip(CircleShape)
                             .background(AppTheme.colors.primaryColor)
@@ -170,7 +180,16 @@ fun BottomTabs(
                                     spread = 20.dp,
                                 ),
                             )
-                            .rippleEffectClickable { isExpanded = !isExpanded },
+                            .pointerInput(Unit) {
+                                detectTapGestures(
+                                    // onPress = { isExpanded = !isExpanded },
+                                    onLongPress = {
+                                        // Move offset y to bottom
+                                        val readOffset = position
+                                        onOpenAIAssistant(readOffset)
+                                    },
+                                )
+                            },
                         contentAlignment = Alignment.Center,
                     ) {
                         Icon(
