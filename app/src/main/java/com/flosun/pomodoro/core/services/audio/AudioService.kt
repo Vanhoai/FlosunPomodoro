@@ -74,10 +74,21 @@ class AudioService : MediaLibraryService(), Player.Listener {
 
     }
 
+    fun playSound(mediaItems: ArrayDeque<MediaItem>, playWhenReady: Boolean = true) {
+
+        scope.launch {
+            exoplayer.setMediaItems(mediaItems.toList())
+            exoplayer.prepare()
+            exoplayer.repeatMode = Player.REPEAT_MODE_OFF
+            exoplayer.playWhenReady = playWhenReady
+        }
+
+    }
+
     fun setMediaItem(mediaItem: MediaItem) {
         exoplayer.setMediaItems(listOf(mediaItem))
         exoplayer.prepare()
         exoplayer.repeatMode = Player.REPEAT_MODE_ALL
     }
-    
+
 }

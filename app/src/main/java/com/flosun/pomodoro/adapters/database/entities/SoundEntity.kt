@@ -2,6 +2,7 @@ package com.flosun.pomodoro.adapters.database.entities
 
 import android.net.Uri
 import androidx.core.net.toUri
+import androidx.media3.common.MediaItem
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
@@ -19,7 +20,7 @@ enum class SoundType {
     tableName = "sounds",
     indices = [
         Index(value = ["title", "sound_type"], unique = true),
-    ]
+    ],
 )
 data class SoundEntity @OptIn(ExperimentalUuidApi::class) constructor(
     @PrimaryKey val id: String = Uuid.random().toString(),
@@ -29,7 +30,9 @@ data class SoundEntity @OptIn(ExperimentalUuidApi::class) constructor(
     @ColumnInfo(name = "sound_type") val soundType: SoundType,
     @ColumnInfo(name = "title") val title: String,
     @ColumnInfo(name = "uri") val uri: String,
-)
+) {
+    fun toMediaItem(): MediaItem = MediaItem.fromUri(uri)
+}
 
 val audios = listOf(
     SoundEntity(

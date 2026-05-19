@@ -20,6 +20,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.flosun.pomodoro.R
+import com.flosunn.core.extensions.rippleEffectClickable
 
 @Composable
 fun RowNavigation(
@@ -30,11 +31,7 @@ fun RowNavigation(
     Row(
         modifier = Modifier
             .height(52.dp)
-            .clickable(
-                indication = ripple(),
-                interactionSource = remember { MutableInteractionSource() },
-                onClick = { onPress() }
-            )
+            .rippleEffectClickable { onPress() }
             .padding(horizontal = 20.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -54,7 +51,7 @@ fun RowNavigation(
                 text = description,
                 fontSize = 15.sp,
                 color = Color(0xFF929292),
-                modifier = Modifier.padding(bottom = 4.dp, end = 4.dp)
+                modifier = Modifier.padding(end = 4.dp)
             )
 
             Icon(

@@ -30,10 +30,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import com.flosun.pomodoro.R
-import com.flosun.pomodoro.core.constants.DurationType
-import com.flosun.pomodoro.presentation.swipe.settings.preference.choose_duration.durationOptions
-import com.flosun.pomodoro.presentation.swipe.settings.preference.choose_duration.pomodoroOptions
-import com.flosun.pomodoro.ui.components.core.CoreButton
 import com.flosun.pomodoro.ui.components.shared.CommonBackHeading
 import com.flosun.pomodoro.ui.theme.AppTheme
 

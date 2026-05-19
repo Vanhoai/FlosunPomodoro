@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "c96412d7800e4de688711be0df161c57",
+    "identityHash": "6bd4bfac859c666c570e126d4eb6c226",
     "entities": [
       {
         "tableName": "sounds",
@@ -66,12 +66,24 @@
       },
       {
         "tableName": "accounts",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `password` TEXT NOT NULL, `email` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `created_at` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL, `name` TEXT NOT NULL, `password` TEXT NOT NULL, `email` TEXT NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
             "columnName": "id",
             "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "created_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updated_at",
+            "affinity": "INTEGER",
             "notNull": true
           },
           {
@@ -102,7 +114,7 @@
       },
       {
         "tableName": "settings",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `created_at` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL, `account_id` TEXT NOT NULL, `is_enabled_daily_target` INTEGER NOT NULL, `daily_target_ms` INTEGER NOT NULL, `pomodoro_duration` INTEGER NOT NULL, `short_break_duration` INTEGER NOT NULL, `long_break_duration` INTEGER NOT NULL, `long_break_after` INTEGER NOT NULL, `is_disabled_break` INTEGER NOT NULL, `auto_start_next_pomodoro` INTEGER NOT NULL, `auto_start_break` INTEGER NOT NULL, `focus_ticking` TEXT NOT NULL, `short_break_ticking` TEXT NOT NULL, `long_break_ticking` TEXT NOT NULL, `focus_alarm` TEXT NOT NULL, `short_break_alarm` TEXT NOT NULL, `long_break_alarm` TEXT NOT NULL, `auto_reset_pomodoro` INTEGER NOT NULL, `prevent_screen_lock` INTEGER NOT NULL, `vibrant_in_silent_mode` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `created_at` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL, `account_id` TEXT NOT NULL, `is_enabled_daily_target` INTEGER NOT NULL, `daily_target_ms` INTEGER NOT NULL, `pomodoro_duration` INTEGER NOT NULL, `short_break_duration` INTEGER NOT NULL, `long_break_duration` INTEGER NOT NULL, `long_break_after` INTEGER NOT NULL, `is_disabled_break` INTEGER NOT NULL, `auto_start_next_pomodoro` INTEGER NOT NULL, `auto_start_break` INTEGER NOT NULL, `focus_ticking` TEXT NOT NULL, `short_break_ticking` TEXT NOT NULL, `long_break_ticking` TEXT NOT NULL, `focus_alarm` TEXT NOT NULL, `short_break_alarm` TEXT NOT NULL, `long_break_alarm` TEXT NOT NULL, `auto_reset_pomodoro` INTEGER NOT NULL, `prevent_screen_lock` INTEGER NOT NULL, `vibrant_in_silent_mode` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`account_id`) REFERENCES `accounts`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -253,11 +265,24 @@
             "orders": [],
             "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_settings_account_id` ON `${TABLE_NAME}` (`account_id`)"
           }
+        ],
+        "foreignKeys": [
+          {
+            "table": "accounts",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "account_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
         ]
       },
       {
         "tableName": "notifications",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `created_at` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL, `account_id` TEXT NOT NULL, `title` TEXT NOT NULL, `content` TEXT NOT NULL, `icon` INTEGER NOT NULL, `is_read` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `created_at` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL, `account_id` TEXT NOT NULL, `title` TEXT NOT NULL, `content` TEXT NOT NULL, `icon` INTEGER NOT NULL, `is_read` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`account_id`) REFERENCES `accounts`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -313,11 +338,35 @@
           "columnNames": [
             "id"
           ]
-        }
+        },
+        "indices": [
+          {
+            "name": "index_notifications_account_id",
+            "unique": false,
+            "columnNames": [
+              "account_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_notifications_account_id` ON `${TABLE_NAME}` (`account_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "accounts",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "account_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
       },
       {
         "tableName": "twelve_week_years",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `created_at` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL, `account_id` TEXT NOT NULL, `name` TEXT NOT NULL, `cover` TEXT NOT NULL, `reward` TEXT NOT NULL, `reward_images` TEXT NOT NULL, `review` TEXT NOT NULL, `stars` INTEGER NOT NULL, `longitude` REAL NOT NULL, `latitude` REAL NOT NULL, `address` TEXT NOT NULL, `is_completed` INTEGER NOT NULL, `start_time_milliseconds` INTEGER NOT NULL, `end_time_milliseconds` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `created_at` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL, `account_id` TEXT NOT NULL, `name` TEXT NOT NULL, `cover` TEXT NOT NULL, `reward` TEXT NOT NULL, `reward_images` TEXT NOT NULL, `review` TEXT NOT NULL, `stars` INTEGER NOT NULL, `longitude` REAL NOT NULL, `latitude` REAL NOT NULL, `address` TEXT NOT NULL, `is_completed` INTEGER NOT NULL, `start_time_milliseconds` INTEGER NOT NULL, `end_time_milliseconds` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`account_id`) REFERENCES `accounts`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -421,11 +470,35 @@
           "columnNames": [
             "id"
           ]
-        }
+        },
+        "indices": [
+          {
+            "name": "index_twelve_week_years_account_id",
+            "unique": false,
+            "columnNames": [
+              "account_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_twelve_week_years_account_id` ON `${TABLE_NAME}` (`account_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "accounts",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "account_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
       },
       {
         "tableName": "lagging_indicators",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `created_at` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL, `year_id` TEXT NOT NULL, `name` TEXT NOT NULL, `progress` INTEGER NOT NULL, `is_completed` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `created_at` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL, `year_id` TEXT NOT NULL, `name` TEXT NOT NULL, `progress` INTEGER NOT NULL, `is_completed` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`year_id`) REFERENCES `twelve_week_years`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -475,11 +548,35 @@
           "columnNames": [
             "id"
           ]
-        }
+        },
+        "indices": [
+          {
+            "name": "index_lagging_indicators_year_id",
+            "unique": false,
+            "columnNames": [
+              "year_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_lagging_indicators_year_id` ON `${TABLE_NAME}` (`year_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "twelve_week_years",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "year_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
       },
       {
         "tableName": "weeks",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `created_at` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL, `year_id` TEXT NOT NULL, `name` TEXT NOT NULL, `reward` TEXT NOT NULL, `reward_images` TEXT NOT NULL, `review` TEXT NOT NULL, `stars` INTEGER NOT NULL, `longitude` REAL NOT NULL, `latitude` REAL NOT NULL, `address` TEXT NOT NULL, `is_completed` INTEGER NOT NULL, `progress` INTEGER NOT NULL, `start_time_milliseconds` INTEGER NOT NULL, `end_time_milliseconds` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `created_at` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL, `year_id` TEXT NOT NULL, `name` TEXT NOT NULL, `reward` TEXT NOT NULL, `reward_images` TEXT NOT NULL, `review` TEXT NOT NULL, `stars` INTEGER NOT NULL, `longitude` REAL NOT NULL, `latitude` REAL NOT NULL, `address` TEXT NOT NULL, `is_completed` INTEGER NOT NULL, `progress` INTEGER NOT NULL, `start_time_milliseconds` INTEGER NOT NULL, `end_time_milliseconds` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`year_id`) REFERENCES `twelve_week_years`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -583,11 +680,35 @@
           "columnNames": [
             "id"
           ]
-        }
+        },
+        "indices": [
+          {
+            "name": "index_weeks_year_id",
+            "unique": false,
+            "columnNames": [
+              "year_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_weeks_year_id` ON `${TABLE_NAME}` (`year_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "twelve_week_years",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "year_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
       },
       {
         "tableName": "goals",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `created_at` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL, `week_id` TEXT NOT NULL, `lagging_indicator_id` TEXT NOT NULL, `name` TEXT NOT NULL, `icon` INTEGER NOT NULL, `color` TEXT NOT NULL, `progress` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `created_at` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL, `week_id` TEXT NOT NULL, `lagging_indicator_id` TEXT NOT NULL, `name` TEXT NOT NULL, `icon` INTEGER NOT NULL, `color` TEXT NOT NULL, `progress` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`week_id`) REFERENCES `weeks`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`lagging_indicator_id`) REFERENCES `lagging_indicators`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -649,11 +770,55 @@
           "columnNames": [
             "id"
           ]
-        }
+        },
+        "indices": [
+          {
+            "name": "index_goals_week_id",
+            "unique": false,
+            "columnNames": [
+              "week_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_goals_week_id` ON `${TABLE_NAME}` (`week_id`)"
+          },
+          {
+            "name": "index_goals_lagging_indicator_id",
+            "unique": false,
+            "columnNames": [
+              "lagging_indicator_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_goals_lagging_indicator_id` ON `${TABLE_NAME}` (`lagging_indicator_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "weeks",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "week_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "lagging_indicators",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "lagging_indicator_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
       },
       {
         "tableName": "tasks",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `created_at` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL, `goal_id` TEXT NOT NULL, `lagging_indicator_id` TEXT NOT NULL, `name` TEXT NOT NULL, `icon` INTEGER NOT NULL, `tags` TEXT NOT NULL, `pomodoro_duration` INTEGER NOT NULL, `num_pomodoro` INTEGER NOT NULL, `num_pomodoro_completed` INTEGER NOT NULL, `total_time_spent` INTEGER NOT NULL, `date` INTEGER NOT NULL, `is_completed` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `created_at` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL, `goal_id` TEXT NOT NULL, `lagging_indicator_id` TEXT NOT NULL, `name` TEXT NOT NULL, `icon` INTEGER NOT NULL, `tags` TEXT NOT NULL, `pomodoro_duration` INTEGER NOT NULL, `num_pomodoro` INTEGER NOT NULL, `num_pomodoro_completed` INTEGER NOT NULL, `total_time_spent` INTEGER NOT NULL, `date` INTEGER NOT NULL, `is_completed` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`goal_id`) REFERENCES `goals`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`lagging_indicator_id`) REFERENCES `lagging_indicators`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -745,7 +910,51 @@
           "columnNames": [
             "id"
           ]
-        }
+        },
+        "indices": [
+          {
+            "name": "index_tasks_goal_id",
+            "unique": false,
+            "columnNames": [
+              "goal_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_tasks_goal_id` ON `${TABLE_NAME}` (`goal_id`)"
+          },
+          {
+            "name": "index_tasks_lagging_indicator_id",
+            "unique": false,
+            "columnNames": [
+              "lagging_indicator_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_tasks_lagging_indicator_id` ON `${TABLE_NAME}` (`lagging_indicator_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "goals",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "goal_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "lagging_indicators",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "lagging_indicator_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
       },
       {
         "tableName": "tags",
@@ -792,7 +1001,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'c96412d7800e4de688711be0df161c57')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '6bd4bfac859c666c570e126d4eb6c226')"
     ]
   }
 }

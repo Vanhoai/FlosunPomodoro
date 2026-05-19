@@ -7,6 +7,7 @@ import kotlinx.datetime.number
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 import kotlinx.datetime.todayIn
+import java.util.Locale
 import kotlin.time.Clock
 import kotlin.time.Instant
 
@@ -72,5 +73,36 @@ object TimeFuncs {
             .atTime(0, 0, 0)
             .toInstant(TimeZone.currentSystemDefault())
             .toEpochMilliseconds()
+    }
+
+    fun formatTimeAMPM(millis: Int): String {
+        val hours = millis / 3600
+        val minutes = (millis % 3600) / 60
+
+        val amPm = if (hours < 12) "AM" else "PM"
+        val displayHours = if (hours % 12 == 0) 12 else hours % 12
+
+        return String.format(Locale.getDefault(), "%02d:%02d %s", displayHours, minutes, amPm)
+    }
+
+
+    // This function assumes the input time format is "HH:mm" (24-hour format)
+    fun parseTimeToMs(time: String): Int {
+        val parts = time.split(":")
+        if (parts.size != 2) {
+            throw IllegalArgumentException("Time must be in the format HH:mm")
+        }
+
+        val hours = parts[0].toIntOrNull() ?: throw IllegalArgumentException("Invalid hours")
+        val minutes = parts[1].toIntOrNull() ?: throw IllegalArgumentException("Invalid minutes")
+
+        if (hours !in 0..23) {
+            throw IllegalArgumentException("Hours must be between 0 and 23")
+        }
+        if (minutes !in 0..59) {
+            throw IllegalArgumentException("Minutes must be between 0 and 59")
+        }
+
+        return hours * 3600 + minutes * 60
     }
 }

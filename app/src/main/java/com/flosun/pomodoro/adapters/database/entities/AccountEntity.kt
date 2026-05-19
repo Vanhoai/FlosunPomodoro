@@ -1,33 +1,20 @@
 package com.flosun.pomodoro.adapters.database.entities
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.flosun.pomodoro.domain.entities.Account
+import kotlinx.serialization.Serializable
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
+@Serializable
 @Entity(tableName = "accounts")
-data class AccountEntity(
-    @PrimaryKey val id: String,
-    val name: String,
-    val password: String,
-    val email: String,
-) {
-    fun toEntity(): Account {
-        return Account(
-            id = id,
-            name = name,
-            email = email,
-            password = password,
-        )
-    }
+data class AccountEntity @OptIn(ExperimentalUuidApi::class) constructor(
+    @PrimaryKey val id: String = Uuid.random().toString(),
+    @ColumnInfo(name = "created_at") val createdAt: Long = System.currentTimeMillis(),
+    @ColumnInfo(name = "updated_at") val updatedAt: Long = System.currentTimeMillis(),
 
-    companion object {
-        fun fromEntity(account: Account): AccountEntity {
-            return AccountEntity(
-                id = account.id,
-                name = account.name,
-                email = account.email,
-                password = account.password,
-            )
-        }
-    }
-}
+    @ColumnInfo(name = "name") val name: String,
+    @ColumnInfo(name = "password") val password: String,
+    @ColumnInfo(name = "email") val email: String,
+)

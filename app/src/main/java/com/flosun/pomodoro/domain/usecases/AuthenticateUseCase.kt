@@ -1,15 +1,18 @@
 package com.flosun.pomodoro.domain.usecases
 
+import com.flosun.pomodoro.adapters.database.PomodoroDatabase
+import com.flosun.pomodoro.adapters.database.entities.AccountEntity
+import com.flosun.pomodoro.core.constants.DEBUG_TAG
 import com.flosun.pomodoro.events.GlobalEvent
 import com.flosun.pomodoro.events.GlobalEventBus
 import com.flosun.pomodoro.core.cryptography.PasswordHasher
 import com.flosun.pomodoro.core.utils.BaseUseCase
 import com.flosun.pomodoro.core.utils.ValidationException
-import com.flosun.pomodoro.domain.entities.Account
-import com.flosun.pomodoro.domain.repositories.AccountRepository
-import java.util.UUID
+import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 data class AuthParams(
     val name: String,
@@ -20,33 +23,34 @@ data class AuthParams(
 @Singleton
 class AuthenticateUseCase @Inject constructor(
     private val passwordHasher: PasswordHasher,
-    private val accountRepository: AccountRepository,
     private val globalEventBus: GlobalEventBus,
-) : BaseUseCase<AuthParams, Account>() {
+    private val database: PomodoroDatabase,
+) : BaseUseCase<AuthParams, AccountEntity>() {
 
-    override suspend fun execute(params: AuthParams): Account {
-        val account = accountRepository.findByEmail(params.email)
+    override suspend fun execute(params: AuthParams): AccountEntity {
+        val account = database.findAccountByEmail(params.email)
         return if (account == null) createNewAccount(params)
         else checkPassword(account, params)
     }
 
-    private suspend fun createNewAccount(params: AuthParams): Account {
+    @OptIn(ExperimentalUuidApi::class)
+    private suspend fun createNewAccount(params: AuthParams): AccountEntity {
         val hashedPassword = passwordHasher.hash(params.password)
 
-        val newAccount = Account(
-            id = UUID.randomUUID().toString(),
+        val newAccount = AccountEntity(
             name = params.name,
             email = params.email,
             password = hashedPassword,
         )
 
-        val createdAccount = accountRepository.create(account = newAccount)
+        val createdResult = database.insertAccount(newAccount)
+        if (createdResult <= 0L) throw ValidationException("Failed to create account")
 
-        globalEventBus.sendEvent(GlobalEvent.CreateSetting(accountId = createdAccount.id))
-        return createdAccount
+        globalEventBus.sendEvent(GlobalEvent.CreateSetting(accountId = newAccount.id))
+        return newAccount
     }
 
-    private fun checkPassword(account: Account, params: AuthParams): Account {
+    private fun checkPassword(account: AccountEntity, params: AuthParams): AccountEntity {
         val isPasswordValid = passwordHasher.verify(params.password, account.password)
         if (!isPasswordValid) throw ValidationException("Invalid password")
 

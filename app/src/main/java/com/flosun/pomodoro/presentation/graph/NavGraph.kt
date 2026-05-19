@@ -42,6 +42,7 @@ import com.flosun.pomodoro.presentation.swipe.settings.language.AppLanguageView
 import com.flosun.pomodoro.presentation.swipe.settings.notification.NotificationSettingsView
 import com.flosun.pomodoro.presentation.swipe.settings.preference.PreferenceView
 import com.flosun.pomodoro.presentation.swipe.settings.preference.choose_duration.ChooseDurationView
+import com.flosun.pomodoro.presentation.swipe.settings.preference.choose_sound.ChooseSoundView
 import com.flosun.pomodoro.presentation.task.add_task.AddTaskView
 import com.flosun.pomodoro.presentation.year.twelve_week_year.TwelveWeekYearView
 import com.flosun.pomodoro.presentation.year.update_year.UpdateYearView
@@ -50,7 +51,7 @@ import com.flosun.pomodoro.presentation.year.year_detail.YearDetailView
 import com.flosun.pomodoro.ui.components.shared.NotFoundView
 import com.flosun.pomodoro.ui.theme.AppTheme
 
-@RequiresApi(Build.VERSION_CODES.O)
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun NavGraph(
     modifier: Modifier = Modifier,
@@ -84,13 +85,8 @@ fun NavGraph(
                 is NavRoute.Auth -> NavEntry(key) { AuthView(navBackStack) }
                 is NavRoute.Swipe -> NavEntry(key) { SwipeView(navBackStack) }
                 is NavRoute.Preference -> NavEntry(key) { PreferenceView(navBackStack) }
-                is NavRoute.ChooseDuration -> NavEntry(key) {
-                    ChooseDurationView(
-                        navBackStack,
-                        key
-                    )
-                }
-
+                is NavRoute.ChooseDuration -> NavEntry(key) { ChooseDurationView(key) }
+                is NavRoute.ChooseSound -> NavEntry(key) { ChooseSoundView(key) }
                 is NavRoute.Appearance -> NavEntry(key) { AppearanceView(navBackStack) }
                 is NavRoute.FullScreen -> NavEntry(key) { FullScreenView(navBackStack) }
                 is NavRoute.Account -> NavEntry(key) { AccountView(navBackStack) }

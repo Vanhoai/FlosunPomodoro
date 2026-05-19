@@ -7,16 +7,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.navigation3.runtime.NavBackStack
-import androidx.navigation3.runtime.NavKey
+import com.flosun.pomodoro.LocalNavBackStack
 import com.flosun.pomodoro.core.constants.DurationType
 import com.flosun.pomodoro.presentation.graph.NavRoute
 import com.flosun.pomodoro.ui.components.shared.RowNavigation
@@ -24,8 +19,12 @@ import com.flosun.pomodoro.ui.components.shared.RowSwitch
 import com.flosun.pomodoro.ui.theme.AppTheme
 
 @Composable
-fun DailyTargetPreferences(navBackStack: NavBackStack<NavKey>) {
-    var isEnabledDailyTarget by remember { mutableStateOf(false) }
+fun DailyTargetPreferences(
+    dailyTarget: Int = 420,
+    isEnabledDailyTarget: Boolean = false,
+    onChangedIsEnabledDailyTarget: (Boolean) -> Unit = {},
+) {
+    val navBackStack = LocalNavBackStack.current
 
     Column(
         modifier = Modifier
@@ -38,7 +37,7 @@ fun DailyTargetPreferences(navBackStack: NavBackStack<NavKey>) {
         RowSwitch(
             title = "Daily Targets",
             isActive = isEnabledDailyTarget,
-            onChange = { isEnabledDailyTarget = it }
+            onChange = onChangedIsEnabledDailyTarget,
         )
 
         HorizontalDivider(
@@ -48,8 +47,8 @@ fun DailyTargetPreferences(navBackStack: NavBackStack<NavKey>) {
 
         RowNavigation(
             title = "Daily Target Minutes",
-            description = "420 minutes",
-            onPress = {}
+            description = "$dailyTarget Minutes",
+            onPress = { navBackStack.add(NavRoute.ChooseDuration(DurationType.DAILY_TARGET_DURATION)) }
         )
     }
 }

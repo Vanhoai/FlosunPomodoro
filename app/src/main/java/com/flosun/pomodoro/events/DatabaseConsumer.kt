@@ -24,11 +24,15 @@ class DatabaseConsumer @Inject constructor(
     private val database: PomodoroDatabase,
 ) : CoroutineService(application) {
 
-
     fun listenGlobalEvents() = ioRun {
         globalEventBus.globalEvent.collect { event ->
             when (event) {
                 is GlobalEvent.CreateSetting -> createSetting(accountId = event.accountId)
+                is GlobalEvent.PlayAlarm -> {
+                    Timber
+                        .tag(DEBUG_TAG)
+                        .d("DatabaseConsumer received PlayAlarm event with mediaItem: ${event.mediaItem}")
+                }
             }
         }
     }

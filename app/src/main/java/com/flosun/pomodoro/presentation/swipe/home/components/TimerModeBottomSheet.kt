@@ -30,7 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.flosun.pomodoro.R
 import com.flosun.pomodoro.core.constants.TimerModeKey
-import com.flosun.pomodoro.core.services.TimerMode
+import com.flosun.pomodoro.core.services.pomodoro.TimerMode
 import com.flosun.pomodoro.ui.components.core.CoreBottomSheet
 import com.flosun.pomodoro.ui.components.core.CoreButton
 import com.flosun.pomodoro.ui.theme.AppTheme

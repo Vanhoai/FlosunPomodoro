@@ -33,6 +33,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.flosunn.core.extensions.tapGesture
@@ -54,6 +55,7 @@ fun SwipeableCard(
     isRevealed: Boolean = false,
     onExpanded: () -> Unit = {},
     onCollapsed: () -> Unit = {},
+    actionWidth: Dp = 58.dp,
     actions: List<SwipeableAction> = emptyList(),
     content: @Composable () -> Unit,
 ) {
@@ -102,7 +104,7 @@ fun SwipeableCard(
                 Box(
                     modifier = Modifier
                         .fillMaxHeight()
-                        .width(48.dp)
+                        .width(actionWidth)
                         .clip(
                             RoundedCornerShape(
                                 topEnd = if (isFinalAction) 8.dp else 0.dp,

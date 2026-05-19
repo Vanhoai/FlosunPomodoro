@@ -53,7 +53,6 @@ import com.flosun.pomodoro.presentation.swipe.tasks.components.OptionsSlider
 import com.flosun.pomodoro.ui.components.core.ActionIcon
 import com.flosun.pomodoro.ui.components.core.CoreFloatingButton
 import com.flosun.pomodoro.ui.components.core.MenuItem
-import com.flosun.pomodoro.ui.components.core.SwipeableCard
 import com.flosun.pomodoro.ui.components.shared.SharedSwipeHeading
 import com.flosun.pomodoro.ui.components.shared.TaskCard
 import com.flosun.pomodoro.ui.theme.PomodoroTheme

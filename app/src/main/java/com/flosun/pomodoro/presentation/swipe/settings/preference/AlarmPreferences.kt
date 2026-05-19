@@ -13,11 +13,21 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
+import com.flosun.pomodoro.LocalNavBackStack
+import com.flosun.pomodoro.adapters.database.entities.SoundEntity
+import com.flosun.pomodoro.presentation.graph.NavRoute
+import com.flosun.pomodoro.presentation.swipe.settings.preference.choose_sound.ChooseSoundType
 import com.flosun.pomodoro.ui.components.shared.RowNavigation
 import com.flosun.pomodoro.ui.theme.AppTheme
 
 @Composable
-fun AlarmPreferences(navBackStack: NavBackStack<NavKey>) {
+fun AlarmPreferences(
+    focusAlarm: SoundEntity,
+    shortBreakAlarm: SoundEntity,
+    longBreakAlarm: SoundEntity,
+) {
+    val navBackStack = LocalNavBackStack.current
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -28,8 +38,8 @@ fun AlarmPreferences(navBackStack: NavBackStack<NavKey>) {
     ) {
         RowNavigation(
             title = "Focus Alarm",
-            description = "Deep Focus",
-            onPress = {}
+            description = focusAlarm.title,
+            onPress = { navBackStack.add(NavRoute.ChooseSound(ChooseSoundType.FOCUS_ALARM)) }
         )
 
         HorizontalDivider(
@@ -39,8 +49,8 @@ fun AlarmPreferences(navBackStack: NavBackStack<NavKey>) {
 
         RowNavigation(
             title = "Short Break Alarm",
-            description = "Steady Beat",
-            onPress = {}
+            description = shortBreakAlarm.title,
+            onPress = { navBackStack.add(NavRoute.ChooseSound(ChooseSoundType.SHORT_BREAK_ALARM)) }
         )
 
         HorizontalDivider(
@@ -50,8 +60,8 @@ fun AlarmPreferences(navBackStack: NavBackStack<NavKey>) {
 
         RowNavigation(
             title = "Long Break Alarm",
-            description = "Deep Focus",
-            onPress = {}
+            description = longBreakAlarm.title,
+            onPress = { navBackStack.add(NavRoute.ChooseSound(ChooseSoundType.LONG_BREAK_ALARM)) }
         )
     }
 }

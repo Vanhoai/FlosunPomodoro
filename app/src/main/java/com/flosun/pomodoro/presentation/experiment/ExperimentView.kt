@@ -77,60 +77,10 @@ import timber.log.Timber
 import kotlin.uuid.ExperimentalUuidApi
 
 
-@RequiresApi(Build.VERSION_CODES.TIRAMISU)
-@SuppressLint("UseOfNonLambdaOffsetOverload", "AutoboxingStateCreation")
 @OptIn(ExperimentalUuidApi::class)
 @Composable
 fun ExperimentView(viewModel: ExperimentViewModel = hiltViewModel<ExperimentViewModel>()) {
-    val context = LocalContext.current
-    var fabPositionOnScreen by remember { mutableStateOf(Offset.Zero) }
-    var pointerId by remember { mutableIntStateOf(100) }
 
-    // Shader Setup
-    val shaderCode = context.assets.open("shaders/wave.glsl").readBytes().decodeToString()
-    val shader = remember { RuntimeShader(shaderCode) }
-
-    var composableSize by remember { mutableStateOf(Size.Zero) }
-    var currentTimeSeconds by remember { mutableFloatStateOf(0f) }
-
-    LaunchedEffect(Unit) {
-        val startTime = System.nanoTime()
-        // while (true) {
-        //     withFrameNanos { frameTime ->
-        //         currentTimeSeconds = (frameTime - startTime) / 1_000_000_000f
-        //     }
-        //
-        //     // Cleanup using seconds instead of millis
-        //     viewModel.cleanupWaves(currentTimeSeconds)
-        //     delay(16) // 60fps limit
-        // }
-    }
-
-//    val waves by viewModel.waves.collectAsState()
-//    val currentShaderParams = viewModel.buildShaderUniforms(currentTimeSeconds)
-
-    SideEffect {
-        // if (composableSize.width > 0f && composableSize.height > 0f) {
-        //     shader.setFloatUniform("uResolution", composableSize.width, composableSize.height)
-        //     shader.setFloatUniform("uTime", currentTimeSeconds)
-        //     shader.setFloatUniform("uGlobalDamping", currentShaderParams.globalDamping)
-        //     shader.setFloatUniform(
-        //         "uMinAmplitudeThreshold",
-        //         currentShaderParams.minAmplitudeThreshold
-        //     )
-        //     shader.setIntUniform("uNumWaves", currentShaderParams.numWaves)
-        //     shader.setFloatUniform("uWaveOrigins", currentShaderParams.origins)
-        //     shader.setFloatUniform("uWaveAmplitudes", currentShaderParams.amplitudes)
-        //     shader.setFloatUniform("uWaveFrequencies", currentShaderParams.frequencies)
-        //     shader.setFloatUniform("uWaveSpeeds", currentShaderParams.speeds)
-        //     shader.setFloatUniform("uWaveStartTimes", currentShaderParams.startTimes)
-        // }
-    }
-
-    val renderEffect = RenderEffect.createRuntimeShaderEffect(
-        shader,
-        "uTexture"
-    ).asComposeRenderEffect()
 
     Scaffold(
         containerColor = Color.White,
@@ -140,25 +90,7 @@ fun ExperimentView(viewModel: ExperimentViewModel = hiltViewModel<ExperimentView
                     .padding(20.dp)
                     .size(60.dp)
                     .clip(CircleShape)
-                    .background(AppTheme.colors.primaryColor)
-                    .onGloballyPositioned { coords ->
-                        val rect = coords.boundsInRoot()
-                        fabPositionOnScreen = rect.center
-                    }
-                    .pointerInput(Unit) {
-                        detectTapGestures(onPress = {
-                            val realOffset = fabPositionOnScreen - Offset(
-                                20.dp.toPx(),
-                                20.dp.toPx(),
-                            )
-
-//                            viewModel.addWave(
-//                                realOffset,
-//                                pointerId++,
-//                                currentTimeSeconds
-//                            )
-                        })
-                    },
+                    .background(AppTheme.colors.primaryColor),
                 contentAlignment = Alignment.Center,
             ) {
                 Icon(
@@ -173,9 +105,7 @@ fun ExperimentView(viewModel: ExperimentViewModel = hiltViewModel<ExperimentView
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
-                .onSizeChanged { composableSize = it.toSize() }
-                .graphicsLayer { this.renderEffect = renderEffect },
+                .padding(paddingValues),
             contentAlignment = Alignment.Center,
         ) {
             CoreButton(onPress = {}) {

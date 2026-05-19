@@ -67,7 +67,9 @@ class AppModule {
             context = application.applicationContext,
             klass = AppDatabase::class.java,
             name = POMODORO_DATABASE,
-        ).build()
+        )
+            .fallbackToDestructiveMigration(false)
+            .build()
     }
 
     @Provides

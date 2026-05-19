@@ -5,7 +5,9 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
+import com.flosun.pomodoro.adapters.database.embedded.SettingWithSounds
 import com.flosun.pomodoro.adapters.database.entities.AccountEntity
 import com.flosun.pomodoro.adapters.database.entities.GoalEntity
 import com.flosun.pomodoro.adapters.database.entities.LaggingIndicatorEntity
@@ -34,7 +36,6 @@ interface DatabaseDao {
     suspend fun removeAllAccounts(): Int
     // endregion ======================================= ACCOUNT QUERIES =======================================
 
-
     // region ======================================= YEAR QUERIES =======================================
     @Query("SELECT * FROM twelve_week_years")
     fun findAllTwelveWeekYears(): Flow<List<TwelveWeekYearEntity>>
@@ -57,6 +58,35 @@ interface DatabaseDao {
         """
     )
     fun findTwelveWeekYearByDate(date: Long): Flow<TwelveWeekYearEntity?>
+
+    @Query("DELETE FROM tasks WHERE goal_id IN (SELECT id FROM goals WHERE week_id IN (SELECT id FROM weeks WHERE year_id = :yearId))")
+    suspend fun deleteTasksByYearId(yearId: String): Int
+
+    @Query("DELETE FROM goals WHERE week_id IN (SELECT id FROM weeks WHERE year_id = :yearId)")
+    suspend fun deleteGoalsByYearId(yearId: String): Int
+
+    @Query("DELETE FROM weeks WHERE year_id = :yearId")
+    suspend fun deleteWeeksByYearId(yearId: String): Int
+
+    @Query("DELETE FROM tasks WHERE lagging_indicator_id IN (SELECT id FROM lagging_indicators WHERE year_id = :yearId)")
+    suspend fun deleteTasksByLaggingIndicatorsYearId(yearId: String): Int
+
+    @Query("DELETE FROM lagging_indicators WHERE year_id = :yearId")
+    suspend fun deleteLaggingIndicatorsByYearId(yearId: String): Int
+
+    @Query("DELETE FROM twelve_week_years WHERE id = :id")
+    suspend fun deleteTwelveWeekYearById(id: String): Int
+
+    // Cascade delete everything for a year
+    @Transaction
+    suspend fun deleteYearCascade(yearId: String) {
+        deleteTasksByYearId(yearId)
+        deleteTasksByLaggingIndicatorsYearId(yearId)
+        deleteGoalsByYearId(yearId)
+        deleteWeeksByYearId(yearId)
+        deleteLaggingIndicatorsByYearId(yearId)
+        deleteTwelveWeekYearById(yearId)
+    }
     // endregion ======================================= YEAR QUERIES =======================================
 
     // region ======================================= LAGGING INDICATORS QUERIES =======================================
@@ -125,6 +155,9 @@ interface DatabaseDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun addNewTask(task: TaskEntity): Long
 
+    @Update
+    fun updateTask(task: TaskEntity): Int
+
     @Query(
         """
         SELECT * FROM tasks
@@ -165,6 +198,9 @@ interface DatabaseDao {
 
     @Query("SELECT * FROM sounds WHERE sound_type = :soundType")
     fun findSoundsByType(soundType: SoundType): Flow<List<SoundEntity>>
+
+    @Query("SELECT * FROM sounds WHERE id = :id LIMIT 1")
+    fun findSoundById(id: String): Flow<SoundEntity?>
     // endregion ======================================= SOUND QUERIES =======================================
 
     // region ======================================= SETTING QUERIES =======================================
@@ -183,5 +219,12 @@ interface DatabaseDao {
     )
     fun findSettingByAccountId(accountId: String): Flow<SettingEntity?>
 
+    @Transaction
+    @Query("SELECT * FROM settings WHERE account_id = :accountId")
+    fun findSettingWithSoundsByAccountId(accountId: String): Flow<SettingWithSounds?>
+
+    @Update
+    fun updateSettings(setting: SettingEntity): Int
     // endregion ======================================= SETTING QUERIES =======================================
+
 }

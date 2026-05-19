@@ -17,11 +17,21 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
+import com.flosun.pomodoro.LocalNavBackStack
+import com.flosun.pomodoro.adapters.database.entities.SoundEntity
+import com.flosun.pomodoro.presentation.graph.NavRoute
+import com.flosun.pomodoro.presentation.swipe.settings.preference.choose_sound.ChooseSoundType
 import com.flosun.pomodoro.ui.components.shared.RowNavigation
 import com.flosun.pomodoro.ui.theme.AppTheme
 
 @Composable
-fun TickingPreferences(navBackStack: NavBackStack<NavKey>) {
+fun TickingPreferences(
+    focusTicking: SoundEntity,
+    shortBreakTicking: SoundEntity,
+    longBreakTicking: SoundEntity,
+) {
+    val navBackStack = LocalNavBackStack.current
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -32,8 +42,8 @@ fun TickingPreferences(navBackStack: NavBackStack<NavKey>) {
     ) {
         RowNavigation(
             title = "Focus Ticking",
-            description = "Deep Focus",
-            onPress = {}
+            description = focusTicking.title,
+            onPress = { navBackStack.add(NavRoute.ChooseSound(ChooseSoundType.FOCUS_TICKING)) }
         )
 
         HorizontalDivider(
@@ -43,8 +53,8 @@ fun TickingPreferences(navBackStack: NavBackStack<NavKey>) {
 
         RowNavigation(
             title = "Short Break Ticking",
-            description = "Steady Beat",
-            onPress = {}
+            description = shortBreakTicking.title,
+            onPress = { navBackStack.add(NavRoute.ChooseSound(ChooseSoundType.SHORT_BREAK_TICKING)) }
         )
 
         HorizontalDivider(
@@ -54,8 +64,8 @@ fun TickingPreferences(navBackStack: NavBackStack<NavKey>) {
 
         RowNavigation(
             title = "Long Break Ticking",
-            description = "Deep Focus",
-            onPress = {}
+            description = longBreakTicking.title,
+            onPress = { navBackStack.add(NavRoute.ChooseSound(ChooseSoundType.LONG_BREAK_TICKING)) }
         )
     }
 }

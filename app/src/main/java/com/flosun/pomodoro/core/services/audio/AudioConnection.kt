@@ -8,12 +8,14 @@ import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.Player.REPEAT_MODE_OFF
 import androidx.media3.common.Player.STATE_ENDED
+import com.flosun.pomodoro.core.constants.DEBUG_TAG
 import com.flosun.pomodoro.core.extensions.togglePlayPause
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import timber.log.Timber
 
 val LocalAudioConnection = staticCompositionLocalOf<AudioConnection?> {
     error("No AudioConnection provided")
@@ -60,6 +62,23 @@ class AudioConnection(
     // ==================================== FUNCTIONALITY ====================================
     fun playMediaItem(mediaItem: MediaItem, playWhenReady: Boolean = true) {
         audioService.playQueue(ArrayDeque(listOf(mediaItem)), playWhenReady)
+    }
+
+    fun playSoundEvent(
+        mediaItem: MediaItem,
+        onFinished: () -> Unit = {},
+    ) {
+        val listener = object : Player.Listener {
+            override fun onPlaybackStateChanged(state: Int) {
+                if (state == STATE_ENDED) {
+                    onFinished()
+                    player.removeListener(this)
+                }
+            }
+        }
+
+        player.addListener(listener)
+        audioService.playSound(ArrayDeque(listOf(mediaItem)))
     }
 
     fun setMediaItem(mediaItem: MediaItem) = audioService.setMediaItem(mediaItem)

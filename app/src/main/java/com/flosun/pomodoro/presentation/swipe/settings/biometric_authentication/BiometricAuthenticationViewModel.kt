@@ -5,13 +5,13 @@ import android.widget.Toast
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.flosun.pomodoro.adapters.database.entities.AccountEntity
 import com.flosun.pomodoro.core.constants.BIOMETRIC_CREDENTIALS_KEY
 import com.flosun.pomodoro.core.constants.CURRENT_ACCOUNT_KEY
 import com.flosun.pomodoro.core.services.BiometricCredentials
 import com.flosun.pomodoro.core.services.BiometricService
 import com.flosun.pomodoro.core.utils.AppStorage
 import com.flosun.pomodoro.core.utils.EncryptedStorage
-import com.flosun.pomodoro.domain.entities.Account
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -29,7 +29,7 @@ class BiometricAuthenticationViewModel @Inject constructor(
 
     @OptIn(ExperimentalUuidApi::class)
     fun enableBiometricAuth(context: FragmentActivity) = viewModelScope.launch(Dispatchers.IO) {
-        val currentAccount = appStorage.readSerializable<Account?>(CURRENT_ACCOUNT_KEY, null)
+        val currentAccount = appStorage.readSerializable<AccountEntity?>(CURRENT_ACCOUNT_KEY, null)
         if (currentAccount == null) {
             Toast.makeText(
                 application.applicationContext,

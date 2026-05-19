@@ -146,7 +146,7 @@ class AuthViewModel @Inject constructor(
             AuthParams(
                 name = name,
                 email = email,
-                password = uid, // Using UID as a password for simplicity, but in a real app, you should handle this more securely.
+                password = uid,
             )
         )
 
@@ -173,9 +173,13 @@ class AuthViewModel @Inject constructor(
         }
 
         val (result1, result2) = coroutineScope {
-            val resultSaveAccount =
-                async { appStorage.writeSerializable(CURRENT_ACCOUNT_KEY, account) }
-            val resultSaveAccountId = async { appStorage.write(CURRENT_ACCOUNT_ID_KEY, account.id) }
+            val resultSaveAccount = async {
+                appStorage.writeSerializable(CURRENT_ACCOUNT_KEY, account)
+            }
+            
+            val resultSaveAccountId = async {
+                appStorage.write(CURRENT_ACCOUNT_ID_KEY, account.id)
+            }
 
             resultSaveAccount.await() to resultSaveAccountId.await()
         }

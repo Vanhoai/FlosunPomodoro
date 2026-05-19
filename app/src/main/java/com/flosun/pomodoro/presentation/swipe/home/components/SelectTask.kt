@@ -33,10 +33,13 @@ import com.flosun.pomodoro.adapters.database.entities.TaskEntity
 import com.flosun.pomodoro.core.constants.CURRENT_TASK_ID_KEY
 import com.flosun.pomodoro.core.functions.ViewFuncs
 import com.flosun.pomodoro.ui.components.core.CoreBottomSheet
+import com.flosun.pomodoro.ui.components.shared.SwipeableAction
+import com.flosun.pomodoro.ui.components.shared.SwipeableCard
 import com.flosun.pomodoro.ui.components.shared.TaskCard
 import com.flosun.pomodoro.ui.components.shared.TwoOptionActions
 import com.flosun.pomodoro.ui.theme.AppTheme
 import com.flosunn.core.libraries.datastore.rememberPreference
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -57,29 +60,48 @@ fun SelectTask(
     val currentTask by database.findTaskById(currentTaskId).collectAsState(null)
     val label = currentTask?.name ?: "Select Task"
 
-    TaskCard(
-        name = label,
+    SwipeableCard(
         modifier = Modifier.padding(horizontal = 20.dp),
-        isShowPlayIcon = false,
-        numPomodoro = currentTask?.numPomodoro ?: 0,
-        numPomodoroCompleted = currentTask?.numPomodoroCompleted ?: 0,
-        pomodoroDuration = currentTask?.pomodoroDuration ?: 0,
-        icon = currentTask?.icon ?: R.drawable.ic_grid,
-        customIcon = {
-            Box(
-                modifier = Modifier,
-                contentAlignment = Alignment.Center,
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_arrow_down),
-                    contentDescription = null,
-                    modifier = Modifier.size(18.dp),
-                    tint = Color(0xFF9E9E9E),
-                )
-            }
-        },
-        onPress = { isExpanded = true },
-    )
+        onCollapsed = {},
+        onExpanded = {},
+        actions = listOf(
+            SwipeableAction(
+                icon = R.drawable.ic_task_done,
+                backgroundColor = Color(0xFF75D06A),
+                onPress = {
+                    scope.launch(Dispatchers.IO) {
+                        val updatedTask = currentTask!!.update(isCompleted = true)
+                        database.updateTask(updatedTask)
+
+                        currentTaskId = ""
+                    }
+                },
+            ),
+        )
+    ) {
+        TaskCard(
+            name = label,
+            isShowPlayIcon = false,
+            numPomodoro = currentTask?.numPomodoro ?: 0,
+            numPomodoroCompleted = currentTask?.numPomodoroCompleted ?: 0,
+            pomodoroDuration = currentTask?.pomodoroDuration ?: 0,
+            icon = currentTask?.icon ?: R.drawable.ic_grid,
+            customIcon = {
+                Box(
+                    modifier = Modifier,
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_arrow_down),
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp),
+                        tint = Color(0xFF9E9E9E),
+                    )
+                }
+            },
+            onPress = { isExpanded = true },
+        )
+    }
 
     if (isExpanded) CoreBottomSheet(
         title = "Select Task",

@@ -7,22 +7,30 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.flosun.pomodoro.LocalNavBackStack
+import com.flosun.pomodoro.core.constants.DurationType
+import com.flosun.pomodoro.core.functions.TimeFuncs
+import com.flosun.pomodoro.presentation.graph.NavRoute
 import com.flosun.pomodoro.ui.components.shared.RowNavigation
 import com.flosun.pomodoro.ui.components.shared.RowSwitch
 import com.flosun.pomodoro.ui.theme.AppTheme
+import java.util.Locale
+
 
 @Composable
-fun AdditionalPreferences() {
-    var isPreventScreenLock by remember { mutableStateOf(false) }
-    var isVibrateInSilentMode by remember { mutableStateOf(false) }
+fun AdditionalPreferences(
+    autoResetPomodoro: Int = 0,
+    preventScreenLock: Boolean = false,
+    onChangePreventScreenLock: (Boolean) -> Unit = {},
+    vibrateInSilentMode: Boolean = false,
+    onChangeVibrateInSilentMode: (Boolean) -> Unit = {},
+) {
+
+    val navBackStack = LocalNavBackStack.current
 
     Column(
         modifier = Modifier
@@ -34,10 +42,9 @@ fun AdditionalPreferences() {
     ) {
         RowNavigation(
             title = "Auto-Reset Pomodoro",
-            description = "00:00 AM",
-            onPress = {}
+            description = TimeFuncs.formatTimeAMPM(autoResetPomodoro),
+            onPress = { navBackStack.add(NavRoute.ChooseDuration(DurationType.AUTO_RESET_POMODORO)) }
         )
-
 
         HorizontalDivider(
             modifier = Modifier.padding(horizontal = 20.dp),
@@ -47,8 +54,8 @@ fun AdditionalPreferences() {
 
         RowSwitch(
             title = "Prevent Screen Lock",
-            isActive = isPreventScreenLock,
-            onChange = { isPreventScreenLock = it }
+            isActive = preventScreenLock,
+            onChange = onChangePreventScreenLock,
         )
 
         HorizontalDivider(
@@ -59,8 +66,8 @@ fun AdditionalPreferences() {
 
         RowSwitch(
             title = "Vibrate in Silent Mode",
-            isActive = isVibrateInSilentMode,
-            onChange = { isVibrateInSilentMode = it }
+            isActive = vibrateInSilentMode,
+            onChange = onChangeVibrateInSilentMode,
         )
     }
 }

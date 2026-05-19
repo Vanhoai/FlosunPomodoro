@@ -2,14 +2,28 @@ package com.flosun.pomodoro.adapters.database.entities
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.flosun.pomodoro.core.utils.StringArray
-import kotlinx.serialization.Serializable
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 
-@Entity(tableName = "twelve_week_years")
+@Entity(
+    tableName = "twelve_week_years",
+    foreignKeys = [
+        ForeignKey(
+            entity = AccountEntity::class,
+            parentColumns = ["id"],
+            childColumns = ["account_id"],
+            onDelete = ForeignKey.CASCADE,
+        )
+    ],
+    indices = [
+        Index(value = ["account_id"], unique = false),
+    ],
+)
 data class TwelveWeekYearEntity @OptIn(ExperimentalUuidApi::class) constructor(
     @PrimaryKey val id: String = Uuid.random().toString(),
     @ColumnInfo(name = "created_at") val createdAt: Long = System.currentTimeMillis(),

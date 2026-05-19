@@ -4,10 +4,10 @@ import androidx.navigation3.runtime.NavKey
 import androidx.savedstate.serialization.SavedStateConfiguration
 import com.flosun.pomodoro.core.constants.DurationType
 import com.flosun.pomodoro.domain.values.Location
+import com.flosun.pomodoro.presentation.swipe.settings.preference.choose_sound.ChooseSoundType
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
-import kotlinx.serialization.modules.subclass
 
 @Serializable
 sealed interface NavRoute : NavKey {
@@ -27,6 +27,11 @@ sealed interface NavRoute : NavKey {
     @Serializable
     data class ChooseDuration(
         val type: DurationType,
+    ) : NavRoute, NavKey
+
+    @Serializable
+    data class ChooseSound(
+        val type: ChooseSoundType,
     ) : NavRoute, NavKey
 
     @Serializable
@@ -101,6 +106,10 @@ val config = SavedStateConfiguration {
             subclass(
                 subclass = NavRoute.ChooseDuration::class,
                 serializer = NavRoute.ChooseDuration.serializer()
+            )
+            subclass(
+                subclass = NavRoute.ChooseSound::class,
+                serializer = NavRoute.ChooseSound.serializer()
             )
             subclass(
                 subclass = NavRoute.Appearance::class,

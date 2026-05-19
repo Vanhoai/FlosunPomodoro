@@ -25,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,15 +35,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.flosun.pomodoro.R
+import com.flosun.pomodoro.core.constants.TimerModeKey
 import com.flosun.pomodoro.core.functions.ViewFuncs
-import com.flosun.pomodoro.core.services.TimerState
+import com.flosun.pomodoro.core.services.pomodoro.SessionType
+import com.flosun.pomodoro.core.services.pomodoro.TimerMode
+import com.flosun.pomodoro.core.services.pomodoro.TimerState
 import com.flosun.pomodoro.rememberPomodoroService
 import com.flosun.pomodoro.ui.theme.AppTheme
 import com.flosunn.core.extensions.rippleEffectClickable
+import com.flosunn.core.libraries.datastore.rememberEnumPreference
 
 @SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
@@ -51,20 +57,32 @@ fun PomodoroTimer(
     modifier: Modifier,
 ) {
     val pomodoroService = rememberPomodoroService()
+    var timerMode by rememberEnumPreference(TimerModeKey, TimerMode.COUNTDOWN)
 
     val session by pomodoroService.session.collectAsState()
 
     val totalSeconds = session.totalTime
     val remainTime = session.remainTime
-    val isRunning = session.timerState == TimerState.RUNNING
+    val elapsedTime = session.elapsedTime
+
+    val isRunning = session.state == TimerState.RUNNING
+    val sessionName = when (session.type) {
+        SessionType.WORK -> "Focus Time"
+        SessionType.SHORT_BREAK -> "Short Break"
+        SessionType.LONG_BREAK -> "Long Break"
+    }
 
     val screenWidthDp = ViewFuncs.screenWidthDp()
     val arcSize = (screenWidthDp - 20 * 2 - 40 * 2).dp
 
-    val progress = if (totalSeconds > 0) {
-        remainTime.toFloat() / totalSeconds.toFloat()
-    } else {
-        1f
+    val progress = when (timerMode) {
+        TimerMode.COUNTDOWN -> if (totalSeconds > 0) {
+            remainTime.toFloat() / totalSeconds.toFloat()
+        } else {
+            1f
+        }
+
+        TimerMode.INFINITY -> 1f
     }
 
     val animatedProgress by animateFloatAsState(
@@ -73,9 +91,19 @@ fun PomodoroTimer(
         label = "Arc Progress"
     )
 
-    val minutes = remainTime / 60
-    val seconds = remainTime % 60
-    val timeText = "%02d:%02d".format(minutes, seconds)
+    val timeText = when (timerMode) {
+        TimerMode.COUNTDOWN -> {
+            val minutes = remainTime / 60
+            val seconds = remainTime % 60
+            "%02d:%02d".format(minutes, seconds)
+        }
+
+        TimerMode.INFINITY -> {
+            val minutes = elapsedTime / 60
+            val seconds = elapsedTime % 60
+            "%02d:%02d".format(minutes, seconds)
+        }
+    }
 
     Column(
         modifier = modifier
@@ -101,12 +129,22 @@ fun PomodoroTimer(
                 track = Color(0xFFE1E1E1),
             )
 
-            Text(
-                text = timeText,
-                fontSize = 48.sp,
-                style = AppTheme.typography.clock,
-                modifier = Modifier.padding(bottom = 20.dp)
-            )
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+            ) {
+                Text(
+                    text = timeText,
+                    fontSize = 48.sp,
+                    style = AppTheme.typography.clock,
+                    modifier = Modifier.padding()
+                )
+
+                Text(
+                    text = sessionName,
+                    fontSize = 20.sp,
+                )
+            }
         }
 
         Row(
@@ -121,11 +159,7 @@ fun PomodoroTimer(
                     .size(40.dp)
                     .clip(CircleShape)
                     .background(AppTheme.colors.primaryColor.copy(alpha = 0.1f))
-                    .clickable(
-                        interactionSource = remember { MutableInteractionSource() },
-                        indication = ripple(),
-                        onClick = {}
-                    ),
+                    .rippleEffectClickable { pomodoroService.reset() },
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
@@ -163,11 +197,7 @@ fun PomodoroTimer(
                     .size(40.dp)
                     .clip(CircleShape)
                     .background(AppTheme.colors.primaryColor.copy(alpha = 0.1f))
-                    .clickable(
-                        interactionSource = remember { MutableInteractionSource() },
-                        indication = ripple(),
-                        onClick = {}
-                    ),
+                    .rippleEffectClickable { pomodoroService.skip() },
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
@@ -212,7 +242,7 @@ private fun ArcProgress(
             style = Stroke(width = sw, cap = StrokeCap.Round)
         )
 
-        if (progress < 1f) {
+        if (progress <= 1f) {
             drawArc(
                 color = foreground,
                 startAngle = startAngle,

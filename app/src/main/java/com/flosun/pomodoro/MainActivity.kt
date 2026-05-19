@@ -26,10 +26,10 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import com.flosun.pomodoro.adapters.database.LocalDatabase
 import com.flosun.pomodoro.adapters.database.PomodoroDatabase
 import com.flosun.pomodoro.core.services.LocationService
-import com.flosun.pomodoro.core.services.PomodoroService
 import com.flosun.pomodoro.core.services.audio.AudioConnection
 import com.flosun.pomodoro.core.services.audio.AudioService
 import com.flosun.pomodoro.core.services.audio.LocalAudioConnection
+import com.flosun.pomodoro.core.services.pomodoro.PomodoroService
 import com.flosun.pomodoro.core.utils.result_store.LocalResultStore
 import com.flosun.pomodoro.core.utils.result_store.rememberResultStore
 import com.flosun.pomodoro.events.DatabaseConsumer
@@ -95,7 +95,7 @@ class MainActivity : FragmentActivity() {
 
     private val mainViewModel: MainViewModel by viewModels<MainViewModel>()
 
-    @RequiresApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge(

@@ -71,7 +71,6 @@ android {
     defaultConfig {
         applicationId = "com.flosun.pomodoro"
         minSdk = 24
-        //noinspection OldTargetApi
         targetSdk = 36
         versionCode = localProperties["versionCode"].toString().toInt()
         versionName = localProperties["versionName"].toString()

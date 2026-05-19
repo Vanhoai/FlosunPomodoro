@@ -31,6 +31,7 @@ import kotlinx.serialization.json.Json
         TagEntity::class,
     ],
     version = 1,
+    exportSchema = true,
 )
 @TypeConverters(
     StringArrayConverter::class,

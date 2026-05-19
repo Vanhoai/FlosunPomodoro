@@ -15,8 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.navigation3.runtime.NavBackStack
-import androidx.navigation3.runtime.NavKey
+import com.flosun.pomodoro.LocalNavBackStack
 import com.flosun.pomodoro.core.constants.DurationType
 import com.flosun.pomodoro.presentation.graph.NavRoute
 import com.flosun.pomodoro.ui.components.shared.RowNavigation
@@ -24,10 +23,19 @@ import com.flosun.pomodoro.ui.components.shared.RowSwitch
 import com.flosun.pomodoro.ui.theme.AppTheme
 
 @Composable
-fun PomodoroPreferences(navBackStack: NavBackStack<NavKey>) {
-    var isDisableBreak by remember { mutableStateOf(false) }
-    var isAutoStartNextPomodoro by remember { mutableStateOf(false) }
-    var isAutoStartBreak by remember { mutableStateOf(false) }
+fun PomodoroPreferences(
+    pomodoroDuration: Int = 30,
+    shortBreakDuration: Int = 5,
+    longBreakDuration: Int = 15,
+    longBreakAfter: Int = 4,
+    isDisabledBreak: Boolean,
+    isAutoStartNextPomodoro: Boolean,
+    isAutoStartBreak: Boolean,
+    onChangedIsDisabledBreak: (Boolean) -> Unit,
+    onChangedIsAutoStartNextPomodoro: (Boolean) -> Unit,
+    onChangedIsAutoStartBreak: (Boolean) -> Unit,
+) {
+    val navBackStack = LocalNavBackStack.current
 
     Column(
         modifier = Modifier
@@ -39,10 +47,8 @@ fun PomodoroPreferences(navBackStack: NavBackStack<NavKey>) {
     ) {
         RowNavigation(
             title = "Pomodoro Duration",
-            description = "30 minutes",
-            onPress = {
-                navBackStack.add(NavRoute.ChooseDuration(DurationType.POMODORO))
-            }
+            description = "$pomodoroDuration Minutes",
+            onPress = { navBackStack.add(NavRoute.ChooseDuration(DurationType.POMODORO_DURATION)) }
         )
 
         HorizontalDivider(
@@ -52,10 +58,8 @@ fun PomodoroPreferences(navBackStack: NavBackStack<NavKey>) {
 
         RowNavigation(
             title = "Short Break Duration",
-            description = "5 minutes",
-            onPress = {
-                navBackStack.add(NavRoute.ChooseDuration(DurationType.SHORT_BREAK))
-            }
+            description = "$shortBreakDuration Minutes",
+            onPress = { navBackStack.add(NavRoute.ChooseDuration(DurationType.SHORT_BREAK_DURATION)) }
         )
 
         HorizontalDivider(
@@ -65,10 +69,8 @@ fun PomodoroPreferences(navBackStack: NavBackStack<NavKey>) {
 
         RowNavigation(
             title = "Long Break Duration",
-            description = "15 minutes",
-            onPress = {
-                navBackStack.add(NavRoute.ChooseDuration(DurationType.LONG_BREAK))
-            }
+            description = "$longBreakDuration Minutes",
+            onPress = { navBackStack.add(NavRoute.ChooseDuration(DurationType.LONG_BREAK_DURATION)) }
         )
 
         HorizontalDivider(
@@ -78,10 +80,8 @@ fun PomodoroPreferences(navBackStack: NavBackStack<NavKey>) {
 
         RowNavigation(
             title = "Long Break After",
-            description = "4 Pomodoros",
-            onPress = {
-                navBackStack.add(NavRoute.ChooseDuration(DurationType.LONG_BREAK_AFTER))
-            }
+            description = "$longBreakAfter Pomodoros",
+            onPress = { navBackStack.add(NavRoute.ChooseDuration(DurationType.LONG_BREAK_AFTER)) }
         )
 
         HorizontalDivider(
@@ -91,8 +91,8 @@ fun PomodoroPreferences(navBackStack: NavBackStack<NavKey>) {
 
         RowSwitch(
             title = "Disable Break",
-            isActive = isDisableBreak,
-            onChange = { isDisableBreak = it }
+            isActive = isDisabledBreak,
+            onChange = onChangedIsDisabledBreak,
         )
 
         HorizontalDivider(
@@ -103,7 +103,7 @@ fun PomodoroPreferences(navBackStack: NavBackStack<NavKey>) {
         RowSwitch(
             title = "Auto Start Next Pomodoro",
             isActive = isAutoStartNextPomodoro,
-            onChange = { isAutoStartNextPomodoro = it }
+            onChange = onChangedIsAutoStartNextPomodoro
         )
 
         HorizontalDivider(
@@ -114,7 +114,7 @@ fun PomodoroPreferences(navBackStack: NavBackStack<NavKey>) {
         RowSwitch(
             title = "Auto Start Break",
             isActive = isAutoStartBreak,
-            onChange = { isAutoStartBreak = it }
+            onChange = onChangedIsAutoStartBreak
         )
     }
 }
