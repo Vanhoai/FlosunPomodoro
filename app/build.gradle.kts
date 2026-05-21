@@ -71,6 +71,7 @@ android {
     defaultConfig {
         applicationId = "com.flosun.pomodoro"
         minSdk = 24
+        //noinspection OldTargetApi
         targetSdk = 36
         versionCode = localProperties["versionCode"].toString().toInt()
         versionName = localProperties["versionName"].toString()
@@ -152,7 +153,9 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 
     // Modules
+    ksp(project(":ksp-processing"))
     implementation(project(":core"))
+    implementation(project(":ksp-processing"))
 
     // Libraries
     implementation(files("../libraries/shared.aar"))
@@ -233,4 +236,7 @@ dependencies {
 
     // Location
     implementation(libs.play.services.location)
+
+    // Ksp
+    implementation(libs.ksp.processing)
 }

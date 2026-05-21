@@ -88,7 +88,7 @@ fun NavGraph(
                 is NavRoute.ChooseDuration -> NavEntry(key) { ChooseDurationView(key) }
                 is NavRoute.ChooseSound -> NavEntry(key) { ChooseSoundView(key) }
                 is NavRoute.Appearance -> NavEntry(key) { AppearanceView(navBackStack) }
-                is NavRoute.FullScreen -> NavEntry(key) { FullScreenView(navBackStack) }
+                is NavRoute.FullScreen -> NavEntry(key) { FullScreenView() }
                 is NavRoute.Account -> NavEntry(key) { AccountView(navBackStack) }
                 is NavRoute.Encrypt -> NavEntry(key) { EncryptView() }
                 is NavRoute.BiometricAuthentication -> NavEntry(key) {

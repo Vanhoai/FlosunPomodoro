@@ -15,6 +15,7 @@ data class AccountEntity @OptIn(ExperimentalUuidApi::class) constructor(
     @ColumnInfo(name = "updated_at") val updatedAt: Long = System.currentTimeMillis(),
 
     @ColumnInfo(name = "name") val name: String,
+    @ColumnInfo(name = "avatar") val avatar: String,
     @ColumnInfo(name = "password") val password: String,
     @ColumnInfo(name = "email") val email: String,
 )

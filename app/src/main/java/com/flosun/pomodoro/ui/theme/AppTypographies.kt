@@ -18,6 +18,11 @@ val poetsenoneFontFamily = FontFamily(
     Font(R.font.poetsenone_regular, weight = FontWeight.Normal),
 )
 
+val firasansFontFamily = FontFamily(
+    Font(R.font.firasans_black, weight = FontWeight.Black),
+)
+
+
 @Immutable
 data class AppTypographies(
     val body: TextStyle,
@@ -40,7 +45,7 @@ val Typography = AppTypographies(
         fontSize = 18.sp,
     ),
     clock = TextStyle(
-        fontFamily = poetsenoneFontFamily,
+        fontFamily = firasansFontFamily,
         fontSize = 48.sp,
     )
 )

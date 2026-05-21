@@ -130,4 +130,10 @@ dependencies {
 
     // Timber
     implementation(libs.timber)
+
+    // Lite RT
+    implementation(libs.lite.rt)
+
+    // Onnxruntime
+    implementation(libs.onnxruntime.android)
 }

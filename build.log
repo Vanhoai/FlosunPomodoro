@@ -1,0 +1,110 @@
+Parallel Configuration Cache is an incubating feature.
+Reusing configuration cache.
+> Task :ksp-processing:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :app:generateDebugAssets UP-TO-DATE
+> Task :core:generateDebugAssets UP-TO-DATE
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :ksp-processing:kspKotlin SKIPPED
+> Task :app:mergeDebugNativeDebugMetadata NO-SOURCE
+> Task :core:prepareLintJarForPublish UP-TO-DATE
+> Task :core:preBuild UP-TO-DATE
+> Task :core:preDebugBuild UP-TO-DATE
+> Task :core:processDebugNavigationResources
+> Task :app:generateDebugResources
+> Task :ksp-processing:processResources
+> Task :app:processDebugGoogleServices
+> Task :core:generateDebugResources
+> Task :core:generateDebugBuildConfig
+> Task :core:packageDebugResources
+> Task :core:mergeDebugAssets
+> Task :core:javaPreCompileDebug
+> Task :app:processDebugNavigationResources
+> Task :core:parseDebugLocalResources
+> Task :app:mergeDebugAssets
+> Task :app:packageDebugResources
+> Task :core:generateDebugRFile
+> Task :core:writeDebugAarMetadata
+> Task :app:desugarDebugFileDependencies
+> Task :app:mapDebugSourceSetPaths
+> Task :app:compileDebugNavigationResources
+> Task :app:compressDebugAssets
+> Task :app:createDebugCompatibleScreenManifests
+> Task :app:extractDeepLinksDebug
+> Task :core:extractDeepLinksDebug
+> Task :app:checkDebugAarMetadata
+> Task :app:checkDebugDuplicateClasses
+> Task :core:mapDebugSourceSetPaths
+> Task :core:compileDebugLibraryResources
+> Task :core:processDebugManifest
+> Task :app:mergeDebugJniLibFolders
+> Task :core:mergeDebugJniLibFolders
+> Task :core:mergeDebugNativeLibs NO-SOURCE
+> Task :app:parseDebugLocalResources
+> Task :core:copyDebugJniLibsProjectOnly
+> Task :app:validateSigningDebug
+> Task :app:writeDebugAppMetadata
+> Task :app:writeDebugSigningConfigVersions
+> Task :app:generateDebugRFile
+> Task :core:stripDebugDebugSymbols NO-SOURCE
+> Task :core:copyDebugJniLibsProjectAndLocalJars
+> Task :core:extractDeepLinksForAarDebug UP-TO-DATE
+> Task :core:prepareDebugArtProfile UP-TO-DATE
+> Task :core:checkDebugAarMetadata
+> Task :app:processDebugMainManifest
+> Task :app:processDebugManifest
+> Task :app:processDebugManifestForPackage
+> Task :app:generateDebugGlobalSynthetics
+> Task :ksp-processing:compileKotlin
+> Task :ksp-processing:compileJava NO-SOURCE
+> Task :ksp-processing:classes
+> Task :ksp-processing:jar
+> Task :app:javaPreCompileDebug
+> Task :app:mergeDebugNativeLibs
+
+> Task :app:stripDebugDebugSymbols
+Unable to strip the following libraries, packaging them as they are: libandroidx.graphics.path.so, libdatastore_shared_counter.so, libmaplibre.so. Run with --info option to learn more.
+
+> Task :core:kspDebugKotlin
+> Task :core:extractDebugAnnotations
+> Task :app:mergeDebugResources
+> Task :core:compileDebugKotlin
+> Task :core:processDebugJavaRes
+> Task :core:mergeDebugJavaResource
+> Task :core:compileDebugJavaWithJavac
+> Task :core:transformDebugClassesWithAsm
+> Task :core:mergeDebugGeneratedProguardFiles
+> Task :core:mergeDebugConsumerProguardFiles
+> Task :core:bundleLibRuntimeToJarDebug
+> Task :core:bundleLibCompileToJarDebug
+> Task :core:syncDebugLibJars
+> Task :core:bundleDebugAar
+> Task :core:assembleDebug
+> Task :core:bundleLibRuntimeToDirDebug
+> Task :app:processDebugResources
+> Task :app:mergeLibDexDebug
+> Task :app:mergeExtDexDebug
+
+> Task :app:kspDebugKotlin
+w: [ksp] Found class: CorrelationEntity with value: null
+
+> Task :app:compileDebugKotlin
+w: file:///Users/hinsun/Workspace/Software/PomodoroApp/app/src/main/java/com/flosun/pomodoro/core/services/LocationService.kt:71:42 'fun getFromLocation(p0: Double, p1: Double, p2: Int): (Mutable)List<Address!>?' is deprecated. Deprecated in Java.
+
+> Task :app:processDebugJavaRes
+> Task :app:compileDebugJavaWithJavac
+> Task :app:hiltSyncDebug
+> Task :app:copyRoomSchemas NO-SOURCE
+> Task :app:hiltAggregateDepsDebug
+> Task :app:mergeDebugJavaResource
+> Task :app:hiltJavaCompileDebug
+> Task :app:transformDebugClassesWithAsm
+> Task :app:dexBuilderDebug
+> Task :app:mergeProjectDexDebug
+> Task :app:packageDebug
+> Task :app:assembleDebug
+> Task :app:createDebugApkListingFileRedirect
+
+BUILD SUCCESSFUL in 20s
+79 actionable tasks: 76 executed, 3 up-to-date
+Configuration cache entry reused.

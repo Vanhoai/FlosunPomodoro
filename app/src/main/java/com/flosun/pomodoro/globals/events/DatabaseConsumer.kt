@@ -1,19 +1,12 @@
-package com.flosun.pomodoro.events
+package com.flosun.pomodoro.globals.events
 
 import android.app.Application
-import androidx.lifecycle.LifecycleCoroutineScope
-import androidx.room.ColumnInfo
 import com.flosun.pomodoro.adapters.database.PomodoroDatabase
 import com.flosun.pomodoro.adapters.database.entities.SettingEntity
 import com.flosun.pomodoro.adapters.database.entities.SoundEntity
 import com.flosun.pomodoro.adapters.database.entities.SoundType
-import com.flosun.pomodoro.core.constants.DEBUG_TAG
 import com.flosun.pomodoro.core.services.CoroutineService
-import com.flosun.pomodoro.core.utils.BaseViewModel
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -28,11 +21,7 @@ class DatabaseConsumer @Inject constructor(
         globalEventBus.globalEvent.collect { event ->
             when (event) {
                 is GlobalEvent.CreateSetting -> createSetting(accountId = event.accountId)
-                is GlobalEvent.PlayAlarm -> {
-                    Timber
-                        .tag(DEBUG_TAG)
-                        .d("DatabaseConsumer received PlayAlarm event with mediaItem: ${event.mediaItem}")
-                }
+                else -> {}
             }
         }
     }
@@ -64,6 +53,5 @@ class DatabaseConsumer @Inject constructor(
         val sounds = database.findSoundsByType(type).first()
         return sounds
     }
-
 
 }

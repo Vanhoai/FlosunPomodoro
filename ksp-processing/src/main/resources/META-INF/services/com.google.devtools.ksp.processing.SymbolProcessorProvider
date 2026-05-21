@@ -1,0 +1,2 @@
+org.flosun.ksp_processing.processors.GenerateToMapProcessorProvider
+org.flosun.ksp_processing.processors.GenerateUpdateFuncProcessorProvider

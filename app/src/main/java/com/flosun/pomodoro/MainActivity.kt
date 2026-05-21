@@ -25,6 +25,7 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 import com.flosun.pomodoro.adapters.database.LocalDatabase
 import com.flosun.pomodoro.adapters.database.PomodoroDatabase
+import com.flosun.pomodoro.core.constants.DEBUG_TAG
 import com.flosun.pomodoro.core.services.LocationService
 import com.flosun.pomodoro.core.services.audio.AudioConnection
 import com.flosun.pomodoro.core.services.audio.AudioService
@@ -32,9 +33,13 @@ import com.flosun.pomodoro.core.services.audio.LocalAudioConnection
 import com.flosun.pomodoro.core.services.pomodoro.PomodoroService
 import com.flosun.pomodoro.core.utils.result_store.LocalResultStore
 import com.flosun.pomodoro.core.utils.result_store.rememberResultStore
-import com.flosun.pomodoro.events.DatabaseConsumer
-import com.flosun.pomodoro.events.GlobalEventBus
-import com.flosun.pomodoro.events.LocalEventBus
+import com.flosun.pomodoro.domain.entites.CorrelationEntity
+import com.flosun.pomodoro.domain.entites.toMap
+import com.flosun.pomodoro.domain.entites.update
+import com.flosun.pomodoro.globals.events.DatabaseConsumer
+import com.flosun.pomodoro.globals.events.GlobalEventBus
+import com.flosun.pomodoro.globals.events.LocalEventBus
+import com.flosun.pomodoro.globals.store.GlobalStore
 import com.flosun.pomodoro.presentation.graph.NavGraph
 import com.flosun.pomodoro.presentation.graph.NavRoute
 import com.flosun.pomodoro.presentation.graph.config
@@ -46,7 +51,11 @@ import com.flosun.pomodoro.ui.components.shared.LocalFlashStackedMessageManager
 import com.flosun.pomodoro.ui.components.shared.LocalGlobalLoading
 import com.flosun.pomodoro.ui.theme.PomodoroTheme
 import dagger.hilt.android.AndroidEntryPoint
+import timber.log.Timber
+import java.util.Timer
 import javax.inject.Inject
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 @AndroidEntryPoint
 class MainActivity : FragmentActivity() {
@@ -75,6 +84,9 @@ class MainActivity : FragmentActivity() {
     @Inject
     lateinit var databaseConsumer: DatabaseConsumer
 
+    @Inject
+    lateinit var globalStore: GlobalStore
+
     private var audioService: AudioService? = null
     private var audioConnection by mutableStateOf<AudioConnection?>(null)
     private val serviceConnection = object : ServiceConnection {
@@ -95,6 +107,7 @@ class MainActivity : FragmentActivity() {
 
     private val mainViewModel: MainViewModel by viewModels<MainViewModel>()
 
+    @OptIn(ExperimentalUuidApi::class)
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -104,6 +117,8 @@ class MainActivity : FragmentActivity() {
                 android.graphics.Color.TRANSPARENT
             )
         )
+
+        globalStore.init(lifecycleScope)
         setContent {
             val resultStore = rememberResultStore()
             val navBackStack = rememberNavBackStack(
@@ -121,6 +136,7 @@ class MainActivity : FragmentActivity() {
                 LocalPomodoroService provides pomodoroService,
                 LocalAudioConnection provides audioConnection,
                 LocalEventBus provides globalEventBus,
+                LocalGlobalStore provides globalStore,
                 LocalNavBackStack provides navBackStack,
                 LocalResultStore provides resultStore,
             ) {
@@ -173,6 +189,10 @@ val LocalNavBackStack = staticCompositionLocalOf<NavBackStack<NavKey>> {
 
 val LocalPomodoroService = staticCompositionLocalOf<PomodoroService> {
     error("No PomodoroService provided")
+}
+
+val LocalGlobalStore = staticCompositionLocalOf<GlobalStore> {
+    error("No GlobalStore provided")
 }
 
 @Composable

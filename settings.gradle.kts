@@ -27,3 +27,4 @@ dependencyResolutionManagement {
 rootProject.name = "FlosunPomodoro"
 include(":app")
 include(":core")
+include(":ksp-processing")

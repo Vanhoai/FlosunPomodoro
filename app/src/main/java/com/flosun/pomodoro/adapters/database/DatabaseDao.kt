@@ -29,6 +29,9 @@ interface DatabaseDao {
     @Query("SELECT * FROM accounts WHERE email = :email")
     suspend fun findAccountByEmail(email: String): AccountEntity?
 
+    @Query("SELECT * FROM accounts WHERE id = :id LIMIT 1")
+    fun findAccountById(id: String): Flow<AccountEntity?>
+
     @Insert
     fun insertAccount(account: AccountEntity): Long
 

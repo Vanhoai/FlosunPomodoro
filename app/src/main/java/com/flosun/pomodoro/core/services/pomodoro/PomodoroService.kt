@@ -1,7 +1,6 @@
 package com.flosun.pomodoro.core.services.pomodoro
 
 import android.app.Application
-import androidx.media3.exoplayer.ExoPlayer
 import com.flosun.pomodoro.adapters.database.PomodoroDatabase
 import com.flosun.pomodoro.adapters.database.entities.SettingEntity
 import com.flosun.pomodoro.adapters.database.entities.TaskEntity
@@ -11,33 +10,30 @@ import com.flosun.pomodoro.core.constants.DEBUG_TAG
 import com.flosun.pomodoro.core.constants.TimerModeKey
 import com.flosun.pomodoro.core.functions.TimeFuncs
 import com.flosun.pomodoro.core.services.CoroutineService
+import com.flosun.pomodoro.core.services.FocusService
 import com.flosun.pomodoro.core.utils.AppStorage
-import com.flosun.pomodoro.events.GlobalEvent
-import com.flosun.pomodoro.events.GlobalEventBus
+import com.flosun.pomodoro.globals.events.GlobalEvent
+import com.flosun.pomodoro.globals.events.GlobalEventBus
+import com.flosun.pomodoro.globals.store.GlobalStore
 import com.flosun.pomodoro.ui.components.shared.AlertMessageManager
 import com.flosunn.core.libraries.datastore.datastore
 import com.flosunn.core.libraries.datastore.enumPreference
-import com.flosunn.core.libraries.datastore.get
-import com.flosunn.core.libraries.datastore.preference
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlin.concurrent.timer
 
 data class TimerSession(
     val type: SessionType = SessionType.WORK,
@@ -90,20 +86,14 @@ class PomodoroService @Inject constructor(
     application: Application,
     private val appStorage: AppStorage,
     private val database: PomodoroDatabase,
+    private val focusService: FocusService,
+    private val globalStore: GlobalStore,
     private val alertMessageManager: AlertMessageManager,
     private val globalEventBus: GlobalEventBus,
 ) : CoroutineService(application) {
 
     private val _timerSession = MutableStateFlow(TimerSession())
     val session = _timerSession.asStateFlow()
-
-    private val _taskFlow = MutableStateFlow<TaskEntity?>(null)
-    private val taskFlow = _taskFlow.asStateFlow()
-
-    private val _settingFlow = MutableStateFlow<SettingEntity?>(null)
-    private val settingFlow = _settingFlow.asStateFlow()
-
-    private val now = TimeFuncs.nowMilliseconds()
 
     private val timerMode by enumPreference(
         context = application.applicationContext,
@@ -116,31 +106,12 @@ class PomodoroService @Inject constructor(
 
     init {
         ioRun {
-            coroutineScope.launch { listenTaskIdChange() }
-            coroutineScope.launch { listenSettingChange() }
             coroutineScope.launch { listenConfigChange() }
         }
     }
 
-    private suspend fun listenTaskIdChange() {
-        application.datastore.data
-            .map { it[CURRENT_TASK_ID_KEY] ?: "" }
-            .distinctUntilChanged()
-            .flatMapLatest { taskId -> database.findTaskByIdAndDate(taskId, now) }
-            .collect { taskEntity -> _taskFlow.value = taskEntity }
-    }
-
-
-    private suspend fun listenSettingChange() {
-        application.datastore.data
-            .map { it[CURRENT_ACCOUNT_ID_KEY] ?: "" }
-            .distinctUntilChanged()
-            .flatMapLatest { accountId -> database.findSettingByAccountId(accountId) }
-            .collect { settingEntity -> _settingFlow.value = settingEntity }
-    }
-
     private suspend fun listenConfigChange() {
-        combine(taskFlow, settingFlow) { task, setting ->
+        combine(globalStore.task, globalStore.setting) { task, setting ->
             Pair(task, setting)
         }.collect { (_, _) ->
             buildConfig()
@@ -178,7 +149,11 @@ class PomodoroService @Inject constructor(
         else -> {}
     }
 
-    fun pause() = _timerSession.update { it.copy(state = TimerState.PAUSED) }
+    fun pause() {
+        timerJob?.cancel()
+        focusService.stopFocusMode()
+        _timerSession.update { it.copy(state = TimerState.PAUSED) }
+    }
 
     fun skip() {
         timerJob?.cancel()
@@ -241,7 +216,7 @@ class PomodoroService @Inject constructor(
     }
 
     private fun startNewSession() {
-        if (taskFlow.value == null) {
+        if (globalStore.task.value == null) {
             alertMessageManager.showMessage(
                 title = "Warning",
                 description = "Do you want to start a new session without an active task? You can select a task in the home screen.",
@@ -273,6 +248,8 @@ class PomodoroService @Inject constructor(
                 tick()
             }
         }
+
+        focusService.startFocusMode()
     }
 
     private fun tick() = when (session.value.mode) {
@@ -309,6 +286,7 @@ class PomodoroService @Inject constructor(
         }
 
         timerJob?.cancel()
+        focusService.stopFocusMode()
         onSessionFinished()
     }
 
@@ -341,7 +319,7 @@ class PomodoroService @Inject constructor(
 
     private fun buildConfig() {
         timerConfig = TimerConfig()
-        val setting = settingFlow.value
+        val setting = globalStore.setting.value
         if (setting != null) {
             timerConfig = timerConfig!!.update(
                 workDuration = setting.pomodoroDuration * 60,
@@ -354,7 +332,7 @@ class PomodoroService @Inject constructor(
             )
         }
 
-        val task = taskFlow.value
+        val task = globalStore.task.value
         if (task != null) timerConfig = timerConfig!!.update(
             workDuration = task.pomodoroDuration * 60
         )
@@ -362,9 +340,8 @@ class PomodoroService @Inject constructor(
 
     private fun onSessionFinished() = ioRun {
         // Update Task's completed pomodoro count in database
-
         coroutineScope.launch(Dispatchers.IO) {
-            val task = taskFlow.value ?: return@launch
+            val task = globalStore.task.value ?: return@launch
             val updatedTask = task.copy(
                 numPomodoroCompleted = task.numPomodoroCompleted + 1,
                 totalTimeSpent = task.totalTimeSpent + session.value.elapsedTime,
@@ -373,7 +350,7 @@ class PomodoroService @Inject constructor(
             database.updateTask(updatedTask)
         }
         // Emit alarm sound event
-        val setting = settingFlow.value ?: return@ioRun
+        val setting = globalStore.setting.value ?: return@ioRun
         val soundId = when (session.value.type) {
             SessionType.WORK -> setting.focusAlarm
             SessionType.SHORT_BREAK -> setting.shortBreakAlarm

@@ -9,8 +9,6 @@ import com.flosun.pomodoro.core.constants.CURRENT_YEAR_ID_KEY
 import com.flosun.pomodoro.core.constants.DEBUG_TAG
 import com.flosun.pomodoro.core.utils.AppStorage
 import com.flosun.pomodoro.core.utils.BaseViewModel
-import com.flosun.pomodoro.events.GlobalEvent
-import com.flosun.pomodoro.events.GlobalEventBus
 import dagger.hilt.android.lifecycle.HiltViewModel
 import timber.log.Timber
 import javax.inject.Inject

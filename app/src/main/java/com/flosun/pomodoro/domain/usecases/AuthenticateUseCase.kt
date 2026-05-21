@@ -2,22 +2,20 @@ package com.flosun.pomodoro.domain.usecases
 
 import com.flosun.pomodoro.adapters.database.PomodoroDatabase
 import com.flosun.pomodoro.adapters.database.entities.AccountEntity
-import com.flosun.pomodoro.core.constants.DEBUG_TAG
-import com.flosun.pomodoro.events.GlobalEvent
-import com.flosun.pomodoro.events.GlobalEventBus
+import com.flosun.pomodoro.globals.events.GlobalEvent
+import com.flosun.pomodoro.globals.events.GlobalEventBus
 import com.flosun.pomodoro.core.cryptography.PasswordHasher
 import com.flosun.pomodoro.core.utils.BaseUseCase
 import com.flosun.pomodoro.core.utils.ValidationException
-import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
 data class AuthParams(
     val name: String,
     val email: String,
     val password: String,
+    val avatar: String,
 )
 
 @Singleton
@@ -41,6 +39,7 @@ class AuthenticateUseCase @Inject constructor(
             name = params.name,
             email = params.email,
             password = hashedPassword,
+            avatar = params.avatar,
         )
 
         val createdResult = database.insertAccount(newAccount)

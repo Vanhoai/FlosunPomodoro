@@ -2,11 +2,14 @@
   <dictionary name="project">
     <words>
       <w>Carto</w>
+      <w>Onnxruntime</w>
       <w>Supabase</w>
       <w>bbox</w>
       <w>encryptedstore</w>
       <w>housenumber</w>
+      <w>nnapi</w>
       <w>poetsenone</w>
+      <w>tflite</w>
     </words>
   </dictionary>
 </component>

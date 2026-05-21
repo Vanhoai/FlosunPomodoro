@@ -25,11 +25,7 @@ import kotlinx.serialization.json.Json
 import io.ktor.serialization.kotlinx.json.json
 import javax.inject.Singleton
 
-@Module(
-    includes = [
-        RepositoryModule::class
-    ]
-)
+@Module(includes = [RepositoryModule::class])
 @InstallIn(SingletonComponent::class)
 class AppModule {
 

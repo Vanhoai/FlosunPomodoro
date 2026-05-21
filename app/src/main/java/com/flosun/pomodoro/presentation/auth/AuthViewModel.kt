@@ -129,6 +129,8 @@ class AuthViewModel @Inject constructor(
         val name = authResult?.user?.displayName
         val uid = authResult?.user?.uid
         val email = authResult?.user?.email
+        val avatar = authResult?.user?.photoUrl?.toString()
+            ?: "https://i1-e.pinimg.com/control1/1200x/9b/00/a6/9b00a61c8303aaf0a7043020c2444ebd.jpg"
 
         if (name == null || uid == null || email == null) {
             globalLoading.setLoading(false)
@@ -147,6 +149,7 @@ class AuthViewModel @Inject constructor(
                 name = name,
                 email = email,
                 password = uid,
+                avatar = avatar,
             )
         )
 
@@ -176,7 +179,7 @@ class AuthViewModel @Inject constructor(
             val resultSaveAccount = async {
                 appStorage.writeSerializable(CURRENT_ACCOUNT_KEY, account)
             }
-            
+
             val resultSaveAccountId = async {
                 appStorage.write(CURRENT_ACCOUNT_ID_KEY, account.id)
             }

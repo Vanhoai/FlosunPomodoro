@@ -7,15 +7,13 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import com.flosun.pomodoro.core.constants.DEBUG_TAG
 import com.flosun.pomodoro.core.services.audio.LocalAudioConnection
-import com.flosun.pomodoro.events.GlobalEvent
-import com.flosun.pomodoro.events.LocalEventBus
+import com.flosun.pomodoro.globals.events.GlobalEvent
+import com.flosun.pomodoro.globals.events.LocalEventBus
 import com.flosun.pomodoro.ui.components.shared.FlashStackedMessages
 import com.flosun.pomodoro.ui.components.shared.GlobalAlertMessages
 import com.flosun.pomodoro.ui.components.shared.GlobalLoading
 import com.flosun.pomodoro.ui.components.shared.rememberFlashStackedMessageManager
-import timber.log.Timber
 
 
 @Composable

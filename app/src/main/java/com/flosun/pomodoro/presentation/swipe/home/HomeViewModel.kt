@@ -3,9 +3,13 @@ package com.flosun.pomodoro.presentation.swipe.home
 import android.app.Application
 import androidx.lifecycle.viewModelScope
 import com.flosun.pomodoro.adapters.database.PomodoroDatabase
+import com.flosun.pomodoro.core.constants.CURRENT_ACCOUNT_ID_KEY
 import com.flosun.pomodoro.core.utils.BaseViewModel
+import com.flosunn.core.libraries.datastore.datastore
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -16,6 +20,7 @@ import kotlinx.datetime.todayIn
 import javax.inject.Inject
 import kotlin.time.Clock
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     application: Application,
@@ -30,5 +35,6 @@ class HomeViewModel @Inject constructor(
     val tasks = database
         .findTasksByDate(nowMilliseconds, false)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), emptyList())
+
 
 }
